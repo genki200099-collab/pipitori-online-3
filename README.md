@@ -611,3 +611,11 @@ Start Command: node server.js
 - 新規ゲーム開始時に古いシュート演出イベントをリセット
 - `FULL_RULE_PROGRESS_UI_AUDIT.md` を追加
 - 作成日時：2026-07-04 00:44 JST
+
+
+## 今回の修正：卓面矢印UIのPC/スマホ最適化
+- PC横長表示で矢印が座席外にはみ出して崩れる問題を修正
+- 旧 `.seat-arrow` を座席内の `.seat-flow-chip` に変更
+- PC/タブレット/スマホ/極小幅で卓面レイアウトを調整
+- `TABLE_ARROW_RESPONSIVE_FIX_AUDIT.md` を追加
+- 作成日時：2026-07-04 01:05 JST
