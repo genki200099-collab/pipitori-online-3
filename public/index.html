@@ -1,0 +1,4358 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>【ピピトリ】ピッグ・ピック・トリック</title>
+  <style>
+:root{--bg:#fff6e8;--ink:#3b2118;--red:#b64040;--pink:#ffd6d6;--gold:#d4a536;--line:#efc5a5;--green:#2e8c58;--blue:#4776b8;--shadow:0 8px 24px rgba(66,36,20,.14)}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% 0,#fffaf0,#ffeeda 55%,#ffd9cf);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",Meiryo,sans-serif;color:var(--ink)}
+#app{max-width:980px;margin:0 auto;padding:12px 12px 90px}.hero{background:linear-gradient(135deg,#fff,#fff7e6);border:3px solid var(--line);border-radius:22px;padding:14px 16px;box-shadow:var(--shadow);position:static;z-index:10}.hero h1{font-size:clamp(23px,5vw,38px);margin:0;color:var(--red);letter-spacing:.02em}.hero p{margin:4px 0 0;color:#895142;font-weight:800}.hero-brand{display:flex;align-items:center;gap:16px;flex-wrap:wrap}.game-logo{display:block;max-width:min(100%,760px);width:100%;height:auto;object-fit:contain}.hero-meta{display:flex;flex-direction:column;gap:4px}.hero-subtitle{font-size:clamp(24px,3.6vw,34px);font-weight:900;color:#be4d4d;letter-spacing:.03em;line-height:1.15}.hero-meta p{margin:0;font-size:clamp(16px,2vw,18px);color:#7b4e3e;font-weight:900}.cardbox{margin-top:12px;background:rgba(255,255,255,.96);border:3px solid var(--line);border-radius:22px;padding:14px;box-shadow:var(--shadow)}
+h2{margin:0 0 10px}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.row>*{flex:1}.btn{border:none;border-radius:999px;background:linear-gradient(135deg,var(--red),#8c2525);color:white;font-weight:900;padding:12px 16px;box-shadow:0 4px 0 #6e1f1f;cursor:pointer}.btn.secondary{background:#fff4df;color:#7b332e;border:2px solid #e5b98d;box-shadow:none}.btn:disabled{opacity:.45;cursor:not-allowed}.input{border:2px solid #e4b09b;border-radius:14px;padding:12px;font-size:16px;min-width:0}.roomcode{font-size:42px;letter-spacing:.18em;font-weight:900;color:var(--red);text-align:center;background:#fff6e8;border:2px dashed #e4b09b;border-radius:18px;padding:12px;margin:8px 0}.small{font-size:12px;color:#80635a}.players{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.player{background:#fffaf2;border:2px solid #efd0b4;border-radius:16px;padding:10px;text-align:center;position:relative;min-height:126px;overflow:visible}.player.active{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,165,54,.25),0 0 18px rgba(212,165,54,.25)}.player .pig{font-size:32px}.player .name{font-weight:900}.seat-chip{display:inline-block;background:#fff7da;color:#7a4c0c;border:2px solid #efce89;border-radius:999px;padding:2px 8px;margin:4px 0 2px;font-size:11px;font-weight:900}.pill{display:inline-block;background:#fff1da;border-radius:999px;padding:4px 8px;margin:4px 2px;font-size:12px}.cpu-badge{display:inline-block;background:#e9f4ff;color:#24598e;border-radius:999px;padding:2px 7px;margin-left:3px;font-size:11px;font-weight:900}.talk{margin-top:6px;background:#fff;border:2px solid #f2c3c3;border-radius:14px;padding:7px;font-size:12px;font-weight:900;color:#82302d;position:relative;animation:pop .28s ease-out}.talk:before{content:'';position:absolute;top:-8px;left:50%;border:8px solid transparent;border-bottom-color:#f2c3c3;transform:translateX(-50%)}@keyframes pop{from{transform:scale(.88);opacity:.1}to{transform:scale(1);opacity:1}}
+.status{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.status div{background:#fffaf2;border:2px solid #efd0b4;border-radius:16px;text-align:center;padding:8px}.status b{display:block;font-size:20px;color:var(--red)}.commentary{background:linear-gradient(135deg,#fff7da,#ffe6ed);border-color:#f1b7a5}.comment-list{display:grid;gap:8px}.comment{display:flex;gap:8px;align-items:flex-start;background:#fff;border:2px solid #efc7b6;border-radius:16px;padding:9px}.comment .face{font-size:24px}.comment b{color:var(--red)}
+.table-commentary{margin:0 0 10px;background:linear-gradient(135deg,#fff7da,#ffe6ed);border:3px solid #f1b7a5;border-radius:18px;padding:10px;box-shadow:0 6px 16px rgba(182,64,64,.10);animation:commentSlide .26s ease-out}
+.table-commentary-title{font-size:13px;font-weight:900;color:#b64040;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.table-commentary-list{display:grid;gap:6px}
+.table-commentary-item{display:flex;gap:8px;align-items:flex-start;background:#fff;border:2px solid #efc7b6;border-radius:14px;padding:8px}
+.table-commentary-face{font-size:24px;line-height:1}
+.table-commentary-text{font-size:13px;font-weight:900;color:#82302d;line-height:1.45}
+.table-commentary-text b{color:#b64040}
+@keyframes commentSlide{from{transform:translateY(-6px);opacity:.15}to{transform:translateY(0);opacity:1}}
+.table-wrap{position:relative}.table{background:radial-gradient(circle,#fff8e8,#ffe8d8);border:2px dashed #efb3a4;border-radius:18px;padding:10px;min-height:138px}.turn-order-bar{display:none;flex-wrap:wrap;flex-wrap:wrap;align-items:center;gap:6px;justify-content:center;margin-bottom:10px;background:#fff8ef;border:2px solid #f0cfb3;border-radius:14px;padding:8px 10px;font-weight:900}.turn-order-bar .ord{padding:6px 10px;border-radius:999px;background:#fff;border:2px solid #efceb1}.turn-order-bar .ord.current{background:#fff1cf;border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,165,54,.18)}.turn-order-bar .ord.done{background:#eef8ef;border-color:#b7d8b7}.turn-order-bar .arrowtxt{color:#aa6d5c;font-weight:900}.table-board{display:grid;grid-template-columns:1fr 124px 1fr;grid-template-areas:'p0 mid p1' 'p3 mid p2';gap:14px;align-items:stretch}.seat{border:2px dashed #e4b09b;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:6px;min-height:180px;background:rgba(255,255,255,.55);transition:.2s;position:relative;padding:12px 10px 14px}.seat.win{border-color:var(--gold);background:#fff7d7;box-shadow:0 0 0 3px rgba(212,165,54,.25)}.seat.weak{border-color:#8752b3;background:#f5edff;box-shadow:0 0 0 3px rgba(120,80,170,.18)}.seat.current{box-shadow:0 0 0 4px rgba(212,165,54,.28),0 10px 18px rgba(212,165,54,.16)}.seat-0{grid-area:p0}.seat-1{grid-area:p1}.seat-2{grid-area:p2}.seat-3{grid-area:p3}.seat .mini-card{transform:scale(1.08);transform-origin:center top}.seat .play-badge{position:absolute;top:8px;left:8px;background:linear-gradient(135deg,#b64040,#8c2525);color:#fff;border-radius:999px;padding:2px 7px;font-size:11px;font-weight:900}.seat .turn-flag{position:absolute;top:8px;right:8px;background:#fff0bd;color:#7a4b00;border:2px solid #efcf7e;border-radius:999px;padding:2px 7px;font-size:11px;font-weight:900;animation:pulse 1s infinite alternate}.seat .seat-arrow{position:absolute;display:flex;align-items:center;gap:4px;background:#fff;border:2px solid #efceb1;border-radius:999px;padding:4px 8px;font-weight:900;color:#8c503e;box-shadow:0 3px 8px rgba(0,0,0,.08)}.seat .seat-arrow.current-next{background:#fff1cf;border-color:var(--gold);color:#7a4b00}.seat-0 .seat-arrow{right:-24px;top:50%;transform:translateY(-50%)}.seat-1 .seat-arrow{left:50%;bottom:-22px;transform:translateX(-50%)}.seat-2 .seat-arrow{left:-24px;top:50%;transform:translateY(-50%)}.seat-3 .seat-arrow{left:50%;top:-22px;transform:translateX(-50%)}.center-wheel{grid-area:mid;align-self:center;justify-self:center;width:118px;height:118px;border-radius:50%;background:linear-gradient(135deg,#fffef8,#ffeecf);border:3px solid #e9c076;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-weight:900;color:#7a4b00;box-shadow:0 10px 18px rgba(212,165,54,.18)}.center-wheel .cw-arrow{font-size:28px;line-height:1}.center-wheel .cw-small{font-size:12px;color:#8c503e}.result-banner{margin-bottom:10px;background:#fff;border:2px solid #e9aa84;border-radius:16px;padding:10px;font-weight:900;display:grid;grid-template-columns:1fr 1fr;gap:8px}.result-banner span{display:block;background:#fff7ed;border-radius:12px;padding:8px}.review-banner{margin:8px 0 10px;background:linear-gradient(135deg,#fff8d2,#ffe6c7);border:3px solid #d4a536;border-radius:16px;padding:10px;text-align:center;font-weight:900;color:#7a4b00;box-shadow:0 0 0 4px rgba(212,165,54,.14);animation:reviewPulse 1s infinite alternate}.review-banner b{font-size:20px;color:#b64040}@keyframes reviewPulse{from{filter:brightness(1)}to{filter:brightness(1.07)}}.who{font-size:12px;font-weight:900;color:#8c503e}.round-status{margin-top:10px;background:linear-gradient(135deg,#fff6d8,#ffe8ec);border:3px solid #e0b04f;border-radius:18px;padding:10px;text-align:center;font-weight:900;color:#7a4b00;box-shadow:0 5px 14px rgba(112,61,23,.12)}
+.round-status .round-big{font-size:24px;color:#b64040}
+.round-start{margin:10px 0;background:linear-gradient(135deg,#fff,#fff2c6);border:3px solid #d4a536;border-radius:20px;padding:14px;text-align:center;font-weight:900;color:#7a4b00;animation:roundPop .9s ease-out}
+.round-start .round-title{font-size:26px;color:#b64040}
+@keyframes roundPop{from{transform:scale(.96);opacity:.15}to{transform:scale(1);opacity:1}}
+.round-modal{position:fixed;inset:0;background:rgba(42,24,16,.46);z-index:100;display:flex;align-items:center;justify-content:center;padding:14px}
+.round-panel{max-width:760px;width:100%;max-height:88vh;overflow:auto;background:radial-gradient(circle at 50% 0,#fffdf4,#ffe8d8);border:4px solid #d4a536;border-radius:26px;padding:16px;box-shadow:0 18px 50px rgba(0,0,0,.26)}
+.round-panel h2{font-size:28px;color:#b64040;text-align:center;margin:0 0 8px}
+.round-reason{background:#fff3c9;border-left:7px solid #d4a536;border-radius:14px;padding:10px;margin:10px 0;font-weight:900;color:#70461d}
+.round-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.round-card{background:#fff;border:2px solid #efc5a5;border-radius:16px;padding:10px;text-align:center;box-shadow:0 5px 12px rgba(66,36,20,.08)}
+.round-card.highlight{border-color:#b64040;background:#fff0f0;box-shadow:0 0 0 3px rgba(182,64,64,.12)}
+.round-card .name{font-weight:900;color:#7a332b}
+.round-card .stat{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dashed #efd0b4;padding:3px 0;font-size:12px}
+.round-card .stat:last-child{border-bottom:none}
+.round-danger{display:inline-block;margin-top:5px;background:#ffe7ee;border:2px solid #d45c7a;color:#8b1f3b;border-radius:999px;padding:2px 8px;font-size:12px;font-weight:900}.round-total{margin-top:6px;background:#fff3c9;border:2px solid #d4a536;border-radius:12px;padding:6px;text-align:center;font-weight:900;color:#7a4b00}
+.round-actions{margin-top:14px;text-align:center}
+.round-actions .btn{min-width:220px}
+@media(max-width:650px){.round-grid{grid-template-columns:1fr 1fr}.round-panel h2{font-size:22px}.round-actions .btn{width:100%}}.hand-note{margin:0;background:linear-gradient(135deg,#f7ffe9,#eef8d8);border:2px solid #b8d18b;border-radius:14px;padding:10px 12px;color:#36511f;font-weight:900;line-height:1.55;writing-mode:horizontal-tb;text-orientation:mixed;display:block;width:100%;max-width:100%;box-sizing:border-box;white-space:normal}
+.hand-note strong{color:#6a4a00}
+.hand-wrap{display:flex;flex-direction:column;gap:10px;width:100%;min-width:0}
+.hand-alerts{display:grid;gap:8px;width:100%;min-width:0}
+.notice{display:block;width:100%;max-width:100%;padding:12px 14px;border-radius:14px;font-weight:900;line-height:1.55;white-space:normal;word-break:break-word;writing-mode:horizontal-tb;text-orientation:mixed;box-sizing:border-box}
+.notice-title{display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:14px}
+.notice-body{font-size:14px}
+.notice.info{background:linear-gradient(135deg,#f7ffe9,#eef8d8);border:2px solid #b8d18b;color:#36511f}
+.notice.warning{background:linear-gradient(135deg,#fff0f3,#ffe0e7);border:2px solid #e3a0af;color:#7a213e}
+.notice.warning .notice-title{color:#b52852}
+.notice.subtle{background:#fff8ef;border:2px solid #efd0b4;color:#7a4b35}
+.hand{display:flex;gap:8px;overflow-x:auto;padding:6px 2px 10px;min-height:142px;scrollbar-gutter:stable}
+.hand-card{border:none;background:transparent;padding:0;margin:0;display:block;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+.hand-card:not(:disabled){cursor:pointer}
+.hand-card:disabled{cursor:not-allowed}
+.hand-card:focus-visible{outline:3px solid #d4a536;border-radius:12px}.playing-card{width:72px;min-width:72px;height:110px;border-radius:10px;border:2px solid #6a3a2f;background:#fff;display:flex;flex-direction:column;justify-content:space-between;padding:6px;box-shadow:0 4px 10px rgba(0,0,0,.16);position:relative;user-select:none;overflow:hidden}.playing-card.playable{cursor:pointer;transform:translateY(-8px);border-color:var(--gold);box-shadow:0 8px 16px rgba(180,115,40,.35)}.un .playing-card,.playing-card.unplayable{opacity:.45;filter:grayscale(.25)}.rank{font-weight:900;font-size:20px}.suit{font-size:22px}.art{text-align:center;font-size:30px}.back{background:linear-gradient(135deg,#f6a3a3,#d94d5f);border-color:#9a2b38;color:#fff;align-items:center;justify-content:center;text-align:center}.back:before{content:'🐷';font-size:34px}.joker{background:linear-gradient(135deg,#fff,#e9ddff);border-color:#4d2c72}.spades{color:#222}.clubs{color:#218042}.hearts,.diamonds{color:#c92929}.madpig{background:linear-gradient(180deg,#fff7f7 0%,#ffe1e1 58%,#ffd0d0 100%);border-color:#a32531;color:#7c121f;box-shadow:0 0 0 2px rgba(163,37,49,.12),0 8px 18px rgba(163,37,49,.26)}.madpig.playable{border-color:#c53d4a;box-shadow:0 0 0 3px rgba(197,61,74,.18),0 0 18px rgba(197,61,74,.28),0 8px 18px rgba(163,37,49,.32)}.madpig .rank,.madpig .suit{color:#8f1724}.madpig .art{filter:drop-shadow(0 0 4px rgba(163,37,49,.35))}.madpig:before{content:'☠';position:absolute;right:5px;top:2px;font-size:18px;color:#8f1724;opacity:.9}.danger-chip{position:absolute;left:50%;bottom:4px;transform:translateX(-50%);background:linear-gradient(135deg,#b8192f,#7a1020);color:#fff;border-radius:999px;padding:1px 7px;font-size:10px;font-weight:900;letter-spacing:.2px;box-shadow:0 3px 8px rgba(0,0,0,.2);white-space:nowrap}.madpig-banner{position:absolute;left:-26px;top:10px;transform:rotate(-40deg);background:#8f1724;color:#fff;font-size:9px;font-weight:900;padding:2px 24px;letter-spacing:.4px;box-shadow:0 2px 6px rgba(0,0,0,.18)}.message{margin-top:8px;background:#fff3c9;border-left:6px solid var(--gold);padding:10px;border-radius:12px;font-weight:900}.log{max-height:220px;overflow:auto;font-size:13px;line-height:1.55;background:#fffaf2;border-radius:12px;padding:8px}.log p{margin:0 0 6px;padding-bottom:6px;border-bottom:1px dashed #edd0b8}.log p:first-child{background:#fff3c9;border-radius:10px;padding:7px}.pick{background:linear-gradient(135deg,#fff,#ffe4e4);border:3px solid #e9a1a1;border-radius:22px;padding:12px;animation:glow 1.4s ease-in-out infinite alternate}.pick h2{color:var(--red);margin:0 0 8px}@keyframes glow{from{box-shadow:0 8px 22px rgba(182,64,64,.16)}to{box-shadow:0 8px 30px rgba(182,64,64,.36)}}.pick-row{display:flex;gap:8px;overflow-x:auto;padding:10px 0}.pick-btn{border:none;background:transparent;padding:0;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+.pick-btn:disabled{cursor:not-allowed}.pick-btn:disabled{opacity:.7}.pick-btn:not(:disabled) .back{animation:shake 1.2s infinite}@keyframes shake{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}@keyframes pulse{from{transform:scale(1)}to{transform:scale(1.06)}}.pick .flow{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center}.pick .person{background:#fff7ed;border:2px solid #f1c7a8;border-radius:16px;padding:10px;text-align:center;font-weight:900}.arrow{font-size:28px;color:var(--red);font-weight:900}.drawn{display:flex;justify-content:center;margin-top:10px;transform:scale(1.15)}.score{width:100%;border-collapse:collapse;font-size:14px}.score th,.score td{border:1px solid #e0b99c;padding:7px;text-align:center}.score th{background:#ffe9d6}.tip{background:#f8fff2;border:2px solid #bedba3;border-radius:14px;padding:8px;margin-top:8px;font-size:13px;font-weight:800;color:#44622d}
+.rule-summary{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:8px}
+.rule-card{background:#fffaf2;border:2px solid #efd0b4;border-radius:16px;padding:10px;box-shadow:0 4px 12px rgba(66,36,20,.06)}
+.rule-card h3{font-size:15px;margin:0 0 6px;color:#b64040}
+.rule-card p,.rule-card ul{margin:0;font-size:13px;line-height:1.55}
+.rule-card ul{padding-left:1.2em}
+.rule-card li{margin:2px 0}
+.rule-rank{font-weight:900;background:#fff;border:2px dashed #efc5a5;border-radius:12px;padding:7px;text-align:center;color:#7b332e;overflow-x:auto;white-space:nowrap}
+.rule-score{width:100%;border-collapse:collapse;font-size:12px;background:#fff}
+.rule-score th,.rule-score td{border:1px solid #e7c2a8;padding:5px;text-align:left}
+.rule-score th{background:#ffe9d6;color:#7b332e}
+.rule-note{margin-top:8px;background:#fff3c9;border-left:6px solid #d4a536;border-radius:12px;padding:8px;font-size:13px;font-weight:900}
+.final-stage{background:radial-gradient(circle at 50% 0,#fffbe9,#ffe8d4 62%,#ffd7dd);border:4px solid #d4a536;border-radius:24px;padding:14px;box-shadow:0 14px 34px rgba(112,61,23,.18);position:relative;overflow:hidden}
+.final-stage:before{content:'🏆';position:absolute;right:10px;top:-10px;font-size:92px;opacity:.12;transform:rotate(12deg)}
+.final-hero{text-align:center;background:linear-gradient(135deg,#fff,#fff3c4);border:3px solid #d4a536;border-radius:22px;padding:14px;margin-bottom:12px;position:relative;box-shadow:0 8px 18px rgba(212,165,54,.22);animation:winnerGlow 1.2s infinite alternate}
+.final-hero .crown{font-size:44px;line-height:1}
+.final-hero h3{margin:4px 0 2px;font-size:24px;color:#b64040}
+.final-hero .winner-name{font-size:30px;font-weight:900;color:#7a4b00}
+.final-hero .winner-score{display:inline-block;margin-top:8px;background:#b64040;color:#fff;border-radius:999px;padding:6px 14px;font-weight:900}
+@keyframes winnerGlow{from{filter:brightness(1);transform:scale(1)}to{filter:brightness(1.05);transform:scale(1.01)}}
+.podium{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:8px;align-items:end;margin:12px 0}
+.podium-card{background:#fffaf2;border:2px solid #efc5a5;border-radius:18px;padding:10px;text-align:center;box-shadow:0 7px 16px rgba(66,36,20,.08);position:relative}
+.podium-card.rank-1{min-height:150px;border-color:#d4a536;background:linear-gradient(135deg,#fffef8,#fff2bf);order:2}
+.podium-card.rank-2{min-height:126px;order:1}
+.podium-card.rank-3{min-height:112px;order:3}
+.podium-card.rank-4{order:4;grid-column:1/-1;background:#fff6f7;border-color:#efb7bf}
+.podium-rank{font-size:24px;font-weight:900;color:#b64040}
+.podium-face{font-size:34px}
+.podium-name{font-weight:900;font-size:16px}
+.podium-score{font-weight:900;color:#7a4b00;background:#fff;border-radius:999px;display:inline-block;padding:4px 10px;margin-top:5px}
+.final-breakdown{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.break-card{background:#fff;border:2px solid #efc5a5;border-radius:16px;padding:10px;box-shadow:0 5px 12px rgba(66,36,20,.06)}
+.break-card h4{margin:0 0 6px;color:#b64040}
+.break-row{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dashed #efd0b4;padding:4px 0;font-size:13px}
+.break-row:last-child{border-bottom:none}
+.break-total{margin-top:6px;background:#fff3c9;border-radius:12px;padding:6px;text-align:center;font-weight:900;color:#7a4b00}
+.danger-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;justify-content:center}
+.danger-badge{background:#f7efff;border:2px solid #9862c4;color:#55306f;border-radius:999px;padding:3px 8px;font-size:12px;font-weight:900}
+.danger-badge.joker{background:#ffe7ee;border-color:#d45c7a;color:#8b1f3b}
+.final-comment{margin-top:12px;background:#fff8d8;border-left:7px solid #d4a536;border-radius:14px;padding:10px;font-weight:900;color:#62421d}
+.final-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px}
+.final-actions .btn{flex:0 1 auto}
+.score-compact{margin-top:12px;overflow-x:auto}
+@media(max-width:650px){.podium{grid-template-columns:1fr}.podium-card.rank-1,.podium-card.rank-2,.podium-card.rank-3,.podium-card.rank-4{order:initial;grid-column:auto;min-height:auto}.final-breakdown{grid-template-columns:1fr}.final-hero .winner-name{font-size:24px}}
+@media(max-width:650px){.rule-summary{grid-template-columns:1fr}.rule-card{padding:9px}.rule-rank{font-size:12px}}
+
+/* --- 盛り上げUI追加：派手な時計回り矢印・順番演出・ピック専用盤面 --- */
+.table.playing-now{background:radial-gradient(circle at 50% 45%,#fffaf0,#ffe1d6 65%,#ffd6d6);position:relative;overflow:hidden}
+.table.playing-now:before{content:'↻';position:absolute;inset:auto 12px 8px auto;font-size:72px;color:rgba(182,64,64,.07);font-weight:900;pointer-events:none}
+.seat .seat-arrow{background:linear-gradient(135deg,#fff,#ffe9c7);border:2px solid #e7b35c;color:#8b421e;box-shadow:0 0 0 2px rgba(255,255,255,.7),0 7px 16px rgba(182,94,40,.18);animation:arrowPulse 1.1s ease-in-out infinite alternate}
+.seat .seat-arrow:after{content:'🐽';font-size:13px;animation:snoutRun .85s linear infinite}
+.seat .seat-arrow.current-next{background:linear-gradient(135deg,#fff4b8,#ffc857);border-color:#d19a19;color:#6e3d00;box-shadow:0 0 0 4px rgba(255,201,67,.25),0 0 18px rgba(255,177,42,.55);animation:arrowHot .55s ease-in-out infinite alternate}
+@keyframes arrowPulse{from{filter:saturate(1);transform:translateY(-50%) scale(1)}to{filter:saturate(1.25);transform:translateY(-50%) scale(1.06)}}
+@keyframes arrowHot{from{filter:brightness(1);opacity:.9}to{filter:brightness(1.15);opacity:1}}
+@keyframes snoutRun{0%{transform:translateX(-2px)}50%{transform:translateX(5px)}100%{transform:translateX(-2px)}}
+.seat-1 .seat-arrow,.seat-3 .seat-arrow{animation-name:arrowPulseVertical}
+@keyframes arrowPulseVertical{from{filter:saturate(1);transform:translateX(-50%) scale(1)}to{filter:saturate(1.25);transform:translateX(-50%) scale(1.06)}}
+.seat.current:before{content:'NOW';position:absolute;z-index:2;top:-10px;left:50%;transform:translateX(-50%);background:#b64040;color:#fff;border-radius:999px;padding:3px 10px;font-size:11px;font-weight:900;box-shadow:0 4px 10px rgba(182,64,64,.25)}
+.seat.has-card .mini-card{animation:cardDrop .42s cubic-bezier(.2,1.25,.35,1)}
+@keyframes cardDrop{from{transform:scale(1.18) translateY(-22px) rotate(-4deg);opacity:.05}to{transform:scale(1.08) translateY(0) rotate(0);opacity:1}}
+.play-trail{margin:8px 0 12px;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;background:linear-gradient(135deg,#fffdf6,#fff2da);border:2px solid #e7bc84;border-radius:18px;padding:10px 12px;font-weight:900;box-shadow:0 4px 12px rgba(140,80,62,.08)}
+.play-trail .trail-step{display:flex;align-items:center;gap:6px;border:2px solid #e3c39a;background:#fff;border-radius:999px;padding:7px 12px;font-size:14px;color:#6e4939;line-height:1.2}
+.play-trail .trail-step.done{background:#edf8ee;border-color:#8fc890;color:#326b38}
+.play-trail .trail-step.current{background:linear-gradient(135deg,#fff4b8,#ffd874);border-color:#d4a536;color:#6d3a00;box-shadow:0 0 0 4px rgba(212,165,54,.22),0 4px 12px rgba(212,165,54,.2);animation:trailBeat .8s infinite alternate}
+.play-trail .trail-arrow{font-weight:900;color:#b15a46;font-size:22px;line-height:1;animation:trailFlow .75s infinite alternate}
+@keyframes trailBeat{from{transform:scale(1)}to{transform:scale(1.06)}}
+@keyframes trailFlow{from{transform:translateX(-2px);opacity:.55}to{transform:translateX(3px);opacity:1}}
+.pick-stage{background:linear-gradient(135deg,#fff7f1,#ffe1e6);border:3px solid #eaa3a3;border-radius:22px;padding:14px;box-shadow:0 12px 30px rgba(182,64,64,.18);position:relative;overflow:hidden}
+.pick-stage:before{content:'ババ抜きピック';position:absolute;right:-18px;top:12px;transform:rotate(8deg);font-size:34px;font-weight:900;color:rgba(182,64,64,.08);white-space:nowrap}
+.pick-stage h3{margin:0 0 8px;color:#b64040;font-size:22px}
+.pick-stage .pick-main{display:grid;grid-template-columns:1fr 84px 1fr;gap:10px;align-items:center}
+.pick-person{background:#fff;border:2px solid #f0c4ac;border-radius:18px;padding:12px;text-align:center;font-weight:900;min-height:118px;box-shadow:0 5px 14px rgba(87,43,30,.08)}
+.pick-person .big{font-size:34px;line-height:1}
+.pick-person.winner{background:#fff8d8;border-color:#d4a536}
+.pick-person.weakest{background:#f7efff;border-color:#9862c4}
+.pick-big-arrow{display:flex;flex-direction:column;align-items:center;justify-content:center;color:#b64040;font-weight:900;font-size:34px;animation:pickArrow 1s infinite alternate}
+.pick-big-arrow small{font-size:11px;color:#8c503e}
+@keyframes pickArrow{from{transform:translateX(-4px) scale(1);filter:brightness(1)}to{transform:translateX(4px) scale(1.08);filter:brightness(1.2)}}
+.pick-stage .pick-hand{display:flex;gap:8px;overflow-x:auto;padding:12px 4px 4px;justify-content:flex-start}
+.pick-stage .pick-card{border:none;background:transparent;padding:0;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+.pick-stage .pick-card:disabled{cursor:not-allowed}
+.pick-stage .pick-card:not(:disabled) .back{animation:pickWiggle .72s infinite alternate;cursor:pointer}
+.pick-stage .pick-card:nth-child(2n) .back{animation-delay:.15s}
+.pick-stage .pick-card:nth-child(3n) .back{animation-delay:.3s}
+@keyframes pickWiggle{from{transform:translateY(0) rotate(-2deg)}to{transform:translateY(-8px) rotate(2deg)}}
+.pick-stage .pick-status{margin-top:10px;background:#fff8c9;border-left:7px solid #d4a536;border-radius:14px;padding:10px;font-weight:900}
+.pick-stage .pick-result{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:10px}
+.pick-stage .pick-result .playing-card{transform:scale(1.18);animation:resultPop .42s cubic-bezier(.2,1.35,.35,1)}
+@keyframes resultPop{from{transform:scale(.6) rotate(-8deg);opacity:.05}to{transform:scale(1.18) rotate(0);opacity:1}}
+.table.pick-mode{background:linear-gradient(135deg,#fff,#ffe4e4);border-color:#e69c9c}
+.table.pick-mode .turn-order-bar,.table.pick-mode .table-board{display:none}
+@media(max-width:650px){
+  .pick-stage .pick-main{grid-template-columns:1fr}
+  .pick-big-arrow{transform:rotate(90deg);font-size:28px}
+  .pick-stage:before{font-size:24px}
+}
+
+@media(max-width:650px){#app{padding:8px 8px 80px}.players,.status{grid-template-columns:repeat(2,1fr)}.row>*{flex-basis:100%}.playing-card{width:62px;min-width:62px;height:96px}.art{font-size:24px}.pick .flow,.result-banner{grid-template-columns:1fr}.arrow{text-align:center;transform:rotate(90deg)}.player{min-height:118px}.hero{position:static}.table-board{grid-template-columns:1fr 1fr;grid-template-areas:'p0 p1' 'mid mid' 'p3 p2'}.center-wheel{width:100%;height:auto;border-radius:16px;padding:12px}.seat-0 .seat-arrow{right:-16px}.seat-2 .seat-arrow{left:-16px}.seat-1 .seat-arrow,.seat-3 .seat-arrow{left:50%}}
+  
+/* スート色：ハート赤、スペード青、クローバー緑、ダイヤ黄色 */
+.playing-card.hearts .rank,.playing-card.hearts .suit{color:#d3273f}
+.playing-card.spades .rank,.playing-card.spades .suit{color:#1f66d1}
+.playing-card.clubs .rank,.playing-card.clubs .suit{color:#238b45}
+.playing-card.diamonds .rank,.playing-card.diamonds .suit{color:#d6a000}
+.playing-card.madpig .rank,.playing-card.madpig .suit{color:#7d1533}
+.suit-color-note{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+.suit-color-note span{display:block;text-align:center;border-radius:999px;padding:4px 6px;background:#fff;font-weight:900;border:2px solid #efd0b4;font-size:12px}
+.suit-color-note .h{color:#d3273f}.suit-color-note .s{color:#1f66d1}.suit-color-note .c{color:#238b45}.suit-color-note .d{color:#d6a000}
+
+
+.input-label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:900;color:#7b332e}
+.pair-choice{margin-top:12px;background:#fff;border:3px solid #d4a536;border-radius:18px;padding:12px}
+.pair-choice h4{margin:0 0 8px;color:#7a4b00;font-size:16px}
+.pair-choice .pair-cards{display:flex;gap:10px;overflow-x:auto;padding:8px 2px}
+.pair-choice .pair-card-btn{border:3px solid #d4a536;background:#fff8dc;border-radius:14px;padding:8px;cursor:pointer;font-weight:900}
+.pair-choice .pair-card-btn:hover{filter:brightness(1.04);transform:translateY(-2px)}
+.pair-choice .skip-pair{margin-top:10px}
+
+.option-toggle select{min-width:110px}.rule-disabled{opacity:.55;filter:grayscale(.25)}
+
+.initial-pair-panel{background:linear-gradient(135deg,#fff8df,#fff);border:3px solid #d4a536;border-radius:18px;padding:12px;margin-bottom:10px}
+.initial-pair-panel h3{margin:0 0 6px;color:#7a4b00}
+.initial-pair-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.hand-card.initial-selectable{box-shadow:0 0 0 3px rgba(212,165,54,.35)}
+.hand-card.initial-selected{transform:translateY(-10px);box-shadow:0 10px 0 #d4a536,0 0 0 4px #ffdc6a}
+.hand-card.initial-candidate{transform:translateY(-16px);box-shadow:0 12px 0 #238b45,0 0 0 4px #75d992}
+.hand-card.initial-dim{opacity:.55}
+
+
+.pass-panel{background:linear-gradient(135deg,#e9f4ff,#fff);border:3px solid #6fa8dc;border-radius:18px;padding:12px;margin-bottom:10px}
+.pass-panel h3{margin:0 0 6px;color:#245b8a}
+.pass-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.pass-count{font-weight:900;background:#fff;border:2px solid #6fa8dc;border-radius:999px;padding:8px 12px}
+.hand-card.passable{box-shadow:0 0 0 3px rgba(31,102,209,.25)}
+.hand-card.pass-selected{transform:translateY(-14px);box-shadow:0 10px 0 #1f66d1,0 0 0 4px #8ec5ff}
+.hand-card.pass-disabled{opacity:.45;filter:grayscale(.35)}
+.pass-route{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;font-weight:900}
+.pass-route span{background:#fff;border:2px solid #b8d7f2;border-radius:999px;padding:6px 10px}
+
+
+/* --- 設定が増えた版のレスポンシブ最適化 --- */
+.setup-row{
+  display:grid;
+  grid-template-columns:minmax(150px,1.3fr) repeat(8,minmax(118px,1fr)) minmax(120px,.9fr);
+  align-items:end;
+  gap:10px;
+}
+.setup-row>*{min-width:0}
+.setup-row .create-btn{min-height:48px}
+.input-label{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  font-size:12px;
+  font-weight:900;
+  color:#7b332e;
+}
+.input-label span{white-space:nowrap}
+.input-label .input,
+.input-label select.input,
+.input-label input.input{width:100%}
+.settings-help{line-height:1.55}
+.hand-wrap{max-width:100%}
+.hand{display:flex;gap:9px;overflow-x:auto;overflow-y:visible;padding:18px 4px 14px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+.hand-card{flex:0 0 auto;scroll-snap-align:center;touch-action:manipulation}
+.playing-card{touch-action:manipulation}
+.table{overflow-x:auto}
+.table-board{min-width:620px}
+.pick-hand,.pair-choice .pair-cards{scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+.pick-card,.pair-card-btn{scroll-snap-align:center}
+.pass-panel,.initial-pair-panel,.notice{line-height:1.55}
+.pass-route{overflow-x:auto;padding-bottom:2px}
+.pass-route span{white-space:nowrap}
+.status{grid-template-columns:repeat(4,minmax(0,1fr))}
+.rule-summary{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.score-table-wrap{overflow-x:auto}
+
+@media (min-width:1100px){
+  #app{max-width:1180px}
+  .players{grid-template-columns:repeat(4,1fr)}
+  .setup-row{grid-template-columns:minmax(150px,1.25fr) repeat(6,minmax(125px,1fr)) minmax(140px,.85fr)}
+}
+
+@media (max-width:900px){
+  #app{max-width:100%;padding:10px 10px 92px}
+  .hero{position:static}
+  .setup-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .setup-row>input#name{grid-column:1 / -1}
+  .setup-row .create-btn{grid-column:1 / -1}
+  .players{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .status{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .table-board{min-width:560px}
+}
+
+@media (max-width:650px){
+  body{background:#fff6e8}
+  #app{padding:8px 8px 84px}
+  .hero,.cardbox{border-width:2px;border-radius:18px;padding:12px}
+  .setup-row{grid-template-columns:1fr}
+  .row{gap:8px}
+  .row>*{flex-basis:100%}
+  .input,.btn{width:100%;font-size:16px}
+  .roomcode{font-size:34px}
+  .players{grid-template-columns:1fr}
+  .status{grid-template-columns:repeat(2,1fr);gap:6px}
+  .status b{font-size:17px}
+  .table-board{min-width:500px}
+  .turn-order-bar,.play-trail{overflow-x:auto;white-space:nowrap;padding-bottom:5px}
+  .hand{gap:7px;padding:18px 2px 16px}
+  .hand-card.pass-selected{transform:translateY(-18px)}
+  .hand-card.initial-candidate{transform:translateY(-20px)}
+  .pass-actions,.initial-pair-actions{display:grid;grid-template-columns:1fr;gap:8px}
+  .pass-count{text-align:center}
+  .pair-choice .pair-cards{gap:8px}
+  .pick-stage{padding:12px}
+  .pick-stage .pick-main{grid-template-columns:1fr}
+  .pick-big-arrow{transform:rotate(90deg);margin:0 auto}
+  .rule-summary{grid-template-columns:1fr}
+  .suit-color-note{grid-template-columns:repeat(2,1fr)}
+}
+
+@media (max-width:420px){
+  .playing-card{width:62px;min-width:62px;height:92px}
+  .playing-card .rank{font-size:18px}
+  .playing-card .suit{font-size:17px}
+  .playing-card .art{font-size:22px}
+  .hand{gap:6px}
+  .table-board{min-width:460px}
+}
+
+
+/* --- 盛り上げ演出強化 --- */
+:root{
+  --neon-pink:#ff6b9a;
+  --neon-blue:#43a5ff;
+  --neon-green:#4fd17b;
+  --neon-yellow:#ffd43b;
+}
+.hero{
+  overflow:hidden;
+}
+.hero:after{
+  content:'🐷 ✦ 🃏 ✦ 🐽 ✦ 🃏 ✦ 🐷';
+  position:absolute;
+  right:-80px;
+  bottom:4px;
+  font-size:22px;
+  opacity:.12;
+  white-space:nowrap;
+  animation:floatRibbon 9s linear infinite;
+}
+@keyframes floatRibbon{
+  from{transform:translateX(0)}
+  to{transform:translateX(-160px)}
+}
+.cardbox{
+  transition:transform .18s ease, box-shadow .18s ease;
+}
+.round-start{
+  position:relative;
+  overflow:hidden;
+  animation:roundBurst .55s cubic-bezier(.2,1.4,.3,1);
+}
+.round-start:before{
+  content:'';
+  position:absolute;
+  inset:-80px;
+  background:
+    radial-gradient(circle at 20% 20%,rgba(255,212,59,.45),transparent 15%),
+    radial-gradient(circle at 80% 30%,rgba(255,107,154,.4),transparent 14%),
+    radial-gradient(circle at 40% 80%,rgba(67,165,255,.35),transparent 16%);
+  animation:confettiGlow 2.6s ease-in-out infinite alternate;
+  pointer-events:none;
+}
+.round-title{
+  position:relative;
+  z-index:1;
+  text-shadow:0 3px 0 rgba(255,255,255,.65);
+}
+@keyframes roundBurst{
+  from{transform:scale(.92) rotate(-1.5deg); opacity:.3}
+  to{transform:scale(1) rotate(0); opacity:1}
+}
+@keyframes confettiGlow{
+  from{transform:rotate(0) scale(1)}
+  to{transform:rotate(7deg) scale(1.08)}
+}
+.table.playing-now{
+  background:
+    radial-gradient(circle at 50% 45%,rgba(255,244,210,.92),rgba(255,255,255,.88) 45%,rgba(255,238,230,.9));
+}
+.seat.current{
+  animation:seatPulse 1.05s ease-in-out infinite alternate;
+}
+@keyframes seatPulse{
+  from{box-shadow:0 0 0 3px rgba(212,165,54,.25),0 0 18px rgba(212,165,54,.18)}
+  to{box-shadow:0 0 0 5px rgba(255,212,59,.5),0 0 30px rgba(255,107,154,.28)}
+}
+.seat.win{
+  animation:winnerPop .75s cubic-bezier(.2,1.5,.3,1);
+}
+.seat.win:after{
+  content:'WIN!';
+  position:absolute;
+  top:-14px;
+  right:8px;
+  background:linear-gradient(135deg,#ffd43b,#ff8a3d);
+  color:#7a2f00;
+  border:3px solid #fff;
+  border-radius:999px;
+  padding:3px 9px;
+  font-weight:1000;
+  transform:rotate(8deg);
+  box-shadow:0 6px 14px rgba(122,47,0,.18);
+}
+.seat.weak:before{
+  content:'PICK対象';
+  position:absolute;
+  top:-14px;
+  left:8px;
+  background:linear-gradient(135deg,#ffe1e8,#ff9bb6);
+  color:#842342;
+  border:3px solid #fff;
+  border-radius:999px;
+  padding:3px 9px;
+  font-weight:1000;
+  transform:rotate(-6deg);
+  box-shadow:0 6px 14px rgba(132,35,66,.14);
+}
+@keyframes winnerPop{
+  0%{transform:scale(.96)}
+  45%{transform:scale(1.05) rotate(1deg)}
+  100%{transform:scale(1)}
+}
+.playing-card{
+  transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
+}
+.hand-card:not(.un):hover .playing-card,
+.pair-card-btn:hover .playing-card{
+  transform:translateY(-8px) rotate(-1.5deg);
+  filter:brightness(1.05);
+}
+.hand-card:not(.un):active .playing-card,
+.pick-card:active .playing-card{
+  transform:translateY(-3px) scale(.97);
+}
+.hand-card.pass-selected .playing-card,
+.hand-card.initial-selected .playing-card{
+  animation:selectedSpark .9s ease-in-out infinite alternate;
+}
+@keyframes selectedSpark{
+  from{filter:drop-shadow(0 0 3px rgba(255,212,59,.45))}
+  to{filter:drop-shadow(0 0 12px rgba(255,107,154,.55))}
+}
+.play-trail .trail-step.current{
+  animation:trailCurrent .9s ease-in-out infinite alternate;
+}
+@keyframes trailCurrent{
+  from{transform:translateY(0)}
+  to{transform:translateY(-4px)}
+}
+.review-banner{
+  animation:reviewPulse .9s ease-in-out infinite alternate;
+}
+@keyframes reviewPulse{
+  from{box-shadow:0 0 0 rgba(212,165,54,0)}
+  to{box-shadow:0 0 20px rgba(212,165,54,.35)}
+}
+.pick-stage{
+  animation:pickStageIn .45s cubic-bezier(.2,1.3,.3,1);
+}
+@keyframes pickStageIn{
+  from{transform:translateY(12px) scale(.97);opacity:.2}
+  to{transform:translateY(0) scale(1);opacity:1}
+}
+.pick-big-arrow{
+  animation:arrowThump .75s ease-in-out infinite alternate;
+}
+@keyframes arrowThump{
+  from{transform:translateX(0)}
+  to{transform:translateX(8px)}
+}
+.pick-result{
+  position:relative;
+}
+.pick-result:after{
+  content:'✨';
+  font-size:34px;
+  position:absolute;
+  right:calc(50% - 92px);
+  top:-22px;
+  animation:sparkPop 1.1s ease-in-out infinite alternate;
+}
+@keyframes sparkPop{
+  from{transform:scale(.75) rotate(-10deg); opacity:.5}
+  to{transform:scale(1.25) rotate(12deg); opacity:1}
+}
+.pair-choice{
+  animation:choiceSlide .35s ease-out;
+}
+@keyframes choiceSlide{
+  from{transform:translateY(10px);opacity:.1}
+  to{transform:translateY(0);opacity:1}
+}
+.pass-panel,.initial-pair-panel{
+  position:relative;
+  overflow:hidden;
+  animation:setupPhaseIn .45s cubic-bezier(.2,1.25,.3,1);
+}
+.pass-panel:after,.initial-pair-panel:after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(105deg,transparent 0%,rgba(255,255,255,.5) 42%,transparent 58%);
+  transform:translateX(-120%);
+  animation:shine 2.8s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes setupPhaseIn{
+  from{transform:translateY(-10px);opacity:.25}
+  to{transform:translateY(0);opacity:1}
+}
+@keyframes shine{
+  0%,55%{transform:translateX(-120%)}
+  100%{transform:translateX(120%)}
+}
+.message{
+  position:relative;
+}
+.message.hype{
+  animation:messagePop .35s cubic-bezier(.2,1.35,.3,1);
+}
+@keyframes messagePop{
+  from{transform:scale(.98);background:#fff0bd}
+  to{transform:scale(1);background:initial}
+}
+.final-hero{
+  background:linear-gradient(135deg,#fff7da,#ffe1ef,#e9f4ff);
+  border:4px solid #ffd43b;
+  border-radius:26px;
+  padding:18px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+  animation:finalIn .8s cubic-bezier(.2,1.45,.3,1);
+}
+.final-hero:before{
+  content:'🎉 🐷 🏆 🐽 🎉';
+  position:absolute;
+  top:10px;
+  left:50%;
+  transform:translateX(-50%);
+  opacity:.18;
+  font-size:42px;
+  white-space:nowrap;
+}
+.final-hero h3{
+  position:relative;
+  font-size:clamp(24px,6vw,42px);
+  margin:12px 0 4px;
+  color:#b64040;
+  text-shadow:0 3px 0 #fff;
+}
+@keyframes finalIn{
+  from{transform:scale(.85) rotate(-2deg);opacity:0}
+  to{transform:scale(1) rotate(0);opacity:1}
+}
+.podium-card.rank-1{
+  animation:champWiggle 1.2s ease-in-out infinite alternate;
+}
+@keyframes champWiggle{
+  from{transform:translateY(0) rotate(-.5deg)}
+  to{transform:translateY(-5px) rotate(.5deg)}
+}
+.hype-toast{
+  position:fixed;
+  left:50%;
+  bottom:18px;
+  transform:translateX(-50%);
+  z-index:9999;
+  background:linear-gradient(135deg,#b64040,#ff6b9a);
+  color:#fff;
+  border:3px solid #fff;
+  border-radius:999px;
+  padding:12px 18px;
+  font-weight:1000;
+  box-shadow:0 10px 30px rgba(66,36,20,.25);
+  animation:toastIn .35s cubic-bezier(.2,1.35,.3,1), toastOut .35s ease-in 2.1s forwards;
+  pointer-events:none;
+}
+@keyframes toastIn{
+  from{transform:translateX(-50%) translateY(30px) scale(.85);opacity:0}
+  to{transform:translateX(-50%) translateY(0) scale(1);opacity:1}
+}
+@keyframes toastOut{
+  to{transform:translateX(-50%) translateY(20px) scale(.96);opacity:0}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*:before,*:after{animation:none!important;transition:none!important}
+}
+@media (max-width:650px){
+  .pick-big-arrow{animation:arrowThumpMobile .75s ease-in-out infinite alternate}
+  @keyframes arrowThumpMobile{
+    from{transform:rotate(90deg) translateX(0)}
+    to{transform:rotate(90deg) translateX(8px)}
+  }
+  .hype-toast{
+    width:calc(100% - 24px);
+    text-align:center;
+    border-radius:18px;
+    bottom:10px;
+  }
+  .seat.win:after,.seat.weak:before{
+    font-size:11px;
+    padding:2px 7px;
+  }
+}
+
+
+/* --- 冗長表示整理・コンパクト化 --- */
+.lobby-main{
+  display:grid;
+  grid-template-columns:minmax(180px,1fr) minmax(140px,220px);
+  gap:10px;
+  align-items:center;
+}
+.settings-details{
+  margin-top:10px;
+  background:#fffaf2;
+  border:2px dashed #efd0b4;
+  border-radius:16px;
+  padding:8px 10px;
+}
+.settings-details summary,
+.compact-rules summary,
+.log-box summary{
+  cursor:pointer;
+  font-weight:900;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  list-style:none;
+}
+.settings-details summary::-webkit-details-marker,
+.compact-rules summary::-webkit-details-marker,
+.log-box summary::-webkit-details-marker{display:none}
+.settings-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(150px,1fr));
+  gap:10px;
+  margin-top:10px;
+}
+.join-row,.room-actions{margin-top:8px}
+.setting-chips{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  justify-content:center;
+  margin-top:6px;
+}
+.setting-chips span{
+  background:#fff7da;
+  border:2px solid #efce89;
+  color:#7a4c0c;
+  border-radius:999px;
+  padding:3px 8px;
+  font-size:11px;
+  font-weight:900;
+}
+.player{min-height:98px}
+.player .pig{font-size:28px}
+.player-stats{
+  display:flex;
+  justify-content:center;
+  gap:5px;
+  flex-wrap:wrap;
+  margin-top:5px;
+}
+.player-stats span{
+  background:#fff1da;
+  border-radius:999px;
+  padding:3px 7px;
+  font-size:12px;
+  font-weight:800;
+}
+.you-mini,.turn-mini{
+  display:inline-block;
+  border-radius:999px;
+  padding:2px 6px;
+  font-size:10px;
+  font-weight:900;
+  margin-left:3px;
+}
+.you-mini{background:#fff7da;color:#7a4c0c}
+.turn-mini{background:#dff6e8;color:#1c6b3c}
+.compact-rules h2,.log-box h2{margin:0;font-size:20px}
+.compact-rules .rule-summary{margin-top:10px}
+.tip{font-size:12px;color:#80635a}
+.pass-panel h3,.initial-pair-panel h3{margin-bottom:4px}
+.pass-panel,.initial-pair-panel{padding:10px}
+.notice{padding:9px}
+.notice-title{font-size:14px}
+.notice-body{font-size:13px}
+.pick-stage h3{font-size:20px}
+.pick-status{font-size:14px}
+.log{max-height:260px;overflow:auto}
+@media(max-width:900px){
+  .lobby-main{grid-template-columns:1fr}
+  .settings-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:650px){
+  .settings-details{padding:8px}
+  .settings-grid{grid-template-columns:1fr}
+  .setting-chips{justify-content:flex-start}
+  .setting-chips span{font-size:10px}
+  .player{min-height:86px}
+  .player .pig{font-size:25px}
+  .player-stats span{font-size:11px}
+  .compact-rules h2,.log-box h2{font-size:18px}
+}
+
+
+/* --- 再接続UI --- */
+.reconnect-btn{border-style:dashed}
+#connStatus{font-size:16px}
+.status{grid-template-columns:repeat(5,1fr)}
+@media(max-width:900px){.status{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:650px){.status{grid-template-columns:repeat(2,1fr)}}
+
+
+/* --- ピック画面ちらつき対策 --- */
+.pick-stage{will-change:auto}
+.pick-stage .pick-card .back{backface-visibility:hidden;transform:translateZ(0)}
+
+/* --- ピック候補選択UI --- */
+.pick-target-panel{margin-top:10px;display:grid;gap:10px}
+.pick-target-cards{display:flex;gap:8px;overflow-x:auto;padding:12px 4px 8px;-webkit-overflow-scrolling:touch}
+.pick-target-card{border:0;background:transparent;padding:0;cursor:pointer;touch-action:manipulation}
+.pick-target-card .playing-card{transition:transform .16s ease, box-shadow .16s ease, filter .16s ease}
+.pick-target-card.selected .playing-card{transform:translateY(-12px);box-shadow:0 0 0 4px rgba(255,212,59,.55),0 12px 22px rgba(182,64,64,.22);filter:brightness(1.05)}
+.pick-target-card:disabled{opacity:.45;cursor:not-allowed}
+.center-note{text-align:center;margin-top:10px}
+@media(max-width:650px){
+  .pick-target-cards{gap:7px;padding-top:14px}
+  .pick-target-card.selected .playing-card{transform:translateY(-10px)}
+}
+
+/* --- 選択画面ちらつき対策 --- */
+.pass-panel:after,.initial-pair-panel:after{animation:none!important;display:none!important}
+.hand-card.pass-selected .playing-card,
+.hand-card.initial-selected .playing-card,
+.pick-target-card.selected .playing-card{animation:none!important}
+.hand-card,.pick-target-card,.pair-card-btn{backface-visibility:hidden;transform:translateZ(0)}
+
+
+.hand-card.initial-selected .playing-card{
+  box-shadow:0 0 0 4px rgba(255,212,59,.55),0 14px 26px rgba(212,165,54,.24)!important;
+}
+.hand-card.initial-candidate .playing-card{
+  box-shadow:0 0 0 4px rgba(79,209,123,.45),0 14px 26px rgba(79,209,123,.18)!important;
+}
+
+
+/* --- PICK対象バッジ位置修正 --- */
+.pick-target-badge{
+  position:absolute;
+  top:10px;
+  right:12px;
+  left:auto !important;
+  transform:rotate(-8deg);
+  z-index:6;
+  pointer-events:none;
+  max-width:110px;
+  text-align:center;
+  white-space:nowrap;
+}
+.seat{
+  position:relative;
+  overflow:visible;
+}
+.seat .who{
+  padding-right:108px;
+}
+@media(max-width:900px){
+  .pick-target-badge{
+    top:8px;
+    right:10px;
+    max-width:92px;
+    font-size:12px;
+  }
+  .seat .who{
+    padding-right:92px;
+  }
+}
+
+
+/* --- iPhone表示修正：ヘッダー装飾絵文字の重なり防止 --- */
+.hero:after{
+  content:none!important;
+  display:none!important;
+}
+
+
+.hero{
+  isolation:isolate;
+}
+
+.cpu-character-note{margin-top:4px;color:#8c503e;font-weight:800}
+
+/* --- CPUキャラクター画像 --- */
+.cpu-avatar-img{
+  width:1.35em;
+  height:1.35em;
+  border-radius:50%;
+  object-fit:cover;
+  vertical-align:middle;
+  display:inline-block;
+  box-shadow:0 0 0 2px rgba(255,255,255,.65), 0 2px 6px rgba(0,0,0,.18);
+  background:#fff;
+}
+.cpu-avatar-emoji{
+  display:inline-block;
+  line-height:1;
+}
+.hero .cpu-avatar-img,
+.status-card .cpu-avatar-img,
+.seat .cpu-avatar-img,
+.pill .cpu-avatar-img{
+  width:1.5em;
+  height:1.5em;
+}
+.pigface.cpu-avatar-img{
+  width:1.7em;
+  height:1.7em;
+  margin-right:.25em;
+}
+@media(max-width:700px){
+  .cpu-avatar-img{
+    width:1.25em;
+    height:1.25em;
+  }
+  .pigface.cpu-avatar-img{
+    width:1.5em;
+    height:1.5em;
+  }
+}
+
+
+/* --- 全体ブラッシュアップ：CPU画像とプレイヤー欄 --- */
+.player.cpu-player .pig .cpu-avatar-img,
+.player .pig .cpu-avatar-img{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  object-fit:cover;
+}
+.disconnect-mini{
+  display:inline-block;
+  border-radius:999px;
+  padding:2px 6px;
+  font-size:10px;
+  font-weight:900;
+  margin-left:3px;
+  background:#ffe1e8;
+  color:#842342;
+}
+.player .name{
+  line-height:1.25;
+}
+@media(max-width:650px){
+  .player.cpu-player .pig .cpu-avatar-img,
+  .player .pig .cpu-avatar-img{
+    width:36px;
+    height:36px;
+  }
+}
+
+
+/* --- CPU実況：吹き出し演出 --- */
+.table-commentary.speech-mode{
+  border:2px solid #f0d0aa;
+  background:linear-gradient(135deg,#fffaf2,#fff0f4);
+  border-radius:18px;
+  padding:10px;
+  box-shadow:0 8px 22px rgba(80,38,20,.08);
+}
+.table-commentary-title{
+  font-weight:1000;
+  color:#7b332e;
+  margin-bottom:8px;
+}
+.table-commentary-list{
+  display:grid;
+  gap:8px;
+}
+.speech-bubble{
+  display:grid;
+  grid-template-columns:44px minmax(0,1fr);
+  gap:9px;
+  align-items:start;
+  animation:speechPop .28s cubic-bezier(.2,1.3,.3,1);
+}
+.speech-bubble.latest{
+  animation:speechPop .34s cubic-bezier(.2,1.45,.3,1), speechGlow 1.15s ease-out;
+}
+.speech-face{
+  width:44px;
+  height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.commentary-avatar{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid #fff;
+  box-shadow:0 3px 8px rgba(0,0,0,.2);
+  background:#fff;
+}
+.commentary-avatar.emoji{
+  font-size:28px;
+}
+.speech-body{
+  position:relative;
+  background:#fff;
+  border:2px solid #efd0b4;
+  border-radius:16px;
+  padding:8px 10px;
+  color:#3b1d14;
+}
+.speech-body:before{
+  content:'';
+  position:absolute;
+  left:-8px;
+  top:15px;
+  width:12px;
+  height:12px;
+  background:#fff;
+  border-left:2px solid #efd0b4;
+  border-bottom:2px solid #efd0b4;
+  transform:rotate(45deg);
+}
+.speech-body b{
+  color:#9a3a32;
+  font-size:13px;
+}
+.speech-body p{
+  margin:2px 0 0;
+  line-height:1.45;
+  font-weight:800;
+}
+.speech-bubble.kamomodoki .speech-body{
+  border-color:#ff7b7b;
+  background:linear-gradient(135deg,#fff,#ffe7e7);
+}
+.speech-bubble.kamomodoki .speech-body b{color:#b30000}
+.speech-bubble.wakumodoki .speech-body{
+  border-color:#ffb45f;
+  background:linear-gradient(135deg,#fff,#fff1db);
+}
+.speech-bubble.wakumodoki .speech-body b{color:#c45900}
+.speech-bubble.rikumodoki .speech-body{
+  border-color:#9fc8ff;
+  background:linear-gradient(135deg,#fff,#eef6ff);
+}
+.speech-bubble.rikumodoki .speech-body b{color:#2e5f9f}
+
+.player{
+  position:relative;
+}
+.player-speech{
+  position:absolute;
+  left:52px;
+  right:8px;
+  bottom:6px;
+  background:#fff;
+  border:2px solid #efd0b4;
+  border-radius:14px;
+  padding:5px 7px;
+  font-size:11px;
+  font-weight:900;
+  line-height:1.3;
+  max-height:42px;
+  overflow:hidden;
+  box-shadow:0 4px 10px rgba(80,38,20,.08);
+  animation:speechPop .28s cubic-bezier(.2,1.3,.3,1);
+}
+.player-speech.kamomodoki{border-color:#ff8d8d;background:#fff0f0;color:#8a1111}
+.player-speech.wakumodoki{border-color:#ffbd75;background:#fff5e8;color:#8d4300}
+.player-speech.rikumodoki{border-color:#a9ceff;background:#f1f7ff;color:#285b91}
+@keyframes speechPop{
+  from{transform:translateY(8px) scale(.96);opacity:0}
+  to{transform:translateY(0) scale(1);opacity:1}
+}
+@keyframes speechGlow{
+  0%{filter:brightness(1.14)}
+  100%{filter:brightness(1)}
+}
+@media(max-width:800px){
+  .speech-bubble{
+    grid-template-columns:38px minmax(0,1fr);
+    gap:7px;
+  }
+  .speech-face,.commentary-avatar{
+    width:36px;
+    height:36px;
+  }
+  .speech-body{
+    padding:7px 9px;
+    font-size:13px;
+  }
+  .player-speech{
+    position:static;
+    margin:6px 6px 0;
+    max-height:48px;
+  }
+}
+@media(max-width:420px){
+  .table-commentary.speech-mode{
+    padding:8px;
+  }
+  .speech-body p{
+    font-size:12px;
+  }
+}
+
+
+/* --- 詳細設定の開閉UIを目立たせる改善 --- */
+.advanced-settings{
+  margin-top:12px;
+  border:2px solid #f0bf5a;
+  border-radius:18px;
+  background:linear-gradient(135deg,#fff8e8,#fff1d9);
+  box-shadow:0 8px 18px rgba(120,80,20,.08);
+  overflow:hidden;
+}
+.advanced-settings-summary{
+  list-style:none;
+  cursor:pointer;
+  user-select:none;
+  padding:14px 16px;
+  font-weight:1000;
+  color:#8b4300;
+  background:linear-gradient(135deg,#ffe39a,#ffd27b);
+  border-bottom:2px dashed rgba(139,67,0,.18);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:16px;
+}
+.advanced-settings-summary::-webkit-details-marker{
+  display:none;
+}
+.advanced-settings-summary::before{
+  content:'▶';
+  display:inline-block;
+  font-size:14px;
+  color:#8b4300;
+  transition:transform .18s ease;
+}
+.advanced-settings[open] > .advanced-settings-summary::before{
+  transform:rotate(90deg);
+}
+.advanced-settings-summary:hover{
+  filter:brightness(1.02);
+}
+.advanced-settings-summary::after{
+  content:'タップ / クリックで開閉';
+  margin-left:auto;
+  font-size:12px;
+  font-weight:900;
+  color:#9e5a16;
+  background:rgba(255,255,255,.6);
+  border:1px solid rgba(139,67,0,.18);
+  border-radius:999px;
+  padding:5px 8px;
+}
+.advanced-settings-hint{
+  padding:10px 16px 2px;
+  color:#8b5b2d;
+  font-size:13px;
+  font-weight:800;
+  line-height:1.5;
+}
+@media(max-width:700px){
+  .advanced-settings-summary{
+    flex-wrap:wrap;
+    font-size:15px;
+    padding:12px 14px;
+  }
+  .advanced-settings-summary::after{
+    width:100%;
+    margin-left:0;
+    text-align:center;
+    font-size:11px;
+  }
+  .advanced-settings-hint{
+    font-size:12px;
+    padding:8px 14px 0;
+  }
+}
+
+
+/* --- 全体ちらつき対策：過剰な再アニメーションを抑制 --- */
+.table-commentary.speech-mode,
+.speech-bubble,
+.speech-bubble.latest,
+.player-speech,
+.pick-stage,
+.round-start,
+.cardbox,
+.playing-card,
+.hand-card.pass-selected .playing-card,
+.hand-card.initial-selected .playing-card,
+.pick-target-card.selected .playing-card{
+  animation:none!important;
+}
+.hero:after,
+.pass-panel:after,
+.initial-pair-panel:after{
+  content:none!important;
+  display:none!important;
+  animation:none!important;
+}
+.speech-bubble.latest{
+  filter:none!important;
+}
+.seat.current{
+  animation:none!important;
+  box-shadow:0 0 0 4px rgba(255,212,59,.38),0 0 20px rgba(212,165,54,.18);
+}
+.pick-big-arrow{
+  animation:none!important;
+}
+.play-trail .trail-step.current{
+  animation:none!important;
+}
+.playing-card,
+.cpu-avatar-img,
+.commentary-avatar{
+  backface-visibility:hidden;
+  transform:translateZ(0);
+}
+
+
+/* --- 全体点検UI補正 --- */
+.settings-details.advanced-settings{
+  display:block;
+}
+.advanced-settings-summary{
+  min-height:44px;
+}
+.advanced-settings-summary .small{
+  opacity:.8;
+}
+@media(max-width:700px){
+  .advanced-settings-summary{
+    line-height:1.35;
+  }
+  .advanced-settings .settings-grid{
+    padding:10px;
+  }
+}
+.hero:after{
+  content:none!important;
+  display:none!important;
+}
+
+
+/* --- iPhone / スマホ向け卓面コンパクトUI改善 --- */
+html{
+  -webkit-text-size-adjust:100%;
+}
+body.mobile-table-compact{
+  min-width:0;
+}
+body.mobile-table-compact .status{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:6px;
+}
+body.mobile-table-compact .status > div{
+  padding:10px 8px;
+  min-width:0;
+}
+body.mobile-table-compact .status b{
+  font-size:15px;
+}
+body.mobile-table-compact .round-status{
+  margin-top:8px;
+  padding:10px 10px 8px;
+}
+body.mobile-table-compact .round-big{
+  font-size:18px;
+}
+body.mobile-table-compact .setting-chips{
+  gap:5px;
+}
+body.mobile-table-compact .setting-chips span{
+  font-size:10px;
+  padding:4px 7px;
+}
+body.mobile-table-compact .round-start{
+  margin-top:8px;
+  padding:8px 10px;
+  border-radius:12px;
+}
+body.mobile-table-compact #tableCommentary{
+  margin-bottom:6px;
+}
+body.mobile-table-compact .table-commentary{
+  margin-bottom:6px;
+  padding:8px 10px;
+}
+body.mobile-table-compact .table-commentary-title{
+  font-size:12px;
+}
+body.mobile-table-compact .speech-bubble{
+  gap:8px;
+}
+body.mobile-table-compact .speech-face{
+  flex:0 0 auto;
+}
+body.mobile-table-compact .speech-body p{
+  font-size:12px;
+  line-height:1.35;
+}
+body.mobile-table-compact #table{
+  overflow:visible;
+}
+body.mobile-table-compact #table .turn-order-badge{
+  padding:8px 10px;
+  margin-bottom:6px;
+  border-radius:14px;
+  font-size:12px;
+  line-height:1.35;
+}
+body.mobile-table-compact #table .play-trail{font-size:13px;
+  margin:6px 0 8px;
+  padding:6px;
+  border-radius:12px;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:5px;
+}
+body.mobile-table-compact #table .play-trail .trail-step{
+  gap:3px;
+  padding:4px 7px;
+  font-size:11px;
+}
+body.mobile-table-compact #table .play-trail .trail-arrow{
+  font-size:14px;
+}
+body.mobile-table-compact #table .table-board{
+  grid-template-columns:1fr 1fr !important;
+  grid-template-areas:
+    'mid mid'
+    'p0 p1'
+    'p3 p2' !important;
+  gap:8px;
+  align-items:stretch;
+}
+body.mobile-table-compact #table .center-wheel{
+  min-height:unset;
+  padding:10px 8px;
+  border-radius:14px;
+  gap:6px;
+  box-shadow:0 6px 14px rgba(212,165,54,.14);
+}
+body.mobile-table-compact #table .center-wheel .cw-arrow{
+  font-size:22px;
+}
+body.mobile-table-compact #table .center-wheel .cw-title{
+  font-size:12px;
+}
+body.mobile-table-compact #table .center-wheel .cw-next{
+  font-size:11px;
+}
+body.mobile-table-compact #table .seat{
+  min-height:132px;
+  padding:8px 6px 10px;
+  border-radius:14px;
+}
+body.mobile-table-compact #table .seat.current{
+  box-shadow:0 0 0 3px rgba(212,165,54,.24),0 6px 12px rgba(212,165,54,.12);
+}
+body.mobile-table-compact #table .seat:before{
+  font-size:12px;
+  padding:4px 8px;
+  top:-10px;
+}
+body.mobile-table-compact #table .who{
+  font-size:11px;
+  line-height:1.2;
+  display:block;
+  max-width:100%;
+  padding-right:46px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+body.mobile-table-compact #table .play-badge,
+body.mobile-table-compact #table .turn-flag{
+  font-size:10px;
+  padding:2px 6px;
+}
+body.mobile-table-compact #table .play-badge{
+  top:6px;
+  left:6px;
+}
+body.mobile-table-compact #table .turn-flag{
+  top:6px;
+  right:6px;
+}
+body.mobile-table-compact #table .mini-card{
+  transform:none;
+  margin-top:6px;
+  display:flex;
+  justify-content:center;
+}
+body.mobile-table-compact #table .mini-card .playing-card{
+  width:56px;
+  min-width:56px;
+  height:88px;
+  border-radius:12px;
+}
+body.mobile-table-compact #table .mini-card .rank{
+  font-size:16px;
+}
+body.mobile-table-compact #table .mini-card .suit{
+  font-size:13px;
+}
+body.mobile-table-compact #table .seat-arrow{
+  bottom:6px;
+  right:6px;
+  padding:5px 10px;
+  font-size:11px;
+  border-radius:999px;
+  transform:none;
+}
+body.mobile-table-compact #table .seat-arrow.current-next{
+  box-shadow:0 0 0 3px rgba(255,220,120,.20),0 4px 10px rgba(212,165,54,.12);
+}
+body.mobile-table-compact .tip{
+  font-size:12px;
+  padding:9px 10px;
+  margin-top:6px;
+  line-height:1.35;
+}
+@media(max-width:400px){
+  body.mobile-table-compact #table .seat{
+    min-height:124px;
+    padding:7px 5px 10px;
+  }
+  body.mobile-table-compact #table .mini-card .playing-card{
+    width:52px;
+    min-width:52px;
+    height:82px;
+  }
+  body.mobile-table-compact #table .who{
+    font-size:10.5px;
+  }
+  body.mobile-table-compact #table .seat-arrow{
+    padding:4px 8px;
+    font-size:10px;
+  }
+}
+
+
+/* --- iPhone縦画面・Safari専用に近い卓面最適化 --- */
+@media (max-width: 640px) and (orientation: portrait){
+  html, body{
+    width:100%;
+    max-width:100%;
+    overflow-x:hidden!important;
+    overscroll-behavior-x:none;
+    -webkit-text-size-adjust:100%;
+  }
+  body{
+    padding-left:env(safe-area-inset-left);
+    padding-right:env(safe-area-inset-right);
+  }
+  #app{
+    width:100%;
+    max-width:100vw;
+    padding:6px 6px calc(92px + env(safe-area-inset-bottom))!important;
+    overflow-x:hidden;
+  }
+  .cardbox{
+    width:100%;
+    max-width:100%;
+    box-sizing:border-box;
+    overflow:hidden;
+    border-radius:16px;
+    padding:10px!important;
+    margin:8px 0!important;
+  }
+  .cardbox > h2{
+    font-size:18px!important;
+    margin:0 0 6px!important;
+  }
+  .status{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:6px!important;
+  }
+  .status div{
+    padding:7px 6px!important;
+    border-radius:12px!important;
+  }
+  .status b{
+    font-size:14px!important;
+    line-height:1.25!important;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .round-status{
+    padding:7px 6px!important;
+    margin-top:6px!important;
+    border-radius:14px!important;
+  }
+  .round-status .round-big{
+    font-size:16px!important;
+  }
+  .setting-chips{
+    gap:4px!important;
+    margin-top:4px!important;
+  }
+  .setting-chips span{
+    font-size:9.5px!important;
+    padding:3px 6px!important;
+  }
+
+  #table{
+    width:100%!important;
+    max-width:100%!important;
+    box-sizing:border-box;
+    overflow:hidden!important;
+    padding:6px!important;
+    border-radius:14px!important;
+  }
+  #table *{
+    box-sizing:border-box;
+  }
+  #table .turn-order-bar{
+    display:grid!important;
+    grid-template-columns:auto 1fr!important;
+    align-items:center!important;
+    gap:5px!important;
+    padding:6px!important;
+    margin:0 0 6px!important;
+    border-radius:12px!important;
+    font-size:11px!important;
+  }
+  #table .turn-order-bar .small{
+    font-size:10px!important;
+    white-space:nowrap;
+  }
+  #table .turn-order-bar .ord{
+    padding:4px 6px!important;
+    font-size:11px!important;
+    max-width:128px;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+  }
+  #table .turn-order-bar .arrowtxt{
+    font-size:12px!important;
+  }
+  #table .play-trail{
+    display:flex!important;
+    flex-wrap:wrap!important;
+    justify-content:center!important;
+    gap:4px!important;
+    padding:6px!important;
+    margin:0 0 6px!important;
+    border-radius:12px!important;
+  }
+  #table .play-trail .trail-step{
+    font-size:10.5px!important;
+    padding:4px 6px!important;
+    max-width:120px;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+  }
+  #table .play-trail .trail-arrow{
+    font-size:12px!important;
+  }
+
+  #table .table-board{
+    display:grid!important;
+    width:100%!important;
+    max-width:100%!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    grid-template-areas:
+      "mid mid"
+      "p0 p1"
+      "p3 p2"!important;
+    gap:7px!important;
+    overflow:hidden!important;
+  }
+  #table .center-wheel{
+    width:100%!important;
+    max-width:100%!important;
+    height:auto!important;
+    min-height:42px!important;
+    border-radius:12px!important;
+    padding:7px 8px!important;
+    display:grid!important;
+    grid-template-columns:auto 1fr!important;
+    column-gap:8px!important;
+    align-items:center!important;
+    justify-items:start!important;
+    text-align:left!important;
+    box-shadow:none!important;
+  }
+  #table .center-wheel .cw-arrow{
+    font-size:18px!important;
+    line-height:1!important;
+    grid-row:1 / span 2;
+  }
+  #table .center-wheel > div:nth-child(2){
+    font-size:13px!important;
+    line-height:1.1!important;
+  }
+  #table .center-wheel .cw-small{
+    font-size:11px!important;
+    line-height:1.2!important;
+    max-width:100%;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+  }
+
+  #table .seat{
+    min-width:0!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-height:118px!important;
+    padding:7px 5px 28px!important;
+    border-radius:12px!important;
+    gap:3px!important;
+    overflow:hidden!important;
+  }
+  #table .seat.current:before{
+    top:-1px!important;
+    left:8px!important;
+    transform:none!important;
+    font-size:10px!important;
+    padding:2px 7px!important;
+    z-index:5;
+  }
+  #table .who{
+    width:100%!important;
+    max-width:100%!important;
+    padding:0 4px!important;
+    margin-top:9px!important;
+    font-size:10.5px!important;
+    line-height:1.2!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    text-align:center!important;
+  }
+  #table .play-badge{
+    top:4px!important;
+    left:4px!important;
+    font-size:9px!important;
+    padding:1px 5px!important;
+    z-index:4;
+  }
+  #table .turn-flag{
+    top:4px!important;
+    right:4px!important;
+    font-size:9px!important;
+    padding:1px 5px!important;
+    z-index:4;
+  }
+  #table .seat .small{
+    font-size:12px!important;
+    margin-top:10px;
+  }
+  #table .mini-card{
+    transform:none!important;
+    margin-top:4px!important;
+    max-width:100%!important;
+  }
+  #table .mini-card .playing-card{
+    width:50px!important;
+    min-width:50px!important;
+    height:78px!important;
+    padding:4px!important;
+    border-radius:10px!important;
+  }
+  #table .mini-card .playing-card .rank{
+    font-size:15px!important;
+  }
+  #table .mini-card .playing-card .suit{
+    font-size:10px!important;
+  }
+  #table .mini-card .playing-card .art{
+    font-size:20px!important;
+  }
+  #table .mini-card .madpig-banner,
+  #table .mini-card .danger-chip{
+    display:none!important;
+  }
+
+  #table .seat-arrow,
+  #table .seat-0 .seat-arrow,
+  #table .seat-1 .seat-arrow,
+  #table .seat-2 .seat-arrow,
+  #table .seat-3 .seat-arrow{
+    position:absolute!important;
+    left:auto!important;
+    top:auto!important;
+    right:5px!important;
+    bottom:5px!important;
+    transform:none!important;
+    max-width:calc(100% - 10px)!important;
+    min-width:0!important;
+    height:auto!important;
+    padding:3px 6px!important;
+    border-radius:999px!important;
+    font-size:10px!important;
+    line-height:1.1!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    z-index:3;
+  }
+  #table .seat-arrow.current-next{
+    background:#fff6c8!important;
+    border-color:#d4a536!important;
+    box-shadow:none!important;
+  }
+
+  #message.message{
+    font-size:15px!important;
+    line-height:1.45!important;
+    padding:10px 12px!important;
+    border-radius:14px!important;
+    margin-top:8px!important;
+    word-break:break-word;
+  }
+  .tip{
+    font-size:12px!important;
+    line-height:1.45!important;
+    padding:8px 10px!important;
+    margin-top:6px!important;
+  }
+  .hand{
+    padding-bottom:calc(14px + env(safe-area-inset-bottom))!important;
+  }
+}
+@media (max-width: 380px) and (orientation: portrait){
+  #table .seat{
+    min-height:112px!important;
+    padding-bottom:25px!important;
+  }
+  #table .who{
+    font-size:10px!important;
+  }
+  #table .mini-card .playing-card{
+    width:46px!important;
+    min-width:46px!important;
+    height:72px!important;
+  }
+  #table .turn-order-bar .ord,
+  #table .play-trail .trail-step{
+    max-width:104px;
+    font-size:10px!important;
+  }
+}
+
+
+/* --- PICK対象ラベル位置修正 --- */
+.seat.pick-target,
+.seat.is-pick-target,
+.seat.pick-weakest,
+.seat.pending-pick-target{
+  position:relative;
+}
+.seat.pick-target::before,
+.seat.is-pick-target::before,
+.seat.pick-weakest::before,
+.seat.pending-pick-target::before{
+  left:auto!important;
+  right:10px!important;
+  top:-12px!important;
+  transform:none!important;
+}
+@media (max-width: 640px){
+  .seat.pick-target::before,
+  .seat.is-pick-target::before,
+  .seat.pick-weakest::before,
+  .seat.pending-pick-target::before{
+    right:8px!important;
+    left:auto!important;
+    top:-10px!important;
+    font-size:10px!important;
+    padding:4px 8px!important;
+    max-width:calc(100% - 16px);
+    white-space:nowrap;
+  }
+}
+
+
+/* --- 端末別レスポンシブ総合ブラッシュアップ --- */
+:root{
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+}
+
+/* 共通：横はみ出しを根本的に抑制 */
+html,body{
+  max-width:100%;
+  overflow-x:hidden;
+}
+*{
+  box-sizing:border-box;
+}
+img,svg,canvas{
+  max-width:100%;
+}
+
+/* 演出は残すが、レイアウトを壊す大移動アニメは抑える */
+.ui-touch .seat.has-card .mini-card,
+.ui-touch .review-banner,
+.ui-touch .play-trail .trail-step.current,
+.ui-touch .pick-big-arrow{
+  animation:none!important;
+}
+.ui-touch .seat.current{
+  animation:none!important;
+  box-shadow:0 0 0 3px rgba(255,212,59,.35),0 0 18px rgba(212,165,54,.16)!important;
+}
+.ui-touch .hype-toast{
+  animation:toastIn .22s ease-out forwards;
+}
+
+/* PC：情報量を活かし、卓面は広く */
+body.ui-desktop #app{
+  max-width:1180px;
+}
+body.ui-desktop .players{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+}
+body.ui-desktop #table{
+  overflow:visible;
+}
+body.ui-desktop #table .table-board{
+  min-width:0!important;
+  grid-template-columns:minmax(0,1fr) 128px minmax(0,1fr);
+}
+body.ui-desktop #table .seat{
+  min-height:182px;
+}
+body.ui-desktop #table .mini-card .playing-card{
+  width:72px;
+  min-width:72px;
+  height:110px;
+}
+
+/* タブレット/Android横など：PC寄りだが少し圧縮 */
+body.ui-tablet #app{
+  max-width:1000px;
+  padding-left:14px;
+  padding-right:14px;
+}
+body.ui-tablet .players{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+}
+body.ui-tablet #table{
+  overflow:hidden;
+}
+body.ui-tablet #table .table-board{
+  min-width:0!important;
+  grid-template-columns:minmax(0,1fr) 104px minmax(0,1fr);
+  gap:10px;
+}
+body.ui-tablet #table .seat{
+  min-height:156px;
+  padding:10px 8px 28px;
+}
+body.ui-tablet #table .center-wheel{
+  width:104px;
+  height:104px;
+}
+body.ui-tablet #table .mini-card .playing-card{
+  width:60px;
+  min-width:60px;
+  height:92px;
+}
+body.ui-tablet #table .seat-arrow{
+  right:6px!important;
+  bottom:6px!important;
+  left:auto!important;
+  top:auto!important;
+  transform:none!important;
+}
+
+/* スマホ共通：まず上部を圧縮して場を主役に */
+body.ui-phone{
+  width:100%;
+  min-width:0;
+  background:#fff6e8;
+  padding-left:var(--safe-left);
+  padding-right:var(--safe-right);
+}
+body.ui-phone #app{
+  width:100%;
+  max-width:100vw;
+  padding:6px 6px calc(96px + var(--safe-bottom))!important;
+  overflow-x:hidden;
+}
+@media(max-width:650px){.hero-brand{gap:10px}.hero-subtitle{font-size:24px}.hero-meta p{font-size:14px}.play-trail{justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap;padding:10px}.play-trail .trail-step{font-size:13px;padding:7px 10px;white-space:nowrap}.play-trail .trail-arrow{font-size:18px}.game-logo{max-width:100%}}
+body.ui-phone .hero{
+  padding:10px 9px!important;
+  border-radius:16px!important;
+}
+body.ui-phone .hero h1{
+  font-size:20px!important;
+  line-height:1.22!important;
+}
+body.ui-phone .hero p{
+  font-size:11px!important;
+}
+body.ui-phone .cardbox{
+  width:100%;
+  max-width:100%;
+  overflow:hidden;
+  padding:10px!important;
+  margin:8px 0!important;
+  border-radius:16px!important;
+}
+body.ui-phone .cardbox > h2{
+  font-size:18px!important;
+  margin:0 0 6px!important;
+}
+body.ui-phone .status{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:6px!important;
+}
+body.ui-phone .status div{
+  padding:7px 6px!important;
+  border-radius:12px!important;
+}
+body.ui-phone .status b{
+  font-size:14px!important;
+  line-height:1.25!important;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+body.ui-phone .round-status{
+  padding:7px 6px!important;
+  margin-top:6px!important;
+  border-radius:14px!important;
+}
+body.ui-phone .round-status .round-big{
+  font-size:16px!important;
+}
+body.ui-phone .setting-chips{
+  gap:4px!important;
+  justify-content:flex-start!important;
+}
+body.ui-phone .setting-chips span{
+  font-size:9.5px!important;
+  padding:3px 6px!important;
+}
+
+/* スマホのプレイヤー欄は2列。縦に長すぎるのを防ぐ */
+body.ui-phone .players{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:7px!important;
+}
+body.ui-phone .player{
+  min-height:82px!important;
+  padding:8px 6px!important;
+}
+body.ui-phone .player .pig .cpu-avatar-img,
+body.ui-phone .player .pig{
+  width:34px!important;
+  height:34px!important;
+  font-size:24px!important;
+}
+body.ui-phone .player .name{
+  font-size:12px!important;
+  line-height:1.2!important;
+}
+body.ui-phone .player-stats{
+  gap:3px!important;
+  margin-top:4px!important;
+}
+body.ui-phone .player-stats span{
+  font-size:10px!important;
+  padding:2px 5px!important;
+}
+body.ui-phone .player-speech{
+  display:none!important;
+}
+
+/* スマホ卓面：横スクロール禁止。中央パネル+2x2座席 */
+body.ui-phone #table{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  overflow:hidden!important;
+  padding:6px!important;
+  border-radius:14px!important;
+}
+body.ui-phone #table *{
+  max-width:100%;
+}
+body.ui-phone #table .turn-order-bar{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  justify-content:center!important;
+  gap:5px!important;
+  padding:6px!important;
+  margin:0 0 6px!important;
+  border-radius:12px!important;
+  white-space:normal!important;
+  overflow:hidden!important;
+}
+body.ui-phone #table .turn-order-bar .small{
+  width:100%;
+  text-align:center;
+  font-size:10px!important;
+}
+body.ui-phone #table .turn-order-bar .ord{
+  padding:4px 6px!important;
+  font-size:11px!important;
+  max-width:132px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+body.ui-phone #table .turn-order-bar .arrowtxt{
+  font-size:11px!important;
+}
+body.ui-phone #table .play-trail{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  justify-content:center!important;
+  gap:4px!important;
+  padding:6px!important;
+  margin:0 0 6px!important;
+  border-radius:12px!important;
+  white-space:normal!important;
+  overflow:hidden!important;
+}
+body.ui-phone #table .play-trail .trail-step{
+  font-size:10.5px!important;
+  padding:4px 6px!important;
+  max-width:126px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+body.ui-phone #table .play-trail .trail-arrow{
+  font-size:12px!important;
+}
+body.ui-phone #table .table-board{
+  display:grid!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  grid-template-areas:
+    "mid mid"
+    "p0 p1"
+    "p3 p2"!important;
+  gap:7px!important;
+  overflow:hidden!important;
+}
+body.ui-phone #table .center-wheel{
+  width:100%!important;
+  max-width:100%!important;
+  height:auto!important;
+  min-height:42px!important;
+  border-radius:12px!important;
+  padding:7px 8px!important;
+  display:grid!important;
+  grid-template-columns:auto minmax(0,1fr)!important;
+  column-gap:8px!important;
+  align-items:center!important;
+  justify-items:start!important;
+  text-align:left!important;
+  box-shadow:none!important;
+}
+body.ui-phone #table .center-wheel .cw-arrow{
+  font-size:18px!important;
+  line-height:1!important;
+  grid-row:1 / span 2;
+}
+body.ui-phone #table .center-wheel > div:nth-child(2){
+  font-size:13px!important;
+  line-height:1.1!important;
+}
+body.ui-phone #table .center-wheel .cw-small{
+  font-size:11px!important;
+  line-height:1.2!important;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+
+/* スマホ座席：バッジは中に収める */
+body.ui-phone #table .seat{
+  min-width:0!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-height:118px!important;
+  padding:7px 5px 28px!important;
+  border-radius:12px!important;
+  gap:3px!important;
+  overflow:hidden!important;
+}
+body.ui-phone #table .seat.current:before{
+  top:-1px!important;
+  left:8px!important;
+  transform:none!important;
+  font-size:10px!important;
+  padding:2px 7px!important;
+}
+body.ui-phone #table .seat.win:after{
+  top:2px!important;
+  right:5px!important;
+  transform:none!important;
+  font-size:9px!important;
+  padding:2px 6px!important;
+}
+body.ui-phone #table .seat.weak:before{
+  top:2px!important;
+  left:auto!important;
+  right:5px!important;
+  transform:none!important;
+  font-size:9px!important;
+  padding:2px 6px!important;
+  max-width:calc(100% - 10px);
+  white-space:nowrap;
+}
+body.ui-phone #table .who{
+  width:100%!important;
+  padding:0 4px!important;
+  margin-top:10px!important;
+  font-size:10.5px!important;
+  line-height:1.2!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  text-align:center!important;
+}
+body.ui-phone #table .play-badge{
+  top:4px!important;
+  left:4px!important;
+  font-size:9px!important;
+  padding:1px 5px!important;
+  z-index:4;
+}
+body.ui-phone #table .turn-flag{
+  top:4px!important;
+  right:4px!important;
+  font-size:9px!important;
+  padding:1px 5px!important;
+  z-index:4;
+}
+body.ui-phone #table .mini-card{
+  transform:none!important;
+  margin-top:4px!important;
+  display:flex!important;
+  justify-content:center!important;
+}
+body.ui-phone #table .mini-card .playing-card{
+  width:50px!important;
+  min-width:50px!important;
+  height:78px!important;
+  padding:4px!important;
+  border-radius:10px!important;
+}
+body.ui-phone #table .mini-card .playing-card .rank{
+  font-size:15px!important;
+}
+body.ui-phone #table .mini-card .playing-card .suit{
+  font-size:10px!important;
+}
+body.ui-phone #table .mini-card .playing-card .art{
+  font-size:20px!important;
+}
+body.ui-phone #table .mini-card .madpig-banner,
+body.ui-phone #table .mini-card .danger-chip{
+  display:none!important;
+}
+
+/* 問題の矢印バッジは常に座席内右下 */
+body.ui-phone #table .seat-arrow,
+body.ui-phone #table .seat-0 .seat-arrow,
+body.ui-phone #table .seat-1 .seat-arrow,
+body.ui-phone #table .seat-2 .seat-arrow,
+body.ui-phone #table .seat-3 .seat-arrow{
+  position:absolute!important;
+  left:auto!important;
+  top:auto!important;
+  right:5px!important;
+  bottom:5px!important;
+  transform:none!important;
+  max-width:calc(100% - 10px)!important;
+  padding:3px 6px!important;
+  border-radius:999px!important;
+  font-size:10px!important;
+  line-height:1.1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  z-index:3;
+}
+body.ui-phone #table .seat-arrow.current-next{
+  background:#fff6c8!important;
+  border-color:#d4a536!important;
+  box-shadow:none!important;
+}
+
+/* メッセージ・ヒント・実況 */
+body.ui-phone #message.message{
+  font-size:15px!important;
+  line-height:1.45!important;
+  padding:10px 12px!important;
+  border-radius:14px!important;
+  margin-top:8px!important;
+  word-break:break-word;
+}
+body.ui-phone .tip{
+  font-size:12px!important;
+  line-height:1.45!important;
+  padding:8px 10px!important;
+  margin-top:6px!important;
+}
+body.ui-phone #tableCommentary .speech-bubble{
+  grid-template-columns:34px minmax(0,1fr);
+}
+body.ui-phone #tableCommentary .commentary-avatar{
+  width:34px!important;
+  height:34px!important;
+}
+body.ui-phone #tableCommentary .speech-body{
+  padding:6px 8px;
+}
+body.ui-phone #tableCommentary .speech-body p{
+  font-size:12px!important;
+  line-height:1.35!important;
+}
+
+/* スマホ手札 */
+body.ui-phone .hand{
+  padding-bottom:calc(14px + var(--safe-bottom))!important;
+}
+body.ui-phone .hand-card .playing-card{
+  width:64px;
+  min-width:64px;
+  height:98px;
+}
+
+/* かなり狭いiPhone/Android */
+@media (max-width:380px){
+  body.ui-phone #table .seat{
+    min-height:112px!important;
+    padding-bottom:25px!important;
+  }
+  body.ui-phone #table .who{
+    font-size:10px!important;
+  }
+  body.ui-phone #table .mini-card .playing-card{
+    width:46px!important;
+    min-width:46px!important;
+    height:72px!important;
+  }
+  body.ui-phone #table .turn-order-bar .ord,
+  body.ui-phone #table .play-trail .trail-step{
+    max-width:104px;
+    font-size:10px!important;
+  }
+}
+
+/* スマホ横向き：縦ほど詰めず、卓面を横長に */
+body.ui-phone-landscape #table .table-board{
+  grid-template-columns:minmax(0,1fr) 84px minmax(0,1fr)!important;
+  grid-template-areas:"p0 mid p1" "p3 mid p2"!important;
+}
+body.ui-phone-landscape #table .center-wheel{
+  width:84px!important;
+  height:auto!important;
+  min-height:100%!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  text-align:center!important;
+}
+body.ui-phone-landscape #table .seat{
+  min-height:108px!important;
+}
+body.ui-phone-landscape #table .mini-card .playing-card{
+  width:48px!important;
+  min-width:48px!important;
+  height:74px!important;
+}
+
+
+/* --- 全体点検後UI補正：ちらつき軽減・順番表示整理 --- */
+.hero{
+  position:static!important;
+}
+.play-trail{
+  scroll-snap-type:x proximity;
+}
+.play-trail .trail-step{
+  scroll-snap-align:center;
+  white-space:nowrap;
+}
+.ui-touch .play-trail .trail-step.current,
+.mobile-table-compact .play-trail .trail-step.current{
+  animation:none!important;
+  box-shadow:0 0 0 3px rgba(212,165,54,.20),0 3px 10px rgba(212,165,54,.14)!important;
+}
+.ui-touch .play-trail .trail-arrow,
+.mobile-table-compact .play-trail .trail-arrow{
+  animation:none!important;
+}
+@media(max-width:650px){
+  .game-logo{
+    max-height:86px;
+    object-fit:contain;
+  }
+  .hero{
+    padding:10px 12px!important;
+  }
+  .hero-meta{
+    gap:2px;
+  }
+  .hero-subtitle{
+    font-size:20px!important;
+  }
+  .hero-meta p{
+    font-size:12px!important;
+  }
+  .play-trail{
+    -webkit-overflow-scrolling:touch;
+  }
+}
+
+
+/* --- シュート・ザ・ピッグ追加UI --- */
+.disabled-option{
+  opacity:.48;
+}
+.shoot-pig-stat{
+  background:linear-gradient(135deg,#fff3b0,#ffd3e8)!important;
+  border-color:#d4a536!important;
+}
+.shoot-pig-banner{
+  background:linear-gradient(135deg,#fff4b8,#ffe1ef)!important;
+  border-color:#d4a536!important;
+  color:#7a3b00!important;
+  font-weight:1000;
+}
+
+
+/* --- 部屋作成時の選択ルール整理 --- */
+.organized-settings .advanced-settings-hint{
+  padding-bottom:8px;
+}
+.rules-default-note{
+  margin:8px 14px 12px;
+  padding:10px 12px;
+  border:2px solid #efce89;
+  border-radius:14px;
+  background:linear-gradient(135deg,#fffef7,#fff5d8);
+  color:#704329;
+  font-size:13px;
+  font-weight:800;
+  line-height:1.55;
+}
+.settings-sections{
+  display:grid;
+  gap:12px;
+  padding:0 14px 14px;
+}
+.settings-section{
+  border:2px solid #efd0b4;
+  border-radius:16px;
+  background:rgba(255,255,255,.76);
+  padding:12px;
+}
+.settings-section.standard-rule{border-color:#b9d9a8;background:linear-gradient(135deg,#fbfff5,#fff)}
+.settings-section.danger-rule{border-color:#efbf90;background:linear-gradient(135deg,#fff8ef,#fff)}
+.settings-section.optional-rule{border-color:#cbb7ef;background:linear-gradient(135deg,#fbf7ff,#fff)}
+.settings-section-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:4px;
+}
+.settings-section h3{
+  margin:0;
+  color:#7b332e;
+  font-size:17px;
+}
+.settings-section p{
+  margin:0 0 10px;
+  color:#7b5d52;
+  font-size:12px;
+  font-weight:800;
+  line-height:1.45;
+}
+.rule-badge{
+  border-radius:999px;
+  padding:4px 9px;
+  font-size:11px;
+  font-weight:1000;
+  white-space:nowrap;
+}
+.rule-badge.standard{background:#e8f8dc;color:#326b38;border:2px solid #a8d28b}
+.rule-badge.important{background:#fff0db;color:#8a4a08;border:2px solid #e7b16e}
+.rule-badge.optional{background:#f1e9ff;color:#6040a0;border:2px solid #cab4ee}
+.settings-grid.compact-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin-top:0;
+}
+.settings-grid.compact-grid .input-label{
+  background:#fff;
+  border:2px solid rgba(126,75,50,.12);
+  border-radius:14px;
+  padding:9px;
+}
+.input-label em{
+  color:#8a6a58;
+  font-size:11px;
+  font-style:normal;
+  font-weight:800;
+  line-height:1.35;
+}
+.disabled-option{
+  opacity:.5;
+  filter:grayscale(.25);
+}
+.disabled-option em::after{
+  content:' / マッドOFF中';
+}
+@media(max-width:700px){
+  .settings-sections{padding:0 10px 10px;gap:10px}
+  .rules-default-note{margin:8px 10px 10px;font-size:12px}
+  .settings-grid.compact-grid{grid-template-columns:1fr}
+  .settings-section{padding:10px}
+  .settings-section-head{align-items:flex-start;flex-direction:column;gap:5px}
+}
+
+
+/* --- ちらつき抑制・再描画安定化 --- */
+.round-modal,.final-stage,.status,.table-board,.hand,.pick-panel{
+  backface-visibility:hidden;
+  transform:translateZ(0);
+}
+.round-card,.break-card,.podium-card,.seat,.played-card,.hand-card{
+  contain:layout paint;
+}
+@media (prefers-reduced-motion: reduce){
+  .round-modal *, .final-stage *, .table-board *, .hand-card, .played-card{
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+  }
+}
+
+
+/* --- UI整理：設定チップの情報量を圧縮 --- */
+.setting-chips.compact{
+  gap:6px;
+}
+.setting-chips.compact span{
+  padding:5px 9px;
+  font-size:12px;
+  line-height:1.15;
+}
+.advanced-settings-hint{
+  margin-bottom:10px;
+}
+.option-note,
+.settings-help{
+  line-height:1.45;
+}
+
+/* --- シュート・ザ・ピッグ演出 --- */
+.shoot-pig-overlay{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.shoot-pig-overlay:empty{
+  display:none;
+}
+.shoot-overlay-card{
+  position:relative;
+  width:min(92vw,560px);
+  padding:28px 22px 24px;
+  border-radius:30px;
+  border:4px solid rgba(80,31,0,.85);
+  background:
+    radial-gradient(circle at 50% -10%, rgba(255,246,159,.98), rgba(255,208,86,.96) 36%, rgba(255,112,112,.94) 72%),
+    linear-gradient(135deg, #fff3b4, #ffc85c);
+  box-shadow:0 24px 80px rgba(78,20,0,.42), 0 0 0 10px rgba(255,255,255,.28);
+  text-align:center;
+  animation:shootPigPop .62s cubic-bezier(.2,1.45,.25,1), shootPigGlow 1.3s ease-in-out infinite alternate;
+  overflow:hidden;
+}
+.shoot-overlay-card:before{
+  content:"";
+  position:absolute;
+  inset:-80px;
+  background:
+    repeating-conic-gradient(from 0deg, rgba(255,255,255,.28) 0 10deg, transparent 10deg 20deg);
+  animation:shootSpin 7s linear infinite;
+}
+.shoot-overlay-card>*{
+  position:relative;
+  z-index:1;
+}
+.shoot-burst{
+  font-size:56px;
+  filter:drop-shadow(0 6px 0 rgba(0,0,0,.18));
+  animation:shootBounce .7s ease-in-out infinite alternate;
+}
+.shoot-title{
+  margin-top:4px;
+  font-size:clamp(30px,7vw,64px);
+  font-weight:1000;
+  letter-spacing:.04em;
+  color:#5b1700;
+  text-shadow:0 3px 0 #fff3a2, 0 7px 0 rgba(127,31,0,.24);
+}
+.shoot-title-jp{
+  display:inline-block;
+  margin-top:6px;
+  padding:7px 14px;
+  border-radius:999px;
+  background:#5b1700;
+  color:#fff6c1;
+  font-weight:1000;
+  letter-spacing:.08em;
+}
+.shoot-name{
+  margin-top:14px;
+  font-size:clamp(24px,5vw,42px);
+  font-weight:1000;
+  color:#fff;
+  text-shadow:0 3px 0 #702000, 0 0 18px rgba(255,255,255,.55);
+}
+.shoot-effect{
+  display:flex;
+  gap:8px;
+  justify-content:center;
+  flex-wrap:wrap;
+  margin-top:16px;
+}
+.shoot-effect span{
+  background:#fff;
+  border:3px solid #6c1e00;
+  border-radius:999px;
+  padding:8px 12px;
+  font-weight:1000;
+  color:#6c1e00;
+  box-shadow:0 4px 0 rgba(82,22,0,.22);
+}
+.shoot-confetti{
+  position:absolute;
+  inset:0;
+  z-index:0;
+}
+.shoot-confetti i{
+  position:absolute;
+  font-style:normal;
+  font-weight:1000;
+  opacity:.92;
+  animation:shootFall 1.8s ease-in-out infinite alternate;
+}
+.shoot-confetti i:nth-child(1){left:8%;top:15%;font-size:34px;animation-delay:.0s}
+.shoot-confetti i:nth-child(2){left:82%;top:12%;font-size:32px;animation-delay:.18s}
+.shoot-confetti i:nth-child(3){left:15%;top:74%;font-size:28px;animation-delay:.32s}
+.shoot-confetti i:nth-child(4){left:78%;top:70%;font-size:30px;animation-delay:.46s}
+.shoot-confetti i:nth-child(5){left:6%;top:48%;font-size:25px;animation-delay:.6s}
+.shoot-confetti i:nth-child(6){left:88%;top:48%;font-size:28px;animation-delay:.76s}
+.shoot-pig-overlay.fade-out .shoot-overlay-card{
+  animation:shootFade .65s ease forwards;
+}
+.shoot-mini-title{
+  font-size:18px;
+  font-weight:1000;
+  margin-bottom:4px;
+}
+.shoot-pig-banner{
+  box-shadow:0 0 0 4px rgba(255,230,116,.55), 0 10px 26px rgba(122,59,0,.22);
+}
+@keyframes shootPigPop{
+  0%{transform:scale(.45) rotate(-7deg);opacity:0}
+  70%{transform:scale(1.06) rotate(2deg);opacity:1}
+  100%{transform:scale(1) rotate(0)}
+}
+@keyframes shootPigGlow{
+  from{box-shadow:0 24px 80px rgba(78,20,0,.42), 0 0 0 10px rgba(255,255,255,.28)}
+  to{box-shadow:0 30px 110px rgba(255,54,54,.58), 0 0 0 14px rgba(255,244,143,.42)}
+}
+@keyframes shootSpin{
+  to{transform:rotate(360deg)}
+}
+@keyframes shootBounce{
+  to{transform:translateY(-8px) scale(1.05)}
+}
+@keyframes shootFall{
+  from{transform:translateY(-8px) rotate(-10deg) scale(.9)}
+  to{transform:translateY(12px) rotate(12deg) scale(1.12)}
+}
+@keyframes shootFade{
+  to{transform:scale(.86) translateY(20px);opacity:0}
+}
+@media (max-width:640px){
+  .shoot-overlay-card{padding:22px 14px 20px;border-radius:24px}
+  .shoot-burst{font-size:44px}
+  .shoot-effect span{font-size:12px;padding:7px 9px}
+  .setting-chips.compact span{font-size:11px;padding:5px 7px}
+}
+
+
+/* =========================================================
+   Modern Game UI Polish 2026
+   既存ロジックを変えず、視認性・余白・階層・タッチ操作を改善する上書きレイヤー
+   ========================================================= */
+:root{
+  --ui-bg-0:#180b1f;
+  --ui-bg-1:#281238;
+  --ui-bg-2:#52234a;
+  --ui-surface:rgba(255,255,255,.90);
+  --ui-surface-strong:rgba(255,255,255,.97);
+  --ui-glass:rgba(255,255,255,.72);
+  --ui-line:rgba(255,255,255,.32);
+  --ui-ink:#2d1822;
+  --ui-muted:#7b6671;
+  --ui-accent:#ff6b75;
+  --ui-accent-2:#ffbc4d;
+  --ui-good:#19a56b;
+  --ui-info:#3b7cff;
+  --ui-danger:#c92c3f;
+  --ui-shadow:0 18px 55px rgba(24,11,31,.18);
+  --ui-shadow-soft:0 10px 28px rgba(24,11,31,.12);
+  --ui-radius-xl:28px;
+  --ui-radius-lg:22px;
+  --ui-radius-md:16px;
+}
+body.modern-game-ui{
+  min-height:100vh;
+  color:var(--ui-ink);
+  background:
+    radial-gradient(circle at 15% -10%, rgba(255,188,77,.46), transparent 34%),
+    radial-gradient(circle at 92% 2%, rgba(255,107,117,.38), transparent 32%),
+    radial-gradient(circle at 50% 16%, rgba(255,255,255,.18), transparent 34%),
+    linear-gradient(145deg, var(--ui-bg-0) 0%, var(--ui-bg-1) 46%, var(--ui-bg-2) 100%);
+  background-attachment:fixed;
+}
+body.modern-game-ui:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:-1;
+  background-image:
+    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+  background-size:42px 42px;
+  mask-image:linear-gradient(to bottom, rgba(0,0,0,.95), rgba(0,0,0,.18));
+}
+body.modern-game-ui #app{
+  max-width:1180px;
+  padding:clamp(12px,2vw,22px) clamp(10px,2vw,22px) 110px;
+}
+body.modern-game-ui .hero,
+body.modern-game-ui .cardbox{
+  border:1px solid var(--ui-line);
+  border-radius:var(--ui-radius-xl);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.94), rgba(255,255,255,.82)),
+    radial-gradient(circle at 10% 0%, rgba(255,188,77,.18), transparent 40%);
+  box-shadow:var(--ui-shadow);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+}
+body.modern-game-ui .hero{
+  position:relative;
+  overflow:hidden;
+  padding:clamp(16px,2.4vw,28px);
+}
+body.modern-game-ui .hero:after{
+  content:"";
+  position:absolute;
+  inset:auto -18% -50% 42%;
+  height:180px;
+  background:radial-gradient(circle, rgba(255,107,117,.23), transparent 70%);
+  pointer-events:none;
+}
+body.modern-game-ui .hero-brand{
+  position:relative;
+  z-index:1;
+  justify-content:center;
+  text-align:center;
+}
+body.modern-game-ui .game-logo{
+  filter:drop-shadow(0 16px 20px rgba(65,22,26,.20));
+  max-height:210px;
+}
+body.modern-game-ui .hero-subtitle{
+  color:#5a2030;
+  text-shadow:0 1px 0 rgba(255,255,255,.75);
+}
+body.modern-game-ui .hero-meta p{
+  color:var(--ui-muted);
+}
+body.modern-game-ui .cardbox{
+  margin-top:clamp(12px,1.7vw,20px);
+  padding:clamp(14px,2vw,22px);
+}
+body.modern-game-ui h2{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:clamp(18px,2.2vw,24px);
+  letter-spacing:.02em;
+  color:#482134;
+}
+body.modern-game-ui h2:after{
+  content:"";
+  flex:1;
+  height:1px;
+  background:linear-gradient(90deg, rgba(255,107,117,.32), transparent);
+}
+body.modern-game-ui .small{
+  color:var(--ui-muted);
+}
+body.modern-game-ui .input{
+  border:1px solid rgba(72,33,52,.20);
+  border-radius:16px;
+  background:rgba(255,255,255,.88);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.75), 0 6px 14px rgba(72,33,52,.05);
+  transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+body.modern-game-ui .input:focus{
+  outline:none;
+  border-color:rgba(255,107,117,.78);
+  box-shadow:0 0 0 4px rgba(255,107,117,.16), inset 0 1px 0 rgba(255,255,255,.9);
+}
+body.modern-game-ui .btn{
+  min-height:46px;
+  border-radius:16px;
+  background:
+    linear-gradient(135deg, #ff6979, #bf2643);
+  box-shadow:0 10px 24px rgba(191,38,67,.26), inset 0 1px 0 rgba(255,255,255,.28);
+  letter-spacing:.03em;
+  transition:transform .16s ease, box-shadow .16s ease, filter .16s ease;
+}
+body.modern-game-ui .btn:hover:not(:disabled){
+  transform:translateY(-2px);
+  box-shadow:0 15px 30px rgba(191,38,67,.32), inset 0 1px 0 rgba(255,255,255,.34);
+  filter:saturate(1.05);
+}
+body.modern-game-ui .btn:active:not(:disabled){
+  transform:translateY(1px);
+}
+body.modern-game-ui .btn.secondary{
+  color:#582638;
+  background:rgba(255,255,255,.76);
+  border:1px solid rgba(72,33,52,.18);
+  box-shadow:0 8px 18px rgba(72,33,52,.08);
+}
+body.modern-game-ui .lobby-main{
+  display:grid;
+  grid-template-columns:minmax(180px,1fr) auto;
+  gap:12px;
+  align-items:center;
+}
+body.modern-game-ui .create-btn{
+  padding-inline:22px;
+}
+body.modern-game-ui .advanced-settings-summary{
+  border-radius:20px;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.88), rgba(255,240,211,.88));
+  border:1px solid rgba(255,188,77,.46);
+  box-shadow:0 10px 22px rgba(72,33,52,.08);
+}
+body.modern-game-ui .rules-default-note{
+  border-radius:20px;
+  background:
+    linear-gradient(135deg, rgba(255,247,220,.92), rgba(255,255,255,.74));
+  border:1px solid rgba(255,188,77,.34);
+  box-shadow:var(--ui-shadow-soft);
+}
+body.modern-game-ui .settings-sections{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+}
+body.modern-game-ui .settings-section{
+  border:1px solid rgba(72,33,52,.14);
+  border-radius:22px;
+  background:rgba(255,255,255,.62);
+  box-shadow:0 10px 20px rgba(72,33,52,.06);
+  padding:14px;
+}
+body.modern-game-ui .settings-section-head h3{
+  margin:0;
+}
+body.modern-game-ui .settings-grid.compact-grid{
+  grid-template-columns:1fr;
+}
+body.modern-game-ui .input-label{
+  color:#5b293b;
+}
+body.modern-game-ui .input-label em{
+  color:var(--ui-muted);
+  font-style:normal;
+  font-weight:800;
+  font-size:11px;
+}
+body.modern-game-ui .roomcode{
+  border:none;
+  color:#fff;
+  background:
+    linear-gradient(135deg, #ff6979, #ffbc4d);
+  box-shadow:0 18px 32px rgba(191,38,67,.20), inset 0 1px 0 rgba(255,255,255,.32);
+  text-shadow:0 2px 0 rgba(70,14,30,.22);
+}
+body.modern-game-ui .status{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:10px;
+}
+body.modern-game-ui .status>div{
+  border:1px solid rgba(72,33,52,.12);
+  border-radius:18px;
+  background:rgba(255,255,255,.70);
+  padding:10px;
+  color:var(--ui-muted);
+  box-shadow:0 8px 16px rgba(72,33,52,.06);
+}
+body.modern-game-ui .status b{
+  display:block;
+  margin-top:4px;
+  color:#421d31;
+  font-size:clamp(14px,1.9vw,18px);
+}
+body.modern-game-ui .round-status{
+  margin-top:12px;
+  border-radius:22px;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.78), rgba(255,243,226,.62));
+  border:1px solid rgba(255,188,77,.24);
+  box-shadow:0 8px 18px rgba(72,33,52,.06);
+}
+body.modern-game-ui .setting-chips span{
+  border:1px solid rgba(72,33,52,.12);
+  background:rgba(255,255,255,.75);
+  color:#552638;
+  box-shadow:0 5px 12px rgba(72,33,52,.05);
+}
+body.modern-game-ui .players{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px;
+}
+body.modern-game-ui .player{
+  min-height:138px;
+  border:1px solid rgba(72,33,52,.14);
+  border-radius:24px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.88), rgba(255,246,234,.74));
+  box-shadow:0 12px 26px rgba(72,33,52,.08);
+}
+body.modern-game-ui .player.active{
+  border-color:rgba(255,188,77,.88);
+  box-shadow:0 0 0 4px rgba(255,188,77,.22), 0 18px 34px rgba(255,107,117,.16);
+}
+body.modern-game-ui .player .pig{
+  filter:drop-shadow(0 6px 8px rgba(72,33,52,.12));
+}
+body.modern-game-ui .cpu-avatar-img,
+body.modern-game-ui .commentary-avatar img{
+  border:2px solid rgba(255,255,255,.8);
+  box-shadow:0 8px 18px rgba(72,33,52,.18);
+}
+body.modern-game-ui .table{
+  border-radius:28px;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,.62), rgba(255,255,255,.20)),
+    linear-gradient(135deg, rgba(255,188,77,.18), rgba(255,107,117,.12));
+  border:1px solid rgba(255,255,255,.32);
+  padding:12px;
+}
+body.modern-game-ui .table-board{
+  border-radius:28px;
+  background:
+    radial-gradient(circle at 50% 35%, rgba(255,255,255,.92), rgba(255,247,230,.72) 58%, rgba(255,226,220,.52));
+  border:1px solid rgba(72,33,52,.13);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.72), 0 18px 35px rgba(72,33,52,.10);
+}
+body.modern-game-ui .seat{
+  border-radius:22px;
+  border:1px solid rgba(72,33,52,.13);
+  background:rgba(255,255,255,.72);
+  box-shadow:0 8px 18px rgba(72,33,52,.07);
+}
+body.modern-game-ui .seat.current{
+  box-shadow:0 0 0 4px rgba(255,188,77,.24), 0 12px 24px rgba(255,107,117,.13);
+}
+body.modern-game-ui .center-wheel{
+  border-radius:26px;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.88), rgba(255,244,209,.78));
+  border:1px solid rgba(255,188,77,.34);
+  box-shadow:0 14px 28px rgba(72,33,52,.10);
+}
+body.modern-game-ui .played-card,
+body.modern-game-ui .mini-card,
+body.modern-game-ui .hand-card,
+body.modern-game-ui .pick-card,
+body.modern-game-ui .pair-card-btn{
+  border-radius:18px;
+  border:1px solid rgba(72,33,52,.15);
+  box-shadow:0 12px 24px rgba(72,33,52,.12);
+}
+body.modern-game-ui .hand{
+  gap:10px;
+  padding:20px 6px 18px;
+}
+body.modern-game-ui .hand-card{
+  transition:transform .16s ease, box-shadow .16s ease, filter .16s ease;
+}
+body.modern-game-ui .hand-card.playable{
+  box-shadow:0 0 0 4px rgba(25,165,107,.18), 0 14px 28px rgba(25,165,107,.18);
+}
+body.modern-game-ui .hand-card.playable:hover{
+  transform:translateY(-10px) rotate(-1deg);
+}
+body.modern-game-ui .notice{
+  border-radius:18px;
+  border:1px solid rgba(72,33,52,.12);
+  background:rgba(255,255,255,.78);
+  box-shadow:0 8px 16px rgba(72,33,52,.06);
+}
+body.modern-game-ui .notice.warning{
+  background:linear-gradient(135deg, rgba(255,245,212,.95), rgba(255,232,220,.86));
+  border-color:rgba(255,188,77,.42);
+}
+body.modern-game-ui .message{
+  border-radius:20px;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.85), rgba(255,245,233,.72));
+  border:1px solid rgba(72,33,52,.12);
+  box-shadow:0 8px 18px rgba(72,33,52,.06);
+  font-weight:900;
+}
+body.modern-game-ui .pick{
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.94), rgba(255,241,211,.86));
+}
+body.modern-game-ui .pick-panel,
+body.modern-game-ui .pair-choice,
+body.modern-game-ui .pass-panel,
+body.modern-game-ui .initial-pair-panel{
+  border-radius:24px;
+  border:1px solid rgba(72,33,52,.13);
+  background:rgba(255,255,255,.72);
+  box-shadow:0 12px 26px rgba(72,33,52,.08);
+}
+body.modern-game-ui .rule-summary{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+}
+body.modern-game-ui .rule-card{
+  border:1px solid rgba(72,33,52,.13);
+  border-radius:22px;
+  background:rgba(255,255,255,.70);
+  box-shadow:0 10px 20px rgba(72,33,52,.06);
+}
+body.modern-game-ui .round-modal{
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+body.modern-game-ui .round-panel,
+body.modern-game-ui .final-stage{
+  border:1px solid rgba(255,255,255,.38);
+  border-radius:30px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,246,233,.92));
+  box-shadow:0 28px 80px rgba(24,11,31,.28);
+}
+body.modern-game-ui .podium-card,
+body.modern-game-ui .break-card{
+  border:1px solid rgba(72,33,52,.13);
+  border-radius:24px;
+  background:rgba(255,255,255,.78);
+  box-shadow:0 12px 24px rgba(72,33,52,.08);
+}
+body.modern-game-ui .log-box{
+  opacity:.92;
+}
+body.modern-game-ui .log{
+  border-radius:18px;
+  background:rgba(255,255,255,.62);
+}
+body.modern-game-ui .tip,
+body.modern-game-ui .cpu-character-note{
+  color:rgba(255,255,255,.74);
+}
+body.modern-game-ui .cardbox .tip,
+body.modern-game-ui .cardbox .cpu-character-note{
+  color:var(--ui-muted);
+}
+@media (max-width:980px){
+  body.modern-game-ui .settings-sections,
+  body.modern-game-ui .rule-summary{
+    grid-template-columns:1fr;
+  }
+  body.modern-game-ui .players{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  body.modern-game-ui .status{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+}
+@media (max-width:640px){
+  body.modern-game-ui #app{
+    padding-inline:9px;
+  }
+  body.modern-game-ui .hero,
+  body.modern-game-ui .cardbox{
+    border-radius:22px;
+  }
+  body.modern-game-ui .lobby-main{
+    grid-template-columns:1fr;
+  }
+  body.modern-game-ui .players{
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+  body.modern-game-ui .player{
+    min-height:112px;
+    padding:9px;
+  }
+  body.modern-game-ui .status{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  body.modern-game-ui .status>div{
+    padding:8px;
+  }
+  body.modern-game-ui h2{
+    font-size:18px;
+  }
+  body.modern-game-ui .btn{
+    border-radius:14px;
+  }
+  body.modern-game-ui .game-logo{
+    max-height:145px;
+  }
+}
+
+</style>
+</head>
+<body class="modern-game-ui">
+<div id="app">
+  <header class="hero"><div class="hero-brand"><img class="game-logo" src="/pig_pick_trick_logo.png" alt="PIG PICK TRICK ロゴ"><div class="hero-meta"><div class="hero-subtitle">【ピピトリ】ピッグ・ピック・トリック</div><p>作成日時：2026-06-28 18:40 JST</p></div></div></header>
+
+  <section id="lobby" class="cardbox">
+    <h2>オンライン部屋</h2>
+    <div class="lobby-main">
+      <input id="name" class="input" placeholder="名前（例：ピピ）" maxlength="12" />
+      <button id="create" class="btn create-btn">部屋を作る</button>
+    </div>
+    <details class="settings-details advanced-settings organized-settings">
+      <summary class="advanced-settings-summary">⚙️ ルール設定を開く（標準・検討中オプション） <span class="small">初期設定のままでも遊べます</span></summary>
+      <div class="advanced-settings-hint">まずは標準設定がおすすめです。追加ルールはグループごとに整理しています。</div>
+      <div class="rules-default-note">
+        <b>標準設定</b>：3ラウンド / マッド・ピッグあり / ババブタ-20点・ラウンド毎 / 残り手札1枚-3点 / ピック対象2枚 / 3枚パスなし / 開始時ペア捨てなし / シュート・ザ・ピッグOFF
+      </div>
+      <div class="settings-sections">
+        <section class="settings-section standard-rule">
+          <div class="settings-section-head">
+            <h3>基本ルール</h3>
+            <span class="rule-badge standard">標準</span>
+          </div>
+          <p>ゲームの長さと、残った手札の失点方法を決めます。</p>
+          <div class="settings-grid compact-grid">
+            <label class="input-label"><span>ラウンド数</span><select id="rounds" class="input"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option></select><em>標準は3ラウンド</em></label>
+            <label class="input-label option-toggle"><span>残り手札の失点</span><select id="penaltyMode" class="input"><option value="flat3" selected>1枚ごとに-3点</option><option value="faceValue">数字分だけ失点</option><option value="spadeSuit">1枚ごとに-1点、♠スートは-3点</option></select><em>標準は1枚-3点</em></label>
+          </div>
+        </section>
+
+        <section class="settings-section danger-rule">
+          <div class="settings-section-head">
+            <h3>危険カード設定</h3>
+            <span class="rule-badge important">得点に影響</span>
+          </div>
+          <p>ババブタ、マッド・ピッグ、シュート・ザ・ピッグの扱いを決めます。</p>
+          <div class="settings-grid compact-grid">
+            <label class="input-label option-toggle"><span>マッド・ピッグ</span><select id="madPigEnabled" class="input"><option value="true" selected>あり</option><option value="false">なし</option></select><em>♠11の追加失点</em></label>
+            <label class="input-label"><span>ババブタ失点</span><input id="jokerPenalty" class="input" type="number" value="-20" min="-999" max="0" step="1" /><em>標準は-20点</em></label>
+            <label class="input-label option-toggle"><span>ババブタ失点タイミング</span><select id="jokerPenaltyTiming" class="input"><option value="perRound" selected>ラウンド毎</option><option value="gameEnd">ゲームの最後</option></select><em>標準はラウンド毎</em></label>
+            <label class="input-label option-toggle"><span>シュート・ザ・ピッグ</span><select id="shootThePigEnabled" class="input"><option value="false" selected>OFF</option><option value="true">ON</option></select><em>マッド・ピッグありの時だけ選択可</em></label>
+          </div>
+        </section>
+
+        <section class="settings-section optional-rule">
+          <div class="settings-section-head">
+            <h3>検討中・追加ルール</h3>
+            <span class="rule-badge optional">任意</span>
+          </div>
+          <p>標準設定から変化を付けたい時の調整項目です。ピック対象数の標準は2枚です。</p>
+          <div class="settings-grid compact-grid">
+            <label class="input-label option-toggle"><span>ピック対象数</span><select id="pickTargetCount" class="input"><option value="0">絞らない</option><option value="1">1枚</option><option value="2" selected>2枚</option><option value="3">3枚</option><option value="4">4枚</option><option value="5">5枚</option><option value="6">6枚</option><option value="7">7枚</option><option value="8">8枚</option><option value="9">9枚</option><option value="10">10枚</option><option value="11">11枚</option><option value="12">12枚</option><option value="13">13枚</option></select><em>標準は2枚。最弱者が候補を絞る</em></label>
+            <label class="input-label option-toggle"><span>開始時3枚パス</span><select id="passThreeEnabled" class="input"><option value="false" selected>なし</option><option value="true">あり</option></select><em>開始前に3枚渡す</em></label>
+            <label class="input-label option-toggle"><span>開始時ペア捨て</span><select id="initialPairDiscardEnabled" class="input"><option value="false" selected>なし</option><option value="true">あり</option></select><em>同じ数字ペアを任意で捨てる</em></label>
+          </div>
+        </section>
+      </div>
+    </details>
+    <div class="row join-row">
+      <input id="code" class="input" placeholder="部屋コード 例：ABCD" maxlength="4" />
+      <button id="join" class="btn secondary">参加する</button><button id="reconnect" class="btn secondary reconnect-btn" style="display:none">前回の部屋に復帰</button>
+    </div>
+    <p class="small settings-help">設定は部屋作成時のみ有効です。友達には部屋コードを共有してください。</p><p class="small cpu-character-note">人数が足りない場合はCPUを追加できます。</p>
+    <div id="roomInfo" style="display:none">
+      <div class="roomcode" id="roomCode">----</div>
+      <div class="row room-actions"><button id="addCpu" class="btn secondary">CPUを追加</button><button id="removeCpu" class="btn secondary">CPUを外す</button></div>
+      <button id="start" class="btn" disabled>4人で開始</button>
+    </div>
+  </section>
+
+  <section class="cardbox">
+    <div class="status"><div>状態<b id="phase">未接続</b></div><div>接続<b id="connStatus">未接続</b></div><div>ラウンド<b id="round">-</b></div><div>手番<b id="turn">-</b></div><div>リード<b id="lead">-</b></div></div>
+    <div id="roundStatus" class="round-status"></div>
+  </section>
+
+  <section class="cardbox"><h2>プレイヤー</h2><div id="players" class="players"></div></section>
+
+  <section class="cardbox"><h2>場のカード</h2><div id="tableCommentary"></div><div id="lastTrick"></div><div id="table" class="table"></div><div id="message" class="message">部屋を作るか、部屋コードで参加してください。</div><div class="tip">出せるカードだけ光ります。迷ったら中央メッセージを見てください。</div></section>
+
+  <section id="pickBox" class="cardbox pick" style="display:none"></section>
+
+  <section class="cardbox"><h2>あなたの手札</h2><div class="hand-wrap"><div id="handNote"></div><div id="handAlerts"></div><div id="hand" class="hand"></div></div></section>
+
+  <section class="cardbox log-box"><details><summary><h2>進行ログ</h2><span class="small">詳しく見る</span></summary><div id="log" class="log"></div></details></section>
+
+  <section class="cardbox compact-rules" id="ruleSummary">
+    <details>
+      <summary><h2>🐷 ルール早見表</h2><span class="small">必要なときだけ開けます</span></summary>
+      <div class="rule-summary">
+        <div class="rule-card">
+          <h3>基本</h3>
+          <ul>
+            <li>4人専用。通常カード52枚＋ババブタ1枚を使い、通常カード1枚を抜いて各自13枚。</li>
+            <li>強さ：13 ＞ 12 ＞ … ＞ 1。1が最弱、13が最強。</li>
+            <li>リードスートがあれば必ず出す。ババブタは場に出せない。</li>
+            <li>勝者はリードスートで一番強いカード。</li>
+            <li>最弱は非リードスートがあればその中の最小。全員フォローなら場の最小。同数は後出し。</li>
+          </ul>
+        </div>
+        <div class="rule-card">
+          <h3>ピックとペア</h3>
+          <ul>
+            <li>勝者は場の4枚をごちそう山へ。</li>
+            <li>勝者は最弱の手札から1枚ピック。</li>
+            <li>標準では、最弱側がピック候補を2枚に絞る。絞らない/1〜13枚にも変更可。</li>
+            <li>最弱側の候補選択画面はスート順→数字順。勝者側のピック画面はランダム順。</li>
+            <li>同じ数字ができたら、ペアで捨てるかスキップを選ぶ。ババブタはペア不可。</li>
+          </ul>
+        </div>
+        <div class="rule-card">
+          <h3>ラウンド終了</h3>
+          <ul>
+            <li>手札0枚になったら終了条件。トリック中なら、そのトリック終了後にラウンド終了。</li>
+            <li>ババブタ1枚だけの場合は、その人の手番開始時にラウンド終了。</li>
+            <li>カードを出してババブタ1枚だけになっても即終了せず、必要なピック処理までは進みます。</li>
+          </ul>
+        </div>
+        <div class="rule-card">
+          <h3>得点・危険カード</h3>
+          <ul>
+            <li>ごちそう山：+1点/枚。</li>
+            <li>残り通常手札：標準は1枚-3点。数字分失点、または1枚-1点・♠は-3点にも変更可。マッドON時の♠11はマッド失点を優先。</li>
+            <li>マッド・ピッグ：♠11。標準ON。通常は追加-13点。数字分失点では手札なら-40点、山なら+1点後に-40点。♠-3/他-1ではマッド失点を優先。</li>
+            <li>ババブタ：標準-20点。失点タイミングはラウンド毎/ゲーム最後から選択。</li>
+            <li>シュート・ザ・ピッグON時：ババブタ＋マッド・ピッグを持ってラウンド終了すると本人の両失点0、他全員-10点。</li>
+          </ul>
+        </div>
+        <div class="rule-card">
+          <h3>開始時オプション</h3>
+          <ul>
+            <li>3枚パスON：次の手番の人へ3枚渡す。ババブタ不可。</li>
+            <li>開始時ペア捨てON：同じ数字ペアを任意で捨てられる。</li>
+          </ul>
+        </div>
+        <div class="rule-card">
+          <h3>標準設定</h3>
+          <ul>
+            <li>3ラウンド / ピック対象2枚 / 残り手札1枚-3点。</li>
+            <li>マッド・ピッグあり / ババブタ-20点・ラウンド毎。</li>
+            <li>3枚パスなし / 開始時ペア捨てなし / シュート・ザ・ピッグOFF。</li>
+          </ul>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <section id="scoreBox" class="cardbox" style="display:none"><h2>最終結果</h2><div id="score"></div></section>
+</div>
+<div id="roundModal"></div>
+<script>
+'use strict';
+let ws, state=null, myId=null;
+let initialPairSelectedId=null;
+let passSelectedIds=[];
+let pickTargetSelectedIds=[];
+let __lastPickReady=false;
+let __lastCommentaryRenderKey='';
+let __lastPlayersRenderKey='';
+let __lastRoundStatusKey='';
+let __lastRoundModalKey='';
+let __lastScoreRenderKey='';
+let __lastShootPigEventId='';
+let __lastLogRenderKey='';
+let __lastLastTrickKey='';
+let __lastLegacyPickKey='';
+let __lastBasicStatusKey='';
+let __lastMessageText='';
+let __lastHandRenderKey='';
+let __lastTableRenderKey='';
+let __pickTargetVisualOrderKey='';
+let __pickTargetVisualOrderIds=[]; // 互換用。候補選択画面は現在ソート表示。
+const suitsClass={'♠':'spades','♥':'hearts','♦':'diamonds','♣':'clubs'};
+const art={'♥':'🐷💗','♦':'🐷🍎','♣':'🐷🌽','♠':'🐷🌙'};
+const faces=['🐷','🐱','🐶','🦊'];
+
+
+
+function applyResponsiveMode(){
+  if(typeof applyDeviceUiMode === 'function') applyDeviceUiMode();
+}
+
+window.addEventListener('resize', applyResponsiveMode);
+document.addEventListener('DOMContentLoaded', applyResponsiveMode);
+window.addEventListener('orientationchange', applyResponsiveMode);
+
+
+
+
+function stableShuffleIdsForPickTarget(hand, key){
+  // 最弱プレイヤーが候補を選ぶ画面は、推理隠しより操作性を優先する。
+  // 実際に勝者へ見せるピック画面では、サーバー側で候補をランダム化済み。
+  const suitOrder = {'♠':0,'♥':1,'♦':2,'♣':3};
+  return (hand || []).slice().sort((a,b)=>{
+    if(a?.joker && !b?.joker) return 1;
+    if(!a?.joker && b?.joker) return -1;
+    if(a?.joker && b?.joker) return String(a.id).localeCompare(String(b.id));
+    const so = (suitOrder[a.suit] ?? 99) - (suitOrder[b.suit] ?? 99);
+    if(so) return so;
+    const av = Number(a.val ?? a.rank ?? 0);
+    const bv = Number(b.val ?? b.rank ?? 0);
+    if(av !== bv) return av - bv;
+    return String(a.id).localeCompare(String(b.id));
+  });
+}
+
+
+function fixPickTargetBadgePosition(){
+  try{
+    document.querySelectorAll('.seat.pick-target,.seat.is-pick-target,.seat.pick-weakest,.seat.pending-pick-target').forEach(el=>{
+      el.style.position = 'relative';
+    });
+    document.querySelectorAll('.seat .pick-target-badge, .seat .pick-badge, .seat .pick-target-label').forEach(el=>{
+      el.style.left = 'auto';
+      el.style.right = '8px';
+      el.style.top = '-10px';
+      el.style.transform = 'none';
+      el.style.maxWidth = 'calc(100% - 16px)';
+      el.style.whiteSpace = 'nowrap';
+    });
+  }catch(e){}
+}
+
+
+function applyDeviceUiMode(){
+  const w = window.innerWidth || document.documentElement.clientWidth || 0;
+  const h = window.innerHeight || document.documentElement.clientHeight || 0;
+  const coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+  const noHover = window.matchMedia && window.matchMedia('(hover: none)').matches;
+  const portrait = h >= w;
+  const phone = (w <= 720 && coarse) || (w <= 640);
+  const tablet = !phone && coarse && w <= 1180;
+  document.body.classList.toggle('ui-phone', phone);
+  document.body.classList.toggle('ui-phone-portrait', phone && portrait);
+  document.body.classList.toggle('ui-phone-landscape', phone && !portrait);
+  document.body.classList.toggle('ui-tablet', tablet);
+  document.body.classList.toggle('ui-desktop', !phone && !tablet);
+  document.body.classList.toggle('ui-touch', coarse || noHover);
+  document.body.classList.toggle('mobile-table-compact', phone);
+}
+window.addEventListener('resize', applyDeviceUiMode);
+window.addEventListener('orientationchange', applyDeviceUiMode);
+document.addEventListener('DOMContentLoaded', applyDeviceUiMode);
+
+function hypeToast(text){
+  const old=document.querySelector('.hype-toast');
+  if(old) old.remove();
+  const div=document.createElement('div');
+  div.className='hype-toast';
+  div.textContent=text;
+  document.body.appendChild(div);
+  setTimeout(()=>div.remove(), 2600);
+}
+let __lastHypeKey='';
+
+
+function hypeByState(){
+  if(!state) return;
+  const key = `${state.phase}:${state.round}:${state.trickReview ? 'review' : ''}:${state.pendingPick?.targetSelectionRequired && !state.pendingPick?.targetSelectionDone ? 'target' : ''}:${state.pendingPick?.pairChoice ? 'pair' : ''}:${state.pendingPick?.result?.text || ''}`;
+  if(key===__lastHypeKey) return;
+  __lastHypeKey=key;
+  if(state.pendingPick?.targetSelectionRequired && !state.pendingPick?.targetSelectionDone) hypeToast('🎯 ピック候補選択');
+  else if(state.pendingPick?.pairChoice) hypeToast('✨ ペア選択');
+  else if(state.pendingPick?.result) hypeToast(state.pendingPick.result.paired ? '✨ ペア浄化' : 'ピック結果');
+  else if(state.phase==='finished') hypeToast('🏆 最終結果');
+}
+
+
+
+
+
+
+const RECONNECT_KEY='pipi_tori_reconnect_v1';
+let reconnectTimer=null;
+let reconnectAttempts=0;
+let intentionalClose=false;
+
+function saveReconnectInfo(code, playerId, name){
+  try{
+    localStorage.setItem(RECONNECT_KEY, JSON.stringify({code, playerId, name, savedAt:Date.now()}));
+  }catch(e){}
+}
+
+function loadReconnectInfo(){
+  try{
+    const raw=localStorage.getItem(RECONNECT_KEY);
+    if(!raw) return null;
+    const data=JSON.parse(raw);
+    if(!data || !data.code || !data.playerId) return null;
+    // 24時間以内だけ表示。
+    if(Date.now() - Number(data.savedAt||0) > 24*60*60*1000) return null;
+    return data;
+  }catch(e){ return null; }
+}
+
+function updateReconnectButton(){
+  const btn=document.getElementById('reconnect');
+  if(!btn) return;
+  const data=loadReconnectInfo();
+  btn.style.display=data ? '' : 'none';
+  if(data) btn.textContent=`前回の部屋 ${data.code} に復帰`;
+}
+
+function setConnStatus(text){
+  const el=document.getElementById('connStatus');
+  if(el) el.textContent=text;
+}
+
+function stopReconnectLoop(){
+  if(reconnectTimer){ clearTimeout(reconnectTimer); reconnectTimer=null; }
+  reconnectAttempts=0;
+}
+
+function scheduleReconnect(){
+  const data=loadReconnectInfo();
+  if(!data || intentionalClose) return;
+  if(reconnectTimer) return;
+  const delay=Math.min(10000, 1200 + reconnectAttempts*900);
+  reconnectAttempts++;
+  reconnectTimer=setTimeout(()=>{
+    reconnectTimer=null;
+    if(ws && (ws.readyState===0 || ws.readyState===1)) return;
+    connect(()=>send({type:'reconnect', code:data.code, playerId:data.playerId, name:data.name || $('name').value || '子ブタ'}), true);
+  }, delay);
+}
+
+const $=id=>document.getElementById(id);
+
+function syncShootThePigAvailability(){
+  const mad = $('madPigEnabled')?.value === 'true';
+  const shoot = $('shootThePigEnabled');
+  if(!shoot) return;
+  shoot.disabled = !mad;
+  shoot.closest('.input-label')?.classList.toggle('disabled-option', !mad);
+  if(!mad) shoot.value = 'false';
+}
+
+$('madPigEnabled').addEventListener('change', syncShootThePigAvailability);
+syncShootThePigAvailability();
+$('create').onclick=()=>{ syncShootThePigAvailability(); intentionalClose=false; connect(()=>send({type:'create', name:$('name').value, rounds:Number($('rounds').value || 3), madPigEnabled:$('madPigEnabled').value==='true', shootThePigEnabled:$('shootThePigEnabled').value==='true', jokerPenalty:Number($('jokerPenalty').value || -20), jokerPenaltyTiming:$('jokerPenaltyTiming').value, initialPairDiscardEnabled:$('initialPairDiscardEnabled').value==='true', passThreeEnabled:$('passThreeEnabled').value==='true', penaltyMode:$('penaltyMode').value, pickTargetCount:Number($('pickTargetCount').value || 2)})); };
+$('join').onclick=()=>{ intentionalClose=false; const saved=loadReconnectInfo(); connect(()=>send({type:'join', name:$('name').value, code:$('code').value, playerId:saved?.playerId || null})); };
+$('start').onclick=()=>send({type:'start'});
+$('addCpu').onclick=()=>send({type:'addCpu'});
+$('removeCpu').onclick=()=>send({type:'removeCpu'});
+$('reconnect').onclick=()=>{ const data=loadReconnectInfo(); if(!data) return; intentionalClose=false; $('code').value=data.code; if(data.name) $('name').value=data.name; connect(()=>send({type:'reconnect', code:data.code, playerId:data.playerId, name:data.name || $('name').value || '子ブタ'}), true); };
+
+// Edge/PCブラウザ対策：インラインonclickではなくイベント委任でピックする。
+// DOMのidやwindowプロパティとの名前衝突を避け、pointer/click両方に対応する。
+let __lastPickTapAt = 0;
+function handlePickButtonEvent(ev){
+  const btn = ev.target && ev.target.closest ? ev.target.closest('[data-pick-index]') : null;
+  if(!btn || btn.disabled) return;
+  if(state && (state.phase === 'initialPair' || state.phase === 'passing')) return;
+  const now = Date.now();
+  if(now - __lastPickTapAt < 350) return; // pointerup + click の二重送信防止
+  __lastPickTapAt = now;
+  ev.preventDefault();
+  requestPick(btn.dataset.pickIndex);
+}
+document.addEventListener('pointerup', handlePickButtonEvent);
+document.addEventListener('click', handlePickButtonEvent);
+
+let __lastPairTapAt = 0;
+function handlePairChoiceEvent(ev){
+  const btn = ev.target && ev.target.closest ? ev.target.closest('[data-pair-card-id],[data-pair-skip]') : null;
+  if(!btn || btn.disabled) return;
+  const now = Date.now();
+  if(now - __lastPairTapAt < 350) return;
+  __lastPairTapAt = now;
+  ev.preventDefault();
+  if(btn.dataset.pairSkip === '1') requestPairChoice(null, true);
+  else requestPairChoice(btn.dataset.pairCardId, false);
+}
+document.addEventListener('pointerup', handlePairChoiceEvent);
+document.addEventListener('click', handlePairChoiceEvent);
+
+
+
+
+
+let __lastPickTargetTapAt = 0;
+
+function handlePickTargetEvent(ev){
+  const btn = ev.target && ev.target.closest ? ev.target.closest('[data-pick-target-card-id],[data-pick-target-submit]') : null;
+  if(!btn || btn.disabled) return;
+  const pp = state && state.pendingPick;
+  if(!pp || !pp.targetSelectionRequired || pp.targetSelectionDone || state.yourIndex !== pp.weakestPid) return;
+  const now = Date.now();
+  if(now - __lastPickTargetTapAt < 160) return;
+  __lastPickTargetTapAt = now;
+  ev.preventDefault();
+
+  const need = Math.min(Number(pp.targetCount || 0), (me()?.hand || []).length);
+  if(btn.dataset.pickTargetSubmit === '1'){
+    if(pickTargetSelectedIds.length !== need){
+      $('message').textContent = `ピック候補を${need}枚選んでください。`;
+      return;
+    }
+    requestPickTargets(pickTargetSelectedIds);
+    return;
+  }
+
+  const id = btn.dataset.pickTargetCardId;
+  if(!id) return;
+  if(pickTargetSelectedIds.includes(id)){
+    pickTargetSelectedIds = pickTargetSelectedIds.filter(x=>x!==id);
+  } else {
+    if(pickTargetSelectedIds.length >= need) return;
+    pickTargetSelectedIds.push(id);
+  }
+  updatePickTargetSelectionUI();
+}
+
+document.addEventListener('pointerup', handlePickTargetEvent);
+document.addEventListener('click', handlePickTargetEvent);
+
+
+let __lastPassTapAt = 0;
+
+function handlePassThreeEvent(ev){
+  const btn = ev.target && ev.target.closest ? ev.target.closest('[data-pass-card-id],[data-pass-submit]') : null;
+  if(!btn || btn.disabled) return;
+  if(!state || state.phase !== 'passing') return;
+  const now = Date.now();
+  if(now - __lastPassTapAt < 160) return;
+  __lastPassTapAt = now;
+  ev.preventDefault();
+
+  if(btn.dataset.passSubmit === '1'){
+    requestPassThree(passSelectedIds);
+    return;
+  }
+
+  const id = btn.dataset.passCardId;
+  if(!id) return;
+  if(passSelectedIds.includes(id)){
+    passSelectedIds = passSelectedIds.filter(x=>x!==id);
+  } else {
+    if(passSelectedIds.length >= 3) return;
+    passSelectedIds.push(id);
+  }
+  updatePassSelectionUI();
+}
+
+document.addEventListener('pointerup', handlePassThreeEvent);
+document.addEventListener('click', handlePassThreeEvent);
+
+
+let __lastInitialPairTapAt = 0;
+
+function handleInitialPairEvent(ev){
+  const btn = ev.target && ev.target.closest ? ev.target.closest('[data-initial-card-id],[data-initial-skip]') : null;
+  if(!btn || btn.disabled) return;
+  if(!state || state.phase !== 'initialPair') return;
+  const now = Date.now();
+  if(now - __lastInitialPairTapAt < 250) return;
+  __lastInitialPairTapAt = now;
+  ev.preventDefault();
+
+  if(btn.dataset.initialSkip === '1'){
+    initialPairSelectedId = null;
+    requestSkipInitialPairs();
+    return;
+  }
+
+  const id = btn.dataset.initialCardId;
+  const hand = me()?.hand || [];
+  const card = hand.find(c=>c.id===id);
+  if(!card || card.joker) return;
+
+  // 同じカードをもう一度押したら選択解除。
+  if(initialPairSelectedId === id){
+    initialPairSelectedId = null;
+    updateInitialPairSelectionUI();
+    return;
+  }
+
+  if(initialPairSelectedId && initialPairSelectedId !== id){
+    const first = hand.find(c=>c.id===initialPairSelectedId);
+    if(first && !first.joker && first.rank === card.rank){
+      requestInitialPairDiscard(initialPairSelectedId, id);
+      initialPairSelectedId = null;
+      return;
+    }
+  }
+
+  initialPairSelectedId = id;
+  updateInitialPairSelectionUI();
+}
+
+document.addEventListener('pointerup', handleInitialPairEvent);
+document.addEventListener('click', handleInitialPairEvent);
+
+
+// Edge/PCブラウザ対策：手札カードもインラインonclickを使わずイベント委任で出す。
+// 2トリック目以降にDOM再描画やグローバル名解決の影響でクリック不能になる問題を防ぐ。
+let __lastCardTapAt = 0;
+function handleHandCardEvent(ev){
+  const btn = ev.target && ev.target.closest ? ev.target.closest('[data-card-id]') : null;
+  if(!btn || btn.disabled) return;
+  const now = Date.now();
+  if(now - __lastCardTapAt < 350) return; // pointerup + click の二重送信防止
+  __lastCardTapAt = now;
+  ev.preventDefault();
+  const cardId = btn.dataset.cardId;
+  if(!state || !Array.isArray(state.playableCardIds) || !state.playableCardIds.includes(cardId)){
+    // disabled属性が何らかの理由でズレた場合でも、誤送信を防ぐ。
+    return;
+  }
+  requestPlay(cardId);
+}
+document.addEventListener('pointerup', handleHandCardEvent);
+document.addEventListener('click', handleHandCardEvent);
+
+function connect(after, isReconnect=false){
+  if(ws && ws.readyState===1){ after(); return; }
+  stopReconnectLoop();
+  setConnStatus(isReconnect ? '復帰中' : '接続中');
+  const proto = location.protocol==='https:'?'wss':'ws';
+  ws = new WebSocket(`${proto}://${location.host}`);
+  ws.onopen=()=>{ setConnStatus(isReconnect ? '復帰確認中' : '接続済'); after(); };
+  ws.onmessage=e=>{
+    const msg=JSON.parse(e.data);
+    if(msg.type==='created'||msg.type==='joined'||msg.type==='reconnected'){
+      myId=msg.playerId;
+      $('roomInfo').style.display='block';
+      $('roomCode').textContent=msg.code;
+      if(msg.name) $('name').value=msg.name;
+      $('code').value=msg.code;
+      saveReconnectInfo(msg.code, msg.playerId, msg.name || $('name').value || '子ブタ');
+      updateReconnectButton();
+      stopReconnectLoop();
+      setConnStatus(msg.type==='reconnected' ? '復帰済' : '接続済');
+      if(msg.type==='reconnected') hypeToast('🔄 再接続しました');
+    }
+    if(msg.type==='state'){
+      state=msg.state;
+      if(!Array.isArray(state.playableCardIds)) state.playableCardIds = [];
+      if(state.pendingPick && !state.pendingPick.clientReadyAt){
+        const ms = Number(state.pendingPick.readyInMs ?? 0);
+        state.pendingPick.clientReadyAt = Date.now() + Math.max(0, ms);
+      }
+      render();
+    }
+    if(msg.type==='errorMsg'){
+      setConnStatus('要確認');
+      alert(msg.message);
+      updateReconnectButton();
+    }
+  };
+  ws.onclose=()=>{
+    setConnStatus('切断');
+    if($('phase')) $('phase').textContent='切断';
+    scheduleReconnect();
+  };
+  ws.onerror=()=>{
+    setConnStatus('不安定');
+  };
+}
+function send(obj){ if(ws && ws.readyState===1) ws.send(JSON.stringify(obj)); else { setConnStatus('切断'); scheduleReconnect(); } }
+function me(){ return state?.players.find(p=>p.id===state.you); }
+function isHost(){ return state && state.you===state.hostId; }
+function playerName(i){ return state?.players[i]?.name || '-'; }
+function face(i){ const p=state?.players?.[i]; return p?.avatar || faces[i] || '🐷'; }
+
+
+function playerAvatarHTML(i, cls=''){
+  const p = state?.players?.[i];
+  const klass = (`cpu-avatar-img ${cls || ''}`).trim();
+  if(p?.avatarImage){
+    return `<img src="${escAttr(p.avatarImage)}" alt="${escAttr(p.name || 'CPU')}" class="${escAttr(klass)}">`;
+  }
+  const emojiClass = (`cpu-avatar-emoji ${cls || ''}`).trim();
+  return `<span class="${escAttr(emojiClass)}">${esc(face(i))}</span>`;
+}
+
+
+
+function penaltyModeLabel(){
+  if(state?.penaltyMode === 'faceValue') return '数字分失点';
+  if(state?.penaltyMode === 'spadeSuit') return '♠-3/他-1';
+  return '1枚-3点';
+}
+function madPigPenaltyDisplayLabel(){
+  if(state?.penaltyMode === 'faceValue') return 'マッド山失点';
+  if(state?.penaltyMode === 'spadeSuit') return 'マッド優先失点';
+  return 'マッド追加失点';
+}
+function madPigHelpText(){
+  if(state?.penaltyMode === 'faceValue') return '♠11は-40点扱いです。';
+  if(state?.penaltyMode === 'spadeSuit') return '♠11は♠失点-3ではなく、マッド失点-13点を優先します。';
+  return '♠11は追加-13点です。';
+}
+
+
+function madPigModeLabel(){
+  if(state?.madPigEnabled === false) return 'マッドなし';
+  return state?.penaltyMode === 'faceValue' ? 'マッド-40' : 'マッド-13';
+}
+function shootThePigLabel(){
+  if(state?.madPigEnabled === false) return 'シュート不可';
+  return state?.shootThePigEnabled ? 'シュートON' : 'シュートOFF';
+}
+
+
+function jokerPenaltyLabel(){
+  const timing = state?.jokerPenaltyTiming === 'gameEnd' ? '最後' : '毎R';
+  return `ババ-${state?.jokerPenalty ?? 20}/${timing}`;
+}
+function compactOptionChips(){
+  if(!state) return [];
+  const chips = [`${state.totalRounds || 3}R`, penaltyModeLabel(), jokerPenaltyLabel(), pickTargetModeLabel()];
+  if(state.madPigEnabled === false) chips.push('マッドなし');
+  if(state.shootThePigEnabled) chips.push('シュートON');
+  if(state.passThreeEnabled) chips.push('3枚パス');
+  if(state.initialPairDiscardEnabled) chips.push('開始ペア');
+  if(state.roundEndDeferred) chips.push('トリック後終了');
+  return chips;
+}
+
+
+function pickTargetModeLabel(){
+  const n = Number(state?.pickTargetCount || 0);
+  return n > 0 ? `候補${n}枚` : 'ピック絞らない';
+}
+
+function isMadPig(card){ return !!card && !card.joker && card.suit==='♠' && String(card.rank)==='11'; }
+function seatNumber(pid){ return pid+1; }
+function playersClockwise(){ return (state?.players||[]).map((_,i)=>i); }
+function gridDisplayOrder(){ const cw=playersClockwise(); return cw.length===4 ? [cw[0],cw[1],cw[3],cw[2]] : cw; }
+function nextPid(pid){ return state?.players?.length ? (pid+1)%state.players.length : pid; }
+function dirSymbol(pid){ return ({0:'→',1:'↓',2:'←',3:'↑'})[pid] || '→'; }
+function orderBadge(order){ return ['①','②','③','④'][order] || String(order+1); }
+function isPickReady(pp){
+  if(!pp || pp.result) return false;
+  if(pp.ready === true) return true;
+  if(typeof pp.readyInMs === 'number' && pp.readyInMs <= 0) return true;
+  if(pp.clientReadyAt && Date.now() >= pp.clientReadyAt) return true;
+  return false;
+}
+function pickRemainingSeconds(pp){
+  if(!pp || pp.result) return 0;
+  const base = pp.clientReadyAt || (Date.now() + Number(pp.readyInMs || 0));
+  return Math.max(0, Math.ceil((base - Date.now())/1000));
+}
+
+function normalizeTableBadges(){
+  try{
+    document.querySelectorAll('#table .seat .pick-target-badge, #table .seat .pick-badge, #table .seat .pick-target-label').forEach(el=>{
+      el.style.left='auto';
+      el.style.right='6px';
+      el.style.transform='none';
+    });
+  }catch(e){}
+}
+
+function render(){
+  if(!state) return;
+  if(state.phase !== 'passing') passSelectedIds = [];
+  if(state.phase !== 'initialPair') initialPairSelectedId = null;
+  if(!state.pendingPick || !state.pendingPick.targetSelectionRequired || state.pendingPick.targetSelectionDone) pickTargetSelectedIds = [];
+  $('roomInfo').style.display='block';
+  if($('roomCode').textContent !== state.code) $('roomCode').textContent=state.code;
+  const phaseText = state.phase==='lobby'?'ロビー':state.phase==='passing'?'3枚パス':state.phase==='initialPair'?'開始ペア':state.phase==='playing'?'対戦中':state.phase==='roundEnd'?'ラウンド結果確認':state.phase==='finished'?'終了':'-';
+  const statusKey = `${phaseText}|${state.round||'-'}|${state.current!=null?playerName(state.current):'-'}|${state.lead!=null?playerName(state.lead):'-'}`;
+  if(statusKey !== __lastBasicStatusKey){
+    __lastBasicStatusKey = statusKey;
+    $('phase').textContent = phaseText;
+    $('round').textContent=state.round||'-';
+    $('turn').textContent=state.current!=null?playerName(state.current):'-';
+    $('lead').textContent=state.lead!=null?playerName(state.lead):'-';
+  }
+  const messageText = state.message||'';
+  if(messageText !== __lastMessageText){
+    __lastMessageText = messageText;
+    $('message').textContent=messageText;
+  }
+  $('start').disabled = !(isHost() && state.phase==='lobby' && state.players.length===4);
+  $('addCpu').disabled = !(isHost() && state.phase==='lobby' && state.players.length<4);
+  $('removeCpu').disabled = !(isHost() && state.phase==='lobby' && state.players.some(p=>p.cpu));
+  renderRoundStatus(); renderRoundModal();
+  renderShootPigOverlay(); renderCommentary(); renderPlayers(); renderLastTrick(); renderTable(); normalizeTableBadges(); fixPickTargetBadgePosition(); renderHand(); renderPick(); renderLog(); renderScore(); hypeByState();
+  if(state.trickReview && state.trickReview.until > Date.now() && !window.__reviewTimer){
+    window.__reviewTimer = setInterval(()=>{
+      if(!state || !state.trickReview || state.trickReview.until <= Date.now()){
+        clearInterval(window.__reviewTimer); window.__reviewTimer=null;
+        return;
+      }
+      const el = document.getElementById('reviewSeconds');
+      if(el){
+        el.textContent = Math.max(0, Math.ceil((state.trickReview.until - Date.now())/1000));
+      }
+    }, 250);
+  }
+
+  // ピック確認中はDOMを再生成せず、秒数とボタン状態だけ更新する。
+  // これによりピック画面のちらつき・カクつきを防ぐ。
+  if(state.pendingPick && !state.pendingPick.result && !(state.pendingPick.targetSelectionRequired && !state.pendingPick.targetSelectionDone) && !window.__pickReadyTimer){
+    window.__pickReadyTimer = setInterval(()=>{
+      if(!state || !state.pendingPick || state.pendingPick.result){
+        clearInterval(window.__pickReadyTimer); window.__pickReadyTimer=null;
+        return;
+      }
+      updatePickScreenStatus(state.pendingPick);
+      if(isPickReady(state.pendingPick)){
+        updatePickScreenStatus(state.pendingPick);
+        clearInterval(window.__pickReadyTimer); window.__pickReadyTimer=null;
+      }
+    }, 250);
+  }
+}
+
+
+
+
+function renderShootPigOverlay(){
+  const root = $('shootPigOverlay');
+  if(!root || !state) return;
+  const ev = state.shootPigEvent;
+  if(!ev){
+    if(root.dataset.active === '1'){
+      root.innerHTML='';
+      root.dataset.active='0';
+    }
+    return;
+  }
+  if(__lastShootPigEventId === ev.id && root.dataset.active === '1') return;
+  __lastShootPigEventId = ev.id;
+  root.dataset.active='1';
+  root.innerHTML = `
+    <div class="shoot-overlay-card">
+      <div class="shoot-burst">🐷🌕</div>
+      <div class="shoot-title">SHOOT THE PIG!</div>
+      <div class="shoot-title-jp">シュート・ザ・ピッグ発動！</div>
+      <div class="shoot-name">${esc(ev.shooterName)}</div>
+      <div class="shoot-effect">
+        <span>ババブタ失点 0</span>
+        <span>マッド失点 0</span>
+        <span>他全員 -10</span>
+      </div>
+      <div class="shoot-confetti" aria-hidden="true">
+        <i>🐷</i><i>🌕</i><i>✨</i><i>🃏</i><i>♠11</i><i>💥</i>
+      </div>
+    </div>
+  `;
+  window.clearTimeout(window.__shootPigOverlayTimer);
+  window.__shootPigOverlayTimer = window.setTimeout(()=>{
+    if(root.dataset.active === '1'){
+      root.classList.add('fade-out');
+      window.setTimeout(()=>{
+        root.innerHTML='';
+        root.dataset.active='0';
+        root.classList.remove('fade-out');
+      }, 650);
+    }
+  }, 6200);
+}
+
+function renderRoundStatus(){
+  const el=$('roundStatus');
+  if(!el || !state){ return; }
+  const label = state.phase==='passing' ? '開始時3枚パス'
+    : state.phase==='initialPair' ? '開始時ペア捨て'
+    : state.phase==='roundEnd' ? `第${state.round}/${state.totalRounds || 3}R 結果確認`
+    : state.phase==='finished' ? 'ゲーム終了'
+    : state.round ? `第${state.round}/${state.totalRounds || 3}R` : '開始前';
+
+  // 常時表示するチップを必要最小限に整理。OFF系の情報は原則出さない。
+  const chips = compactOptionChips();
+
+  const start = state.roundStart ? `<div class="round-start"><div class="round-title">第${state.roundStart.round}R開始！</div><div>${esc(state.roundStart.text)}</div></div>` : '';
+  const html = `<div class="round-big">${esc(label)}</div><div class="setting-chips compact">${chips.map(c=>`<span>${esc(c)}</span>`).join('')}</div>${start}`;
+  const key = `${label}|${chips.join(',')}|${state.roundStart?.round||''}|${state.roundStart?.text||''}|${state.roundStart?.expiresAt||''}`;
+  if(key === __lastRoundStatusKey) return;
+  __lastRoundStatusKey = key;
+  el.innerHTML = html;
+}
+
+
+
+
+
+function renderRoundModal(){
+  const el=$('roundModal');
+  if(!el || !state) return;
+  const sum = state.roundEndSummary;
+
+  // ラウンド終了時に表示。OKで次ラウンドへ。
+  if(state.phase !== 'roundEnd' || !sum){
+    if(__lastRoundModalKey !== 'empty'){
+      el.innerHTML='';
+      __lastRoundModalKey = 'empty';
+    }
+    return;
+  }
+
+  const rows = (sum.rows||[]).map(r=>`
+    <div class="round-card ${r.pid===sum.reasonPid?'highlight':''}">
+      <div class="name">${r.pid===sum.reasonPid?'🏁 ':''}${esc(r.name)}</div>
+      <div class="stat"><span>ごちそう山</span><b>${r.pile}枚</b></div>
+      <div class="stat"><span>残り通常手札</span><b>${r.normalHand}枚</b></div>
+      <div class="stat"><span>ペア浄化</span><b>${r.pairs}組</b></div>
+      <div class="stat"><span>マッド・ピッグ</span><b>${sum.madPigEnabled === false ? "なし" : `${r.madPig}枚`}</b></div>
+      <div class="stat"><span>得点パイル</span><b>+${r.pileScore ?? r.pile}</b></div>
+      <div class="stat"><span>手札失点</span><b>-${r.handPenalty ?? (r.normalHand*3)}</b></div>
+      <div class="stat"><span>マッド・ピッグ失点</span><b>${sum.madPigEnabled === false ? "なし" : `-${r.madPigPenalty ?? (r.madPig*13)}`}</b></div>
+      ${r.shootThePig ? `<div class="stat shoot-pig-stat"><span>シュート・ザ・ピッグ</span><b>発動！</b></div>` : (r.shootPigPenalty ? `<div class="stat"><span>シュート失点</span><b>-${r.shootPigPenalty}</b></div>` : '')}
+      <div class="stat"><span>${sum.jokerPenaltyTiming==='gameEnd' ? 'ババブタ失点' : '今回のババブタ失点'}</span><b>${sum.jokerPenaltyTiming==='gameEnd' ? '最終のみ' : `-${r.jokerPenalty ?? 0}`}</b></div>
+      ${sum.jokerPenaltyTiming==='perRound' ? `<div class="stat"><span>ババブタ累計</span><b>-${r.jokerPenaltyTotal ?? 0}</b></div>` : (r.hasJoker ? `<div class="stat"><span>最終時なら</span><b>-${r.pendingFinalJokerPenalty ?? (state.jokerPenalty ?? 20)}</b></div>` : '')}
+      <div class="round-total">暫定得点：${r.total ?? ((r.pile||0) - (r.normalHand||0)*3 - (r.madPig||0)*13 - (r.hasJoker?20:0))} 点</div>
+      ${r.hasJoker?'<span class="round-danger">🃏 ババブタ保持</span>':''}
+    </div>
+  `).join('');
+
+  const modalHtml = `<div class="round-modal">
+    <div class="round-panel">
+      <h2>🐷 第${sum.round}ラウンド結果</h2><p class="small" style="text-align:center;margin-top:-4px">ここではこのラウンド終了時点の暫定得点を表示します。ババブタ失点：${sum.jokerPenaltyTiming==='gameEnd'?'ゲームの最後のみ':'ラウンド毎'}</p>
+      ${sum.shootPigResult ? `<div class="round-reason shoot-pig-banner"><div class="shoot-mini-title">🐷🌕 シュート・ザ・ピッグ！</div><div><b>${esc(sum.shootPigResult.shooterName)}</b> が危険カードを逆転コンボ！ 本人のババブタ/マッド失点0、他全員に-10点。</div></div>` : ''}
+      <div class="round-reason">${esc(sum.reasonText)}</div>
+      <div class="round-grid">${rows}</div>
+      <div class="round-actions">
+        <button type="button" class="btn" onclick="this.disabled=true; this.textContent='次ラウンド準備中…'; continueRound()">OK：次のラウンドへ進む</button>
+      </div>
+      <p class="small" style="text-align:center;margin-top:8px">この画面は各ラウンド終了時に表示されます。誰かがOKを押すと全員が次のラウンドへ進みます。</p>
+    </div>
+  </div>`;
+  const key = JSON.stringify({
+    round:sum.round,
+    reason:sum.reasonText,
+    timing:sum.jokerPenaltyTiming,
+    shoot:sum.shootPigResult,
+    rows:(sum.rows||[]).map(r=>[r.pid,r.total,r.jokerPenalty,r.jokerPenaltyTotal,r.madPigPenalty,r.handPenalty,r.shootThePig,r.shootPigPenalty,r.hasJoker,r.madPig])
+  });
+  if(key === __lastRoundModalKey) return;
+  __lastRoundModalKey = key;
+  el.innerHTML = modalHtml;
+}
+
+
+
+
+function renderCommentary(){
+  const el=$('tableCommentary');
+  if(!el) return;
+  const list=(state.commentary||[]).slice(0,3);
+  const key = list.map(c=>`${c.pid}:${c.text}:${c.expiresAt||''}`).join('|');
+  if(key === __lastCommentaryRenderKey) return;
+  __lastCommentaryRenderKey = key;
+  if(!list.length){ el.innerHTML=''; return; }
+  const avatar = (c)=> c.avatarImage
+    ? `<img src="${escAttr(c.avatarImage)}" alt="${escAttr(c.name)}" class="commentary-avatar">`
+    : `<span class="commentary-avatar emoji">${esc(c.avatar || face(c.pid))}</span>`;
+  el.innerHTML = `<div class="table-commentary speech-mode">
+    <div class="table-commentary-title">🎙️ 卓上実況</div>
+    <div class="table-commentary-list">
+      ${list.map((c,idx)=>`<div class="speech-bubble ${c.cpuKey||''} ${idx===0?'latest':''}">
+        <div class="speech-face">${avatar(c)}</div>
+        <div class="speech-body"><b>${esc(c.name)}</b><p>${esc(c.text)}</p></div>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+
+
+
+
+
+function renderPlayers(){
+  const order = gridDisplayOrder();
+  const key = order.map(i=>{
+    const p=state.players[i];
+    if(!p) return 'x';
+    return [i,p.name,p.cpuKey,p.avatarImage,p.connected,p.handCount,p.scorePileCount,p.pairsCount,state.current===i,p.id===state.you,p.lastComment?.text||''].join(':');
+  }).join('|');
+  if(key === __lastPlayersRenderKey) return;
+  __lastPlayersRenderKey = key;
+
+  $('players').innerHTML = order.map(i=>{
+    const p=state.players[i]; if(!p) return '';
+    const turn = state.current===i ? '<span class="turn-mini">手番</span>' : '';
+    const you = p.id===state.you ? '<span class="you-mini">あなた</span>' : '';
+    const conn = (!p.cpu && !p.connected) ? '<span class="disconnect-mini">切断中</span>' : '';
+    const last = p.lastComment?.text ? `<div class="player-speech ${p.cpuKey||''}">${esc(p.lastComment.text)}</div>` : '';
+    return `<div class="player ${state.current===i?'active':''} ${p.cpu?'cpu-player':''}">
+      <div class="pig">${playerAvatarHTML(i)}</div>
+      <div class="name">${esc(p.name)} ${you}${turn}${conn}</div>
+      <div class="player-stats"><span>手札 ${p.handCount}</span><span>山 ${p.scorePileCount}</span><span>ペア ${p.pairsCount}</span></div>
+      ${last}
+    </div>`;
+  }).join('');
+}
+
+
+
+
+
+
+
+function renderLastTrick(){
+  const lt=state.lastTrick;
+  if(!lt || !state.trickReview){
+    if(__lastLastTrickKey !== 'empty'){
+      $('lastTrick').innerHTML='';
+      __lastLastTrickKey='empty';
+    }
+    return;
+  }
+  const key = `${lt.winnerName}|${lt.winnerCard}|${lt.weakestName}|${lt.weakestCard}|${state.trickReview.until}`;
+  if(key === __lastLastTrickKey) return;
+  __lastLastTrickKey = key;
+  $('lastTrick').innerHTML = `<div class="result-banner"><span>👑 勝者：${esc(lt.winnerName)}<br><small>${esc(lt.winnerCard)}</small></span><span>💀 最弱：${esc(lt.weakestName)}<br><small>${esc(lt.weakestCard)}</small></span></div>`;
+}
+
+
+
+
+
+function updatePassSelectionUI(){
+  const hand = me()?.hand || [];
+  passSelectedIds = passSelectedIds.filter(id=>hand.some(c=>c.id===id));
+  const count = passSelectedIds.length;
+
+  document.querySelectorAll('[data-pass-card-id]').forEach(btn=>{
+    const id = btn.dataset.passCardId;
+    const selected = passSelectedIds.includes(id);
+    btn.classList.toggle('pass-selected', selected);
+  });
+
+  const countEl = document.getElementById('passCount');
+  if(countEl) countEl.textContent = `${count}/3`;
+
+  const submit = document.querySelector('[data-pass-submit]');
+  if(submit) submit.disabled = count !== 3;
+}
+
+function updateInitialPairSelectionUI(){
+  const hand = me()?.hand || [];
+  const selected = initialPairSelectedId && hand.some(c=>c.id===initialPairSelectedId) ? initialPairSelectedId : null;
+  if(!selected) initialPairSelectedId = null;
+  const selectedCard = selected ? hand.find(c=>c.id===selected) : null;
+
+  document.querySelectorAll('[data-initial-card-id]').forEach(btn=>{
+    const id = btn.dataset.initialCardId;
+    const card = hand.find(c=>c.id===id);
+    const isSelected = selected === id;
+    const isCandidate = !!(selectedCard && card && !card.joker && id !== selected && card.rank === selectedCard.rank);
+    const isDim = !!(selectedCard && !isCandidate && !isSelected);
+    btn.classList.toggle('initial-selected', isSelected);
+    btn.classList.toggle('initial-candidate', isCandidate);
+    btn.classList.toggle('initial-dim', isDim);
+  });
+}
+
+function updatePickTargetSelectionUI(){
+  const pp = state?.pendingPick;
+  const hand = me()?.hand || [];
+  const need = Math.min(Number(pp?.targetCount || 0), hand.length);
+  pickTargetSelectedIds = pickTargetSelectedIds.filter(id=>hand.some(c=>c.id===id));
+  const count = pickTargetSelectedIds.length;
+
+  document.querySelectorAll('[data-pick-target-card-id]').forEach(btn=>{
+    const id = btn.dataset.pickTargetCardId;
+    btn.classList.toggle('selected', pickTargetSelectedIds.includes(id));
+    const label = btn.querySelector('.small');
+    if(label) label.textContent = pickTargetSelectedIds.includes(id) ? '候補' : '選ぶ';
+  });
+
+  const countEl = document.getElementById('pickTargetCountText');
+  if(countEl) countEl.textContent = `${count}/${need}`;
+
+  const submit = document.querySelector('[data-pick-target-submit]');
+  if(submit) submit.disabled = count !== need;
+}
+
+function updatePickScreenStatus(pp){
+  if(!pp) return;
+  if(pp.targetSelectionRequired && !pp.targetSelectionDone) return;
+  const ready = isPickReady(pp);
+  const waitSec = pickRemainingSeconds(pp);
+  const statusEl = document.getElementById('pickStatus');
+  if(statusEl && !pp.result && !pp.pairChoice){
+    if(state.yourIndex===pp.winnerPid){
+      statusEl.textContent = ready ? '1枚選んでピック！' : `確認中…あと${waitSec}秒`;
+    } else {
+      const w=state.players[pp.winnerPid];
+      statusEl.textContent = ready ? `${w.name} が選択中です。` : `確認中…あと${waitSec}秒`;
+    }
+  }
+  if(ready !== __lastPickReady){
+    document.querySelectorAll('#table .pick-card').forEach(btn=>{
+      if(ready) btn.removeAttribute('disabled');
+      else btn.setAttribute('disabled','disabled');
+    });
+    __lastPickReady = ready;
+  }
+}
+
+
+
+function renderTable(){
+  const pp = state.pendingPick;
+  if(pp){
+    __lastTableRenderKey='__pick__';
+    const w=state.players[pp.winnerPid], l=state.players[pp.weakestPid];
+    const ready=isPickReady(pp);
+    const waitSec=pickRemainingSeconds(pp);
+    const isTargetSelecting = pp.targetSelectionRequired && !pp.targetSelectionDone;
+    const mode = isTargetSelecting ? `target:${pp.weakestPid}:${pp.targetCount}:${state.yourIndex===pp.weakestPid?'me':'wait'}`
+      : pp.result ? 'result'
+      : pp.pairChoice ? `pair:${pp.pairChoice.drawn?.id || ''}:${pp.pairChoice.candidateCount || 0}:${state.yourIndex===pp.winnerPid?'me':'wait'}`
+      : `pick:${pp.winnerPid}:${pp.weakestPid}:${pp.targetCandidateCount || l.handCount}:${state.yourIndex===pp.winnerPid?'me':'wait'}`;
+
+    // 同じピック構造の間はDOMを作り直さず、秒数とdisabled状態だけ更新する。
+    if($('table').dataset.renderKey === mode){
+      updatePickScreenStatus(pp);
+      return;
+    }
+
+    let html=`<div class="pick-stage">
+      <h3>🐽 ピック</h3>
+      <div class="pick-main">
+        <div class="pick-person winner"><div class="big">${playerAvatarHTML(pp.winnerPid)}</div><div>勝者</div><div>${esc(w.name)}</div></div>
+        <div class="pick-big-arrow">➡<small>1枚ピック</small></div>
+        <div class="pick-person weakest"><div class="big">${playerAvatarHTML(pp.weakestPid)}</div><div>最弱</div><div>${esc(l.name)}</div></div>
+      </div>`;
+
+    if(isTargetSelecting){
+      const need = Math.min(Number(pp.targetCount || 0), (me()?.hand || []).length || l.handCount || 0);
+      if(state.yourIndex===pp.weakestPid){
+        const hand = me()?.hand || [];
+        pickTargetSelectedIds = pickTargetSelectedIds.filter(id=>hand.some(c=>c.id===id));
+        const count = pickTargetSelectedIds.length;
+        html += `<div class="pick-status" id="pickStatus">あなたがピック候補を選びます。<b id="pickTargetCountText">${count}/${need}</b>枚</div>`;
+        html += `<div class="pick-target-panel"><div class="pick-target-cards">`;
+        const targetVisualHand = stableShuffleIdsForPickTarget(hand, mode);
+        for(const c of targetVisualHand){
+          const selected = pickTargetSelectedIds.includes(c.id);
+          html += `<button type="button" class="pick-target-card ${selected?'selected':''}" data-pick-target-card-id="${escAttr(c.id)}">${cardHTML(c,true)}<div class="small">${selected?'候補':'選ぶ'}</div></button>`;
+        }
+        html += `</div><button type="button" class="btn" ${count===need?'':'disabled'} data-pick-target-submit="1">この${need}枚を候補にする</button><div class="small">選んだ候補は、勝者側ではランダム順で表示されます。</div></div>`;
+      } else {
+        html += `<div class="pick-status" id="pickStatus">${esc(l.name)} がピック候補を${pp.targetCount}枚に絞っています。</div><div class="small center-note">候補が決まると、${esc(w.name)} がその中から1枚選びます。</div>`;
+      }
+    } else if(pp.result){
+      html += `<div class="pick-status" id="pickStatus">${esc(pp.result.text)}</div><div class="pick-result"><span>引いたカード</span>${cardHTML(pp.result.drawn,true)}</div>`;
+    } else if(pp.pairChoice){
+      const pc = pp.pairChoice;
+      html += `<div class="pick-status" id="pickStatus">引いたカード：${cardHTML(pc.drawn,true)}<br>ペアにするか、スキップできます。</div>`;
+      if(state.yourIndex===pp.winnerPid && Array.isArray(pc.candidates)){
+        html += `<div class="pair-choice"><h4>ペアにするカードを選択</h4><div class="pair-cards">`;
+        for(const c of pc.candidates){
+          html += `<button type="button" class="pair-card-btn" data-pair-card-id="${escAttr(c.id)}">${cardHTML(c,true)}<div class="small">これと捨てる</div></button>`;
+        }
+        html += `</div><button type="button" class="btn secondary skip-pair" data-pair-skip="1">スキップ</button></div>`;
+      } else {
+        html += `<div class="pick-status">${esc(w.name)} のペア選択待ちです。</div>`;
+      }
+    } else if(state.yourIndex===pp.winnerPid){
+      const cnt = pp.targetCandidateCount || l.handCount;
+      html += `<div class="pick-status" id="pickStatus">${ready?'1枚選んでピック！':`確認中…あと${waitSec}秒`}</div><div class="pick-hand">`;
+      for(let i=0;i<cnt;i++) html += `<button type="button" class="pick-card" ${ready?'':'disabled'} data-pick-index="${i}"><div class="playing-card back"></div></button>`;
+      html += `</div>`;
+    } else {
+      const cnt = pp.targetCandidateCount || l.handCount;
+      html += `<div class="pick-status" id="pickStatus">${ready?`${esc(w.name)} が選択中です。`:`確認中…あと${waitSec}秒`}</div><div class="pick-hand">`;
+      for(let i=0;i<cnt;i++) html += `<div class="playing-card back"></div>`;
+      html += `</div>`;
+    }
+    html += `</div>`;
+    $('table').classList.add('pick-mode');
+    $('table').classList.remove('playing-now');
+    $('table').dataset.renderKey = mode;
+    $('table').innerHTML = html;
+    __lastPickReady = ready;
+    return;
+  }
+  __pickTargetVisualOrderKey=''; __pickTargetVisualOrderIds=[];
+  $('table').dataset.renderKey = '';
+  $('table').classList.remove('pick-mode');
+  $('table').classList.add('playing-now');
+  const lt=state.trickReview ? state.lastTrick : null;
+  const order = playersClockwise();
+  const trickMap = new Map((state.trick||[]).map(t=>[t.pid,t]));
+  const lead = state.lead ?? 0;
+  const flow = order.map((_,i)=>(lead+i)%order.length);
+  const review = state.trickReview && state.trickReview.until ? Math.max(0, Math.ceil((state.trickReview.until - Date.now())/1000)) : 0;
+  const tableKey = [
+    state.phase,
+    state.round,
+    state.current,
+    state.lead,
+    state.leadSuit || '',
+    state.trickReview?.until || '',
+    state.lastTrick?.winnerPid ?? '',
+    state.lastTrick?.weakestPid ?? '',
+    order.join(','),
+    (state.players || []).map(p=>`${p.name}:${p.handCount}:${p.scorePileCount}:${p.pairsCount}`).join('/'),
+    (state.trick || []).map(t=>`${t.pid}:${t.card?.id || ''}:${t.order ?? ''}`).join(','),
+  ].join('|');
+  if(tableKey === __lastTableRenderKey){
+    const el = document.getElementById('reviewSeconds');
+    if(el && review) el.textContent = review;
+    return;
+  }
+  __lastTableRenderKey = tableKey;
+  const reviewBanner = review ? `<div class="review-banner">トリック結果確認中：<b id="reviewSeconds">${review}</b> 秒後にババ抜きピックへ進みます</div>` : '';
+  const trail = flow.map((pid,idx)=>{
+    const done = trickMap.has(pid);
+    const cur = state.current===pid && !done;
+    return `<span class="trail-step ${done?'done':''} ${cur?'current':''}">${orderBadge(idx)} ${esc(playerName(pid))}</span>${idx<flow.length-1?'<span class="trail-arrow">➜</span>':''}`;
+  }).join('');
+  const orderLine = order.map(pid=>{
+    const done = trickMap.has(pid);
+    return `<span class="ord ${state.current===pid&&!state.pendingPick?'current':''} ${done?'done':''}">${seatNumber(pid)}. ${esc(playerName(pid))}</span>${pid!==order[order.length-1]?'<span class="arrowtxt">→</span>':''}`;
+  }).join('');
+  const seats = order.map(pid=>{
+    const x=trickMap.get(pid);
+    const cls = `${x && !state.trickReview ? ' has-card' : ''}${lt && lt.winnerPid===pid ? ' win' : ''}${lt && lt.weakestPid===pid ? ' weak' : ''}${state.current===pid&&!state.pendingPick ? ' current' : ''}`;
+    const next = nextPid(pid);
+    const arrowCls = state.current===next && !state.pendingPick ? ' current-next' : '';
+    return `<div class="seat seat-${pid}${cls}">
+      <div class="who">${seatNumber(pid)}. ${esc(playerName(pid))}</div>
+      ${x?`<div class="play-badge">${orderBadge(x.order)}手目</div>`:''}
+      ${state.current===pid&&!state.pendingPick?'<div class="turn-flag">▶ 手番</div>':''}
+      ${x?`<div class="mini-card">${cardHTML(x.card)}</div>`:'<span class="small">未プレイ</span>'}
+      <div class="seat-arrow${arrowCls}">${dirSymbol(pid)} ${state.current===next&&!state.pendingPick?'次':''}</div>
+    </div>`;
+  }).join('');
+  $('table').innerHTML=`${reviewBanner}<div class="play-trail">${trail}</div><div class="table-board">${seats}<div class="center-wheel"><div class="cw-arrow">↻</div><div>時計回り</div><div class="cw-small">次は ${state.current!=null&&!state.pendingPick?esc(playerName(state.current)):'結果確認中'} </div></div></div>`;
+}
+
+
+
+function playable(card){
+  if(!state || !card) return false;
+  // 出せるカード判定はサーバーを正とする。Edge/ラウンド開始直後の判定ズレ対策。
+  return Array.isArray(state.playableCardIds) && state.playableCardIds.includes(card.id);
+}
+
+function renderHand(){
+  const hand=me()?.hand || [];
+  const playableSet = new Set(state?.playableCardIds || []);
+  const initialSet = new Set(state?.initialPairCandidateIds || []);
+  const passableSet = new Set(state?.passableCardIds || []);
+  const handKey = [
+    state?.phase,
+    state?.yourIndex,
+    state?.current,
+    state?.isYourTurn,
+    state?.penaltyMode,
+    state?.madPigEnabled,
+    (state?.passDone || []).join(','),
+    (state?.initialPairDone || []).join(','),
+    (state?.playableCardIds || []).join(','),
+    (state?.initialPairCandidateIds || []).join(','),
+    (state?.passableCardIds || []).join(','),
+    hand.map(c=>c.id).join(',')
+  ].join('|');
+  if(handKey === __lastHandRenderKey) return;
+  __lastHandRenderKey = handKey;
+
+  let note = '';
+
+  if(state?.phase === 'passing'){
+    const done = Array.isArray(state.passDone) && state.passDone.includes(state.yourIndex);
+    const targetName = state.passTargetPid != null ? playerName(state.passTargetPid) : '次の人';
+    const sourceName = state.passSourcePid != null ? playerName(state.passSourcePid) : '前の人';
+    const count = passSelectedIds.filter(id=>hand.some(c=>c.id===id)).length;
+    passSelectedIds = passSelectedIds.filter(id=>hand.some(c=>c.id===id));
+    note = `<div class="pass-panel">
+      <h3>🔁 3枚パス</h3>
+      <div class="pass-route"><span>あなた</span><b>→</b><span>${esc(targetName)}</span><span class="small">${esc(sourceName)}から受け取り</span></div>
+      ${done ? `<div class="small">確定済み。待機中です。</div>` : `<div class="pass-actions"><span class="pass-count" id="passCount">${count}/3</span><button type="button" class="btn" ${count===3?'':'disabled'} data-pass-submit="1">3枚を渡す</button></div><div class="small">ババブタは選べません。</div>`}
+    </div>`;
+  } else if(state?.phase === 'initialPair'){
+    const done = Array.isArray(state.initialPairDone) && state.initialPairDone.includes(state.yourIndex);
+    note = `<div class="initial-pair-panel">
+      <h3>🧹 開始時ペア捨て</h3>
+      ${done ? `<div class="small">完了/スキップ済み。待機中です。</div>` : `<div class="small">同じ数字ペアを任意で捨てられます。</div><div class="initial-pair-actions"><button type="button" class="btn secondary" data-initial-skip="1">スキップ</button></div>`}
+    </div>`;
+  } else if(state?.phase === 'playing' && state?.isYourTurn && playableSet.size === 0){
+    note = `<div class="notice info"><div class="notice-title">出せるカードなし</div><div class="notice-body">終了条件の処理を待っています。</div></div>`;
+  } else if(state?.phase === 'playing' && state?.isYourTurn){
+    note = `<div class="notice info"><div class="notice-title">あなたの手番</div><div class="notice-body">光っているカードを選んでください。</div></div>`;
+  }
+  $('handNote').innerHTML = note;
+
+  const alerts = [];
+  if(state?.madPigEnabled !== false && hand.some(isMadPig)){
+    alerts.push(`<div class="notice warning"><div class="notice-title">☠️ マッド・ピッグ注意</div><div class="notice-body">${madPigHelpText()}</div></div>`);
+  }
+  if(state?.phase === 'roundEnd'){
+    alerts.push(`<div class="notice subtle"><div class="notice-title">結果確認中</div><div class="notice-body">OKで次のラウンドへ進みます。</div></div>`);
+  }
+  $('handAlerts').className = alerts.length ? 'hand-alerts' : '';
+  $('handAlerts').innerHTML = alerts.join('');
+
+  const selected = initialPairSelectedId && hand.some(c=>c.id===initialPairSelectedId) ? initialPairSelectedId : null;
+  if(!selected) initialPairSelectedId = null;
+  const selectedCard = selected ? hand.find(c=>c.id===selected) : null;
+  const passDone = Array.isArray(state?.passDone) && state.passDone.includes(state.yourIndex);
+
+  const cards = hand.map(c=>{
+    if(state?.phase === 'passing'){
+      const passable = !passDone && passableSet.has(c.id);
+      const selectedPass = passSelectedIds.includes(c.id);
+      return `<button type="button" class="hand-card ${passable?'passable':'pass-disabled'} ${selectedPass?'pass-selected':''}" ${passable?'':'disabled'} data-pass-card-id="${escAttr(c.id)}">${cardHTML(c, passable)}</button>`;
+    }
+    if(state?.phase === 'initialPair'){
+      const done = Array.isArray(state.initialPairDone) && state.initialPairDone.includes(state.yourIndex);
+      const selectable = !done && initialSet.has(c.id);
+      const selectedCls = selected === c.id ? 'initial-selected' : '';
+      const candidate = selectedCard && !c.joker && c.id !== selected && c.rank === selectedCard.rank;
+      const dim = selectedCard && !candidate && selected !== c.id ? 'initial-dim' : '';
+      return `<button type="button" class="hand-card ${selectable?'initial-selectable':'un'} ${selectedCls} ${candidate?'initial-candidate':''} ${dim}" ${selectable?'':'disabled'} data-initial-card-id="${escAttr(c.id)}">${cardHTML(c, selectable)}</button>`;
+    }
+    const can = playableSet.has(c.id);
+    return `<button type="button" class="hand-card ${can?'':'un'}" ${can?'': 'disabled'} data-card-id="${escAttr(c.id)}">${cardHTML(c, can)}</button>`;
+  }).join('') || '<p class="small">手札はまだありません。</p>';
+
+  $('hand').innerHTML = cards;
+}
+
+
+function requestPlay(id){
+  if(!ws || ws.readyState!==1){
+    $('message').textContent = '通信が切れています。ページを再読み込みして再参加してください。';
+    return;
+  }
+  send({type:'play', cardId:String(id)});
+}
+window.play = requestPlay;
+function requestPick(i){
+  if(!ws || ws.readyState!==1){
+    $('message').textContent = '通信が切れています。ページを再読み込みして再参加してください。';
+    return;
+  }
+  send({type:'pick', index:Number(i)});
+}
+window.pick = requestPick;
+
+function requestPickTargets(cardIds){
+  if(!ws || ws.readyState!==1){
+    $('message').textContent = '通信が切れています。ページを再読み込みして再参加してください。';
+    return;
+  }
+  send({type:'pickTargets', cardIds:(cardIds||[]).map(String)});
+  pickTargetSelectedIds = [];
+}
+
+function requestPairChoice(cardId, skip){
+  if(!ws || ws.readyState!==1){
+    $('message').textContent = '通信が切れています。ページを再読み込みして再参加してください。';
+    return;
+  }
+  send({type:'pairChoice', cardId:cardId ? String(cardId) : null, skip:!!skip});
+}
+
+
+
+function requestPassThree(cardIds){
+  if(!ws || ws.readyState!==1){
+    $('message').textContent = '通信が切れています。ページを再読み込みして再参加してください。';
+    return;
+  }
+  if(!Array.isArray(cardIds) || cardIds.length !== 3){
+    $('message').textContent = 'パスするカードを3枚選んでください。';
+    return;
+  }
+  send({type:'passThree', cardIds:cardIds.map(String)});
+  passSelectedIds = [];
+}
+
+function requestInitialPairDiscard(cardAId, cardBId){
+  if(!ws || ws.readyState!==1){
+    $('message').textContent = '通信が切れています。ページを再読み込みして再参加してください。';
+    return;
+  }
+  send({type:'initialPairDiscard', cardAId:String(cardAId), cardBId:String(cardBId)});
+}
+function requestSkipInitialPairs(){
+  if(!ws || ws.readyState!==1){
+    $('message').textContent = '通信が切れています。ページを再読み込みして再参加してください。';
+    return;
+  }
+  send({type:'skipInitialPairs'});
+}
+
+function continueRound(){
+  if(!ws || ws.readyState!==1){
+    $('message').textContent = '通信が切れています。ページを再読み込みして再参加してください。';
+    return;
+  }
+  send({type:'continueRound'});
+}
+window.continueRound = continueRound;
+
+function renderPick(){
+  // ピック中は「場のカード」エリア自体を専用レイアウトへ切り替えるため、
+  // 旧ピックBoxは重複表示しない。毎回innerHTMLを消すと無駄な再描画になるため一度だけ処理する。
+  const box=$('pickBox');
+  if(__lastLegacyPickKey === 'hidden') return;
+  box.style.display='none';
+  box.innerHTML='';
+  __lastLegacyPickKey='hidden';
+}
+
+
+function renderLog(){
+  const rows = state.log || [];
+  const key = rows.map(x=>`${x.time}:${x.text}`).join('|');
+  if(key === __lastLogRenderKey) return;
+  __lastLogRenderKey = key;
+  $('log').innerHTML=rows.map(x=>`<p><b>${x.time}</b> ${esc(x.text)}</p>`).join('');
+}
+
+function renderScore(){
+  if(state.phase!=='finished'){
+    $('scoreBox').style.display='none';
+    __lastScoreRenderKey='empty';
+    return;
+  }
+  $('scoreBox').style.display='block';
+
+  const sorted=[...state.players].sort((a,b)=>b.final.total-a.final.total);
+  const win=sorted[0];
+  const medal=['🥇','🥈','🥉','🐽'];
+  const rankLabel=['1位','2位','3位','4位'];
+
+  function dangerBadges(p){
+    const badges=[];
+    if(p.final.joker) badges.push('<span class="danger-badge joker">🃏 ババブタ</span>');
+    if(state.madPigEnabled !== false && p.final.madPig) badges.push(`<span class="danger-badge">♠11 マッド・ピッグ ×${p.final.madPig}${p.final.shootPigMadPigWaived?'（失点0）':''}</span>`);
+    if(p.final.shootPigActivatedRounds?.length) badges.push(`<span class="danger-badge joker">🐷🌕 シュート・ザ・ピッグ</span>`);
+    if(p.final.shootPigPenalty) badges.push(`<span class="danger-badge">🌕 シュート失点 -${p.final.shootPigPenalty}</span>`);
+    if(!badges.length) badges.push('<span class="danger-badge">✨ 危険カードなし</span>');
+    return `<div class="danger-badges">${badges.join('')}</div>`;
+  }
+
+  const podium = sorted.map((p,idx)=>`
+    <div class="podium-card rank-${idx+1}">
+      <div class="podium-rank">${medal[idx]} ${rankLabel[idx]}</div>
+      <div class="podium-face">${face(p.seat ?? state.players.indexOf(p))}</div>
+      <div class="podium-name">${esc(p.name)}</div>
+      <div class="podium-score">${p.final.total} 点</div>
+      ${dangerBadges(p)}
+    </div>
+  `).join('');
+
+  const breakdown = sorted.map((p,idx)=>`
+    <div class="break-card">
+      <h4>${medal[idx]} ${esc(p.name)}</h4>
+      <div class="break-row"><span>ごちそう山</span><b>+${p.final.pile}</b></div>
+      <div class="break-row"><span>残り通常手札</span><b>-${p.final.handPenalty ?? (p.final.normalHand*3)}</b></div>
+      ${state.madPigEnabled !== false ? `<div class="break-row"><span>${madPigPenaltyDisplayLabel()}</span><b>-${p.final.madPigPenalty ?? (p.final.madPig*13)}</b></div>` : `<div class="break-row"><span>マッド・ピッグ</span><b>なし</b></div>`}
+      <div class="break-row"><span>ババブタ</span><b>-${p.final.jokerPenalty ?? (p.final.joker*(p.final.jokerPenaltyValue ?? state.jokerPenalty ?? 20))}</b></div>
+      <div class="break-row"><span>シュート失点</span><b>-${p.final.shootPigPenalty ?? 0}</b></div>
+      ${p.final.shootPigActivatedRounds?.length ? `<div class="break-row"><span>シュート成功</span><b>${p.final.shootPigActivatedRounds.join(',')}R</b></div>` : ''}
+      <div class="break-total">合計 ${p.final.total} 点</div>
+    </div>
+  `).join('');
+
+  const rows=sorted.map((p,idx)=>`<tr><td>${medal[idx]} ${rankLabel[idx]}</td><td>${esc(p.name)}</td><td>${p.final.pile}</td><td>-${p.final.handPenalty ?? (p.final.normalHand*3)}</td><td>${state.madPigEnabled !== false ? `-${p.final.madPigPenalty ?? (p.final.madPig*13)}` : `なし`}</td><td>-${p.final.jokerPenalty ?? (p.final.joker*(p.final.jokerPenaltyValue ?? state.jokerPenalty ?? 20))}</td><td>-${p.final.shootPigPenalty ?? 0}</td><td><b>${p.final.total}</b></td></tr>`).join('');
+
+  const last = sorted[sorted.length-1];
+  const finalReason = state.finalRoundSummary ? `<div class="final-comment"><b>第${state.finalRoundSummary.round || state.round}ラウンド終了理由：</b>${esc(state.finalRoundSummary.reasonText)}</div>` : '';
+
+  const comment = win.final.total===last.final.total
+    ? '全員同点！これはもう全員で拍手です。'
+    : `${esc(win.name)} がごちそうを一番うまく集めました！ ${esc(last.name)} はババブタと次回リベンジ。`;
+
+  const scoreHtml = `
+    <div class="final-stage">
+      <div class="final-hero">
+        <div class="crown">🏆🐷🏆</div>
+        <h3>収穫祭、優勝は…</h3>
+        <div class="winner-name">${esc(win.name)}</div>
+        <div class="winner-score">${win.final.total} 点</div>
+      </div>
+      <div class="podium">${podium}</div>
+      ${finalReason}<div class="final-comment">${comment}</div>
+      <h3 style="margin:14px 0 6px;color:#b64040">得点内訳</h3>${state.madPigEnabled !== false ? `<div class="final-comment">マッド・ピッグは、1枚-3点では追加-13点。数字分失点では手札なら-40点、山なら+1点後に-40点です。♠-3/他-1では、手札の♠11は♠失点-3ではなくマッド失点-13点を優先します。</div>` : `<div class="final-comment">この部屋ではマッド・ピッグなし。スペード11は通常カードとして扱います。</div>`}<div class="final-comment">ババブタ失点は ${state.jokerPenaltyTiming==='gameEnd'?'ゲームの最後のみ':'ラウンド毎'} 適用です。</div>
+      <div class="final-breakdown">${breakdown}</div>
+      <div class="score-compact">
+        <table class="score">
+          <tr><th>順位</th><th>名前</th><th>得点パイル</th><th>残り手札</th><th>マッド・ピッグ</th><th>ババブタ</th><th>シュート</th><th>合計</th></tr>
+          ${rows}
+        </table>
+      </div>
+      <div class="final-actions">
+        <button type="button" class="btn secondary" onclick="window.scrollTo({top:0,behavior:'smooth'})">上に戻る</button>
+        <button type="button" class="btn" onclick="location.reload()">新しい部屋で遊ぶ</button>
+      </div>
+    </div>
+  `;
+  const key = JSON.stringify((state.players||[]).map(p=>[p.name,p.final?.total,p.final?.jokerPenalty,p.final?.madPigPenalty,p.final?.shootPigPenalty,p.final?.shootPigActivatedRounds?.join(',')]).concat([state.jokerPenaltyTiming,state.shootThePigEnabled,state.madPigEnabled,state.penaltyMode]));
+  if(key === __lastScoreRenderKey) return;
+  __lastScoreRenderKey = key;
+  $('score').innerHTML = scoreHtml;
+}
+function cardHTML(c, playable=false){
+  if(!c) return '';
+  if(c.joker) return `<div class="playing-card joker ${playable?'playable':''}"><div class="rank">JOKER</div><div class="art">🤡🐷</div><div class="suit">ババブタ</div></div>`;
+  const mad = state?.madPigEnabled !== false && isMadPig(c);
+  return `<div class="playing-card ${suitsClass[c.suit]} ${mad?'madpig':''} ${playable?'playable':''}">
+    ${mad?'<div class="madpig-banner">DANGER</div>':''}
+    <div><div class="rank">${c.rank}</div><div class="suit">${c.suit}</div></div>
+    <div class="art">${mad?'☠️🐷':art[c.suit]}</div>
+    <div class="suit">${mad?'マッド・ピッグ':c.suit}</div>
+    ${mad?'<div class="danger-chip">失点 -13</div>':''}
+  </div>`;
+}
+function esc(s){ return String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])); }
+function escAttr(s){ return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+window.addEventListener('load', ()=>{ applyDeviceUiMode(); const data=loadReconnectInfo(); if(data){ $('code').value=data.code; if(data.name) $('name').value=data.name; } updateReconnectButton(); });
+</script>
+<div id="shootPigOverlay" class="shoot-pig-overlay" data-active="0"></div>
+</body>
+</html>
