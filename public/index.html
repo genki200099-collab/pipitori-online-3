@@ -3632,6 +3632,112 @@ body.shoot-impact-active #app{
   }
 }
 
+
+/* =========================================================
+   PC Badge Visibility Fix
+   原因：WIN/PICK/NOWを疑似要素で座席枠の外側に出していたため、PC表示でoverflowにより切れていた。
+   対策：座席内の安全なステータス行に統一し、PC/スマホどちらでも隠れないようにする。
+   ========================================================= */
+#table .seat.current:before,
+#table .seat.win:after,
+#table .seat.weak:before{
+  content:none!important;
+  display:none!important;
+}
+#table .play-badge,
+#table .turn-flag{
+  display:none!important;
+}
+body.modern-game-ui #table .seat{
+  overflow:hidden!important;
+  padding-top:10px!important;
+}
+#table .seat-status-row{
+  width:100%;
+  min-height:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  flex-wrap:wrap;
+  margin:0 0 4px;
+  padding:0 4px;
+  box-sizing:border-box;
+  position:relative;
+  z-index:4;
+}
+#table .seat-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:22px;
+  padding:3px 8px;
+  border-radius:999px;
+  border:2px solid rgba(255,255,255,.88);
+  font-size:11px;
+  line-height:1;
+  font-weight:1000;
+  white-space:nowrap;
+  box-shadow:0 5px 12px rgba(72,33,52,.10);
+}
+#table .seat-badge.now{
+  background:linear-gradient(135deg,#c74b55,#9d2630);
+  color:#fff;
+}
+#table .seat-badge.win-inline{
+  background:linear-gradient(135deg,#ffd43b,#ff8a3d);
+  color:#7a2f00;
+}
+#table .seat-badge.pick-inline{
+  background:linear-gradient(135deg,#ffe1e8,#ff9bb6);
+  color:#842342;
+}
+#table .seat-badge.order-inline{
+  background:linear-gradient(135deg,#b64040,#8c2525);
+  color:#fff;
+}
+body.modern-game-ui #table .who{
+  margin-top:0!important;
+  padding:0 6px!important;
+  max-width:100%;
+  text-align:center;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+body.modern-game-ui #table .seat .small{
+  margin-top:8px;
+}
+@media (min-width:900px){
+  body.modern-game-ui #table .seat{
+    min-height:clamp(178px,18vw,226px)!important;
+  }
+  #table .seat-status-row{
+    min-height:30px;
+  }
+  #table .seat-badge{
+    font-size:12px;
+    min-height:24px;
+    padding:4px 9px;
+  }
+}
+@media (max-width:640px){
+  #table .seat-status-row{
+    min-height:24px;
+    gap:3px;
+    margin-bottom:2px;
+  }
+  #table .seat-badge{
+    font-size:9px;
+    min-height:18px;
+    padding:2px 5px;
+    border-width:1px;
+  }
+  body.modern-game-ui #table .seat{
+    padding-top:7px!important;
+  }
+}
+
 </style>
 </head>
 <body class="modern-game-ui">
@@ -4924,14 +5030,16 @@ function renderTable(){
   const seats = order.map(pid=>{
     const x=trickMap.get(pid);
     const cls = `${x && !state.trickReview ? ' has-card' : ''}${lt && lt.winnerPid===pid ? ' win' : ''}${lt && lt.weakestPid===pid ? ' weak' : ''}${state.current===pid&&!state.pendingPick ? ' current' : ''}`;
-    const next = nextPid(pid);
-    const arrowCls = state.current===next && !state.pendingPick ? ' current-next' : '';
+    const badges = [
+      state.current===pid&&!state.pendingPick ? '<span class="seat-badge now">NOW</span>' : '',
+      lt && lt.winnerPid===pid ? '<span class="seat-badge win-inline">WIN!</span>' : '',
+      lt && lt.weakestPid===pid ? '<span class="seat-badge pick-inline">PICK対象</span>' : '',
+      x ? `<span class="seat-badge order-inline">${orderBadge(x.order)}手目</span>` : ''
+    ].filter(Boolean).join('');
     return `<div class="seat seat-${pid}${cls}">
+      <div class="seat-status-row">${badges}</div>
       <div class="who">${seatNumber(pid)}. ${esc(playerName(pid))}</div>
-      ${x?`<div class="play-badge">${orderBadge(x.order)}手目</div>`:''}
-      ${state.current===pid&&!state.pendingPick?'<div class="turn-flag">▶ 手番</div>':''}
       ${x?`<div class="mini-card">${cardHTML(x.card)}</div>`:'<span class="small">未プレイ</span>'}
-
     </div>`;
   }).join('');
   $('table').innerHTML=`${reviewBanner}<div class="play-trail">${trail}</div><div class="table-board">${seats}<div class="center-wheel"><div class="cw-arrow">↻</div><div>時計回り</div><div class="cw-small">次は ${state.current!=null&&!state.pendingPick?esc(playerName(state.current)):'結果確認中'} </div></div></div>`;

@@ -659,3 +659,10 @@ Start Command: node server.js
 - ババブタを引いた時の結果表示時間を延長
 - `HYPE_SHOOT_BABA_AUDIT.md` を追加
 - 作成日時：2026-07-04 11:34 JST
+
+
+## 今回の修正：PC表示のWIN/PICK/NOWバッジ隠れ修正
+- WIN/PICK/NOWを座席枠外の疑似要素から、座席内のステータス行へ変更
+- PC/スマホどちらでもバッジが隠れないよう調整
+- `PC_BADGE_VISIBILITY_FIX_AUDIT.md` を追加
+- 作成日時：2026-07-04 19:49 JST
