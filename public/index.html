@@ -2935,6 +2935,703 @@ body.modern-game-ui .cardbox .cpu-character-note{
   }
 }
 
+
+/* =========================================================
+   Table Arrow Responsive Fix
+   原因：旧 .seat-arrow は座席外へ absolute 配置するため、PCの横長グリッドで隣の席/中央ホイールへはみ出していた。
+   対策：矢印を座席内の .seat-flow-chip に変更し、PC/スマホ別に安全な位置へ収める。
+   ========================================================= */
+.table-board{
+  overflow:visible;
+}
+.seat .seat-arrow{
+  display:none!important;
+}
+.seat{
+  overflow:hidden;
+  padding-bottom:44px!important;
+}
+.seat-flow-chip{
+  position:absolute;
+  right:10px;
+  bottom:9px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  max-width:calc(100% - 20px);
+  min-height:28px;
+  padding:5px 9px;
+  border-radius:999px;
+  border:1px solid rgba(126,73,48,.18);
+  background:rgba(255,255,255,.78);
+  color:#7b4f39;
+  font-weight:1000;
+  font-size:12px;
+  line-height:1;
+  box-shadow:0 6px 14px rgba(72,33,52,.08);
+  white-space:nowrap;
+  pointer-events:none;
+  z-index:3;
+}
+.seat-flow-chip span{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#fff4d1,#fff);
+  color:#a15f20;
+  font-size:15px;
+  box-shadow:inset 0 0 0 1px rgba(255,188,77,.28);
+}
+.seat-flow-chip small{
+  font-size:11px;
+  font-weight:1000;
+  color:inherit;
+}
+.seat-flow-chip.current-next{
+  background:linear-gradient(135deg,#fff2b7,#fff);
+  border-color:rgba(212,165,54,.72);
+  color:#7a4b00;
+  box-shadow:0 0 0 3px rgba(212,165,54,.16), 0 8px 18px rgba(212,165,54,.16);
+}
+.seat-flow-chip.current-next span{
+  background:linear-gradient(135deg,#ffbc4d,#fff4b7);
+  color:#5f3300;
+}
+.play-trail{
+  overflow-x:auto;
+  scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+}
+.play-trail::-webkit-scrollbar{
+  display:none;
+}
+.play-trail .trail-step,
+.play-trail .trail-arrow{
+  flex:0 0 auto;
+}
+
+/* PC横長：卓面を安定した3列にし、中央ホイールを細くしすぎない */
+@media (min-width: 900px){
+  .table-board{
+    grid-template-columns:minmax(260px,1fr) minmax(132px,160px) minmax(260px,1fr)!important;
+    gap:clamp(14px,2vw,24px)!important;
+  }
+  .seat{
+    min-height:clamp(190px,22vw,245px)!important;
+  }
+  .center-wheel{
+    min-width:128px;
+    align-self:center;
+    justify-self:stretch;
+  }
+}
+
+/* タブレット以下：席内チップをさらに小さく */
+@media (max-width: 899px){
+  .seat{
+    padding-bottom:38px!important;
+  }
+  .seat-flow-chip{
+    right:8px;
+    bottom:8px;
+    padding:4px 8px;
+    font-size:11px;
+  }
+  .seat-flow-chip small{
+    display:none;
+  }
+}
+
+/* スマホ縦：矢印は丸アイコンだけにし、カードや名前を邪魔しない */
+@media (max-width: 640px){
+  .table-board{
+    grid-template-columns:1fr 86px 1fr!important;
+    gap:8px!important;
+  }
+  .seat{
+    min-height:132px!important;
+    padding:9px 7px 34px!important;
+    border-radius:18px!important;
+  }
+  .seat-flow-chip{
+    right:6px;
+    bottom:6px;
+    min-height:24px;
+    padding:2px;
+    background:rgba(255,255,255,.72);
+  }
+  .seat-flow-chip span{
+    width:22px;
+    height:22px;
+    font-size:14px;
+  }
+  .center-wheel{
+    min-width:72px;
+    padding:10px 6px!important;
+  }
+  .center-wheel .cw-arrow{
+    font-size:26px!important;
+  }
+  .center-wheel .cw-small{
+    font-size:10px!important;
+  }
+  .play-trail{
+    justify-content:flex-start!important;
+    padding-inline:6px;
+  }
+}
+
+/* 極小幅：中央ホイールを上に逃がして、2列卓面にする */
+@media (max-width: 430px){
+  .table-board{
+    grid-template-columns:1fr 1fr!important;
+    grid-template-areas:
+      'mid mid'
+      'p0 p1'
+      'p3 p2'!important;
+  }
+  .center-wheel{
+    max-width:100%;
+    margin:0 auto 2px;
+  }
+}
+
+
+/* =========================================================
+   Lobby Clarity Fix
+   部屋作成/ゲーム開始の状態を分かりやすくする
+   ========================================================= */
+.lobby-guide{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin:4px 0 12px;
+}
+.lobby-step{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  min-height:38px;
+  border-radius:999px;
+  border:1px solid rgba(72,33,52,.13);
+  background:rgba(255,255,255,.62);
+  color:#7b6671;
+  font-weight:1000;
+  box-shadow:0 6px 14px rgba(72,33,52,.05);
+}
+.lobby-step b{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  background:rgba(255,255,255,.9);
+  color:#7b6671;
+}
+.lobby-step.active,
+.lobby-step.done{
+  background:linear-gradient(135deg,#fff4c4,#fff);
+  border-color:rgba(255,188,77,.55);
+  color:#5b293b;
+}
+.lobby-step.done b,
+.lobby-step.active b{
+  background:linear-gradient(135deg,#ffbc4d,#ff6979);
+  color:#fff;
+}
+.create-btn{
+  position:relative;
+  min-width:180px;
+  display:flex!important;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:2px;
+  overflow:hidden;
+}
+.create-btn .btn-main{
+  font-size:16px;
+  line-height:1.1;
+}
+.create-btn .btn-sub{
+  font-size:11px;
+  opacity:.86;
+  line-height:1.1;
+}
+.create-btn.is-creating{
+  background:linear-gradient(135deg,#ffbc4d,#e08713)!important;
+  box-shadow:0 12px 28px rgba(224,135,19,.30), inset 0 1px 0 rgba(255,255,255,.34)!important;
+}
+.create-btn.is-creating:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.34),transparent);
+  animation:createBtnShine 1.1s linear infinite;
+}
+.create-btn.is-created{
+  background:linear-gradient(135deg,#20b978,#128854)!important;
+  box-shadow:0 12px 28px rgba(18,136,84,.26), inset 0 1px 0 rgba(255,255,255,.34)!important;
+}
+.create-btn.is-error{
+  background:linear-gradient(135deg,#d63c50,#9e1f31)!important;
+}
+.create-feedback{
+  margin:8px 2px 0;
+  padding:9px 12px;
+  border-radius:16px;
+  background:rgba(255,255,255,.66);
+  border:1px solid rgba(72,33,52,.12);
+  color:#6a4b58;
+  font-weight:900;
+  font-size:13px;
+  text-align:center;
+}
+.room-info-panel{
+  margin-top:12px;
+  padding:14px;
+  border-radius:24px;
+  background:linear-gradient(180deg,rgba(255,255,255,.72),rgba(255,245,226,.62));
+  border:1px solid rgba(255,188,77,.30);
+  box-shadow:0 14px 30px rgba(72,33,52,.08);
+}
+.room-created-banner{
+  margin-bottom:10px;
+  padding:9px 12px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#eafff4,#fff);
+  color:#146b45;
+  border:1px solid rgba(25,165,107,.22);
+  font-weight:1000;
+  text-align:center;
+}
+.start-panel{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  margin:14px auto 0;
+  width:min(100%,720px);
+}
+.start-game-btn{
+  width:100%;
+  max-width:680px;
+  min-height:64px;
+  border-radius:22px!important;
+  font-size:clamp(18px,2.7vw,26px);
+  letter-spacing:.05em;
+  text-align:center;
+}
+.start-game-btn.is-ready{
+  background:linear-gradient(135deg,#ffbc4d,#ff6979)!important;
+  box-shadow:0 18px 36px rgba(255,105,121,.30), 0 0 0 6px rgba(255,188,77,.16)!important;
+  animation:startReadyPulse 1.15s ease-in-out infinite alternate;
+}
+.start-game-btn.is-waiting:disabled{
+  opacity:.72;
+  background:linear-gradient(135deg,#b7a9b1,#8f7f88)!important;
+  box-shadow:none!important;
+}
+.start-game-btn.is-starting{
+  background:linear-gradient(135deg,#20b978,#128854)!important;
+}
+.start-hint{
+  color:#6a4b58;
+  font-weight:900;
+  font-size:13px;
+  text-align:center;
+}
+.room-actions{
+  max-width:680px;
+  margin:10px auto 0;
+}
+.room-actions .btn{
+  min-height:44px;
+}
+@keyframes createBtnShine{
+  from{transform:translateX(-110%)}
+  to{transform:translateX(110%)}
+}
+@keyframes startReadyPulse{
+  from{transform:translateY(0) scale(1);filter:saturate(1)}
+  to{transform:translateY(-2px) scale(1.012);filter:saturate(1.15)}
+}
+@media (max-width:640px){
+  .lobby-guide{
+    grid-template-columns:1fr;
+    gap:6px;
+  }
+  .lobby-step{
+    justify-content:flex-start;
+    padding-inline:12px;
+  }
+  .create-btn{
+    width:100%;
+  }
+  .start-game-btn{
+    min-height:58px;
+    font-size:20px;
+  }
+  .room-created-banner{
+    border-radius:16px;
+  }
+}
+
+
+/* =========================================================
+   PC Table Layout Cleanup
+   - 卓面内の小矢印を廃止し、順番表示は上部play-trailへ統一
+   - PC横幅で座席境界にUIが食い込む問題を解消
+   - 冗長な説明文削除後の余白を調整
+   ========================================================= */
+#table .seat-flow-chip,
+#table .seat-arrow{
+  display:none!important;
+}
+body.modern-game-ui #table .seat{
+  overflow:hidden;
+  padding:14px 12px 16px!important;
+}
+body.modern-game-ui #table .table-board{
+  grid-template-columns:minmax(260px,1fr) minmax(112px,144px) minmax(260px,1fr)!important;
+  gap:clamp(12px,1.6vw,20px)!important;
+  align-items:stretch;
+}
+body.modern-game-ui #table .center-wheel{
+  min-width:112px;
+  max-width:144px;
+  justify-self:center;
+  align-self:center;
+  padding:18px 10px!important;
+}
+body.modern-game-ui #table .play-trail{
+  justify-content:center;
+  gap:8px;
+  margin-bottom:10px;
+  border-radius:18px;
+}
+body.modern-game-ui #table .trail-arrow{
+  opacity:.78;
+  transform:translateY(-1px);
+}
+body.modern-game-ui #table .mini-card{
+  margin-top:6px;
+}
+body.modern-game-ui #table .seat .small{
+  margin-top:8px;
+  color:#7b6671;
+  font-weight:800;
+}
+body.modern-game-ui #message.message{
+  margin-top:10px;
+}
+body.modern-game-ui section.cardbox:has(#table) .tip{
+  display:none!important;
+}
+
+/* PCでは場を広く、スマホでは詰まりすぎないよう再調整 */
+@media (min-width: 900px){
+  body.modern-game-ui #table .seat{
+    min-height:clamp(162px,18vw,218px)!important;
+  }
+  body.modern-game-ui #table .playing-card,
+  body.modern-game-ui #table .mini-card .playing-card{
+    max-width:96px;
+  }
+}
+@media (max-width: 899px){
+  body.modern-game-ui #table .table-board{
+    grid-template-columns:1fr 92px 1fr!important;
+    gap:8px!important;
+  }
+  body.modern-game-ui #table .seat{
+    padding:10px 8px 12px!important;
+  }
+  body.modern-game-ui #table .center-wheel{
+    min-width:76px;
+    max-width:92px;
+    padding:12px 6px!important;
+  }
+}
+@media (max-width: 430px){
+  body.modern-game-ui #table .table-board{
+    grid-template-columns:1fr 1fr!important;
+    grid-template-areas:
+      'mid mid'
+      'p0 p1'
+      'p3 p2'!important;
+  }
+  body.modern-game-ui #table .center-wheel{
+    grid-area:mid;
+    max-width:180px;
+    margin:0 auto 2px;
+  }
+}
+
+
+/* =========================================================
+   Hype Upgrade: Shoot The Pig & Baba Draw
+   ========================================================= */
+.shoot-pig-overlay,
+.baba-draw-overlay{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:10000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.shoot-pig-overlay:empty,
+.baba-draw-overlay:empty{
+  display:none;
+}
+.shoot-impact-bg,
+.baba-impact-bg{
+  position:absolute;
+  inset:0;
+  opacity:.95;
+}
+.shoot-impact-bg{
+  background:
+    radial-gradient(circle at 50% 46%, rgba(255,246,127,.56), transparent 27%),
+    radial-gradient(circle at 50% 50%, rgba(255,79,89,.42), transparent 45%),
+    repeating-conic-gradient(from 0deg, rgba(255,255,255,.18) 0 8deg, transparent 8deg 16deg);
+  animation:impactSpin 4.5s linear infinite;
+}
+.baba-impact-bg{
+  background:
+    radial-gradient(circle at 50% 48%, rgba(255,255,255,.40), transparent 20%),
+    radial-gradient(circle at 50% 48%, rgba(168,41,64,.46), transparent 48%),
+    repeating-conic-gradient(from 12deg, rgba(40,0,20,.35) 0 10deg, transparent 10deg 20deg);
+  animation:impactSpinReverse 5.5s linear infinite;
+}
+.shoot-overlay-card-v2,
+.baba-overlay-card{
+  position:relative;
+  width:min(94vw,640px);
+  overflow:hidden;
+  text-align:center;
+  border-radius:34px;
+  padding:30px 22px 26px;
+  box-shadow:0 30px 95px rgba(10,0,20,.45), 0 0 0 10px rgba(255,255,255,.22);
+  isolation:isolate;
+}
+.shoot-overlay-card-v2{
+  border:5px solid rgba(92,38,0,.92);
+  background:
+    radial-gradient(circle at 50% -10%, #fff4a0 0%, #ffd866 32%, #ff736f 68%, #7b2440 100%);
+  animation:megaPop .66s cubic-bezier(.2,1.5,.25,1), shootMegaGlow 1.1s ease-in-out infinite alternate;
+}
+.baba-overlay-card{
+  border:5px solid rgba(69,18,36,.92);
+  background:
+    radial-gradient(circle at 50% -5%, #fff 0%, #ffe1e7 28%, #ce4965 67%, #351225 100%);
+  animation:megaPop .66s cubic-bezier(.2,1.5,.25,1), babaMegaGlow 1s ease-in-out infinite alternate;
+}
+.shoot-kicker,
+.baba-kicker{
+  display:inline-block;
+  margin:4px auto 6px;
+  padding:6px 12px;
+  border-radius:999px;
+  background:rgba(255,255,255,.82);
+  color:#5b1700;
+  font-size:12px;
+  font-weight:1000;
+  letter-spacing:.16em;
+}
+.baba-kicker{
+  color:#6b1230;
+}
+.shoot-combo-line{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+.combo-piece{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:8px 12px;
+  border-radius:999px;
+  background:rgba(255,255,255,.88);
+  border:2px solid rgba(92,38,0,.35);
+  color:#5b1700;
+  font-weight:1000;
+}
+.shoot-effect-v2 .zero{
+  border-color:#19a56b;
+  color:#0d7048;
+  background:#ecfff5;
+}
+.shoot-effect-v2 .damage{
+  border-color:#b3203a;
+  color:#861326;
+  background:#fff1f3;
+}
+.shoot-hype-copy,
+.baba-copy{
+  margin-top:14px;
+  font-weight:1000;
+  font-size:clamp(15px,2.3vw,20px);
+  color:#fff;
+  text-shadow:0 3px 0 rgba(0,0,0,.22), 0 0 18px rgba(255,255,255,.34);
+}
+.baba-burst{
+  font-size:clamp(44px,8vw,72px);
+  filter:drop-shadow(0 8px 0 rgba(0,0,0,.22));
+  animation:babaShake .44s ease-in-out infinite alternate;
+}
+.baba-title{
+  font-size:clamp(34px,7vw,66px);
+  font-weight:1000;
+  color:#fff;
+  letter-spacing:.04em;
+  text-shadow:0 4px 0 #7b1432, 0 9px 0 rgba(0,0,0,.22);
+}
+.baba-name{
+  margin-top:8px;
+  font-size:clamp(24px,5vw,44px);
+  font-weight:1000;
+  color:#fff7bc;
+  text-shadow:0 3px 0 #5b1026, 0 0 18px rgba(255,255,255,.52);
+}
+.baba-route{
+  display:inline-block;
+  margin-top:8px;
+  padding:7px 13px;
+  border-radius:999px;
+  background:rgba(255,255,255,.86);
+  color:#6b1230;
+  font-weight:1000;
+}
+.baba-card-pop{
+  display:flex;
+  justify-content:center;
+  margin-top:16px;
+}
+.reveal-joker-card{
+  transform:scale(1.16) rotate(-4deg);
+  box-shadow:0 18px 40px rgba(0,0,0,.32)!important;
+  animation:jokerCardPop .7s ease-in-out infinite alternate;
+}
+.baba-warning{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:18px;
+}
+.baba-warning span,
+.baba-warning b{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:8px 12px;
+  border-radius:999px;
+  border:3px solid rgba(255,255,255,.72);
+  background:rgba(255,255,255,.90);
+  color:#6b1230;
+  font-weight:1000;
+}
+.baba-warning b{
+  background:#361225;
+  color:#fff3a6;
+  border-color:#fff3a6;
+}
+.baba-confetti,
+.shoot-confetti{
+  position:absolute;
+  inset:0;
+  z-index:-1;
+}
+.baba-confetti i,
+.shoot-confetti i{
+  position:absolute;
+  font-style:normal;
+  font-weight:1000;
+  opacity:.95;
+  animation:confettiFloat 1.7s ease-in-out infinite alternate;
+}
+.baba-confetti i:nth-child(1),.shoot-confetti i:nth-child(1){left:7%;top:14%;font-size:34px;animation-delay:.0s}
+.baba-confetti i:nth-child(2),.shoot-confetti i:nth-child(2){left:84%;top:12%;font-size:32px;animation-delay:.16s}
+.baba-confetti i:nth-child(3),.shoot-confetti i:nth-child(3){left:13%;top:74%;font-size:28px;animation-delay:.32s}
+.baba-confetti i:nth-child(4),.shoot-confetti i:nth-child(4){left:80%;top:72%;font-size:30px;animation-delay:.48s}
+.baba-confetti i:nth-child(5),.shoot-confetti i:nth-child(5){left:6%;top:47%;font-size:24px;animation-delay:.64s}
+.baba-confetti i:nth-child(6),.shoot-confetti i:nth-child(6){left:86%;top:48%;font-size:26px;animation-delay:.80s}
+.shoot-confetti i:nth-child(7){left:43%;top:8%;font-size:28px;animation-delay:.92s}
+.shoot-confetti i:nth-child(8){left:45%;top:82%;font-size:26px;animation-delay:1.05s}
+.shoot-pig-overlay.fade-out .shoot-overlay-card,
+.baba-draw-overlay.fade-out .baba-overlay-card{
+  animation:impactFade .72s ease forwards;
+}
+.baba-result-status{
+  background:linear-gradient(135deg,#fff1f4,#ffe08a)!important;
+  border:2px solid rgba(176,32,58,.45)!important;
+  color:#78152a!important;
+  font-weight:1000;
+}
+.baba-result-panel{
+  background:linear-gradient(135deg,#fff,#ffe8ed)!important;
+  border:3px solid rgba(176,32,58,.32)!important;
+  box-shadow:0 0 0 5px rgba(176,32,58,.08), 0 16px 34px rgba(80,16,34,.16)!important;
+}
+body.baba-impact-active #app,
+body.shoot-impact-active #app{
+  animation:screenRumble .46s ease-in-out 2;
+}
+@keyframes megaPop{
+  0%{transform:scale(.38) rotate(-8deg);opacity:0}
+  70%{transform:scale(1.07) rotate(2deg);opacity:1}
+  100%{transform:scale(1) rotate(0)}
+}
+@keyframes shootMegaGlow{
+  from{filter:saturate(1);box-shadow:0 30px 95px rgba(10,0,20,.45), 0 0 0 10px rgba(255,255,255,.22)}
+  to{filter:saturate(1.22);box-shadow:0 34px 120px rgba(255,45,71,.58), 0 0 0 16px rgba(255,230,90,.32)}
+}
+@keyframes babaMegaGlow{
+  from{filter:saturate(1);box-shadow:0 30px 95px rgba(10,0,20,.45), 0 0 0 10px rgba(255,255,255,.22)}
+  to{filter:saturate(1.18);box-shadow:0 34px 120px rgba(176,32,58,.62), 0 0 0 16px rgba(255,255,255,.26)}
+}
+@keyframes impactSpin{to{transform:rotate(360deg)}}
+@keyframes impactSpinReverse{to{transform:rotate(-360deg)}}
+@keyframes babaShake{from{transform:translateX(-2px) rotate(-3deg)}to{transform:translateX(2px) rotate(3deg)}}
+@keyframes jokerCardPop{from{transform:scale(1.08) rotate(-5deg)}to{transform:scale(1.22) rotate(4deg)}}
+@keyframes confettiFloat{from{transform:translateY(-9px) rotate(-10deg)}to{transform:translateY(13px) rotate(13deg)}}
+@keyframes impactFade{to{transform:scale(.88) translateY(18px);opacity:0}}
+@keyframes screenRumble{
+  0%,100%{transform:translate(0,0)}
+  20%{transform:translate(-3px,2px)}
+  40%{transform:translate(3px,-2px)}
+  60%{transform:translate(-2px,-1px)}
+  80%{transform:translate(2px,1px)}
+}
+@media (max-width:640px){
+  .shoot-overlay-card-v2,.baba-overlay-card{
+    padding:22px 14px 20px;
+    border-radius:26px;
+  }
+  .shoot-combo-line{
+    gap:6px;
+  }
+  .combo-piece,.baba-warning span,.baba-warning b{
+    padding:7px 9px;
+    font-size:12px;
+  }
+  .baba-route{
+    font-size:12px;
+  }
+}
+
 </style>
 </head>
 <body class="modern-game-ui">
@@ -2943,10 +3640,16 @@ body.modern-game-ui .cardbox .cpu-character-note{
 
   <section id="lobby" class="cardbox">
     <h2>オンライン部屋</h2>
+    <div class="lobby-guide">
+      <div class="lobby-step active"><b>1</b><span>名前を入れる</span></div>
+      <div class="lobby-step"><b>2</b><span>部屋を作る</span></div>
+      <div class="lobby-step"><b>3</b><span>4人で遊ぶ</span></div>
+    </div>
     <div class="lobby-main">
       <input id="name" class="input" placeholder="名前（例：ピピ）" maxlength="12" />
-      <button id="create" class="btn create-btn">部屋を作る</button>
+      <button id="create" class="btn create-btn" data-state="idle"><span class="btn-main">部屋を作る</span><span class="btn-sub">オンライン部屋を作成</span></button>
     </div>
+    <div id="createFeedback" class="create-feedback" aria-live="polite">まだ部屋は作られていません。</div>
     <details class="settings-details advanced-settings organized-settings">
       <summary class="advanced-settings-summary">⚙️ ルール設定を開く（標準・検討中オプション） <span class="small">初期設定のままでも遊べます</span></summary>
       <div class="advanced-settings-hint">まずは標準設定がおすすめです。追加ルールはグループごとに整理しています。</div>
@@ -2999,10 +3702,14 @@ body.modern-game-ui .cardbox .cpu-character-note{
       <button id="join" class="btn secondary">参加する</button><button id="reconnect" class="btn secondary reconnect-btn" style="display:none">前回の部屋に復帰</button>
     </div>
     <p class="small settings-help">設定は部屋作成時のみ有効です。友達には部屋コードを共有してください。</p><p class="small cpu-character-note">人数が足りない場合はCPUを追加できます。</p>
-    <div id="roomInfo" style="display:none">
+    <div id="roomInfo" class="room-info-panel" style="display:none">
+      <div class="room-created-banner">✅ 部屋を作成しました。友達に部屋コードを共有してください。</div>
       <div class="roomcode" id="roomCode">----</div>
       <div class="row room-actions"><button id="addCpu" class="btn secondary">CPUを追加</button><button id="removeCpu" class="btn secondary">CPUを外す</button></div>
-      <button id="start" class="btn" disabled>4人で開始</button>
+      <div class="start-panel">
+        <button id="start" class="btn start-game-btn" disabled>4人で遊ぶ</button>
+        <div id="startHint" class="start-hint">4人そろうとゲームを開始できます。</div>
+      </div>
     </div>
   </section>
 
@@ -3013,7 +3720,7 @@ body.modern-game-ui .cardbox .cpu-character-note{
 
   <section class="cardbox"><h2>プレイヤー</h2><div id="players" class="players"></div></section>
 
-  <section class="cardbox"><h2>場のカード</h2><div id="tableCommentary"></div><div id="lastTrick"></div><div id="table" class="table"></div><div id="message" class="message">部屋を作るか、部屋コードで参加してください。</div><div class="tip">出せるカードだけ光ります。迷ったら中央メッセージを見てください。</div></section>
+  <section class="cardbox"><h2>場のカード</h2><div id="tableCommentary"></div><div id="lastTrick"></div><div id="table" class="table"></div><div id="message" class="message">部屋を作るか、部屋コードで参加してください。</div></section>
 
   <section id="pickBox" class="cardbox pick" style="display:none"></section>
 
@@ -3098,6 +3805,7 @@ let __lastRoundStatusKey='';
 let __lastRoundModalKey='';
 let __lastScoreRenderKey='';
 let __lastShootPigEventId='';
+let __lastBabaDrawEventId='';
 let __lastLogRenderKey='';
 let __lastLastTrickKey='';
 let __lastLegacyPickKey='';
@@ -3263,6 +3971,71 @@ function scheduleReconnect(){
 
 const $=id=>document.getElementById(id);
 
+
+function setCreateButtonState(mode, text=''){
+  const btn = $('create');
+  const feedback = $('createFeedback');
+  if(!btn) return;
+  btn.dataset.state = mode || 'idle';
+  btn.classList.toggle('is-creating', mode === 'creating');
+  btn.classList.toggle('is-created', mode === 'created');
+  btn.classList.toggle('is-error', mode === 'error');
+  const main = btn.querySelector('.btn-main');
+  const sub = btn.querySelector('.btn-sub');
+  if(mode === 'creating'){
+    if(main) main.textContent = '部屋を作成中…';
+    if(sub) sub.textContent = '接続しています';
+    btn.disabled = true;
+    if(feedback) feedback.textContent = text || '部屋を作成しています。少し待ってください。';
+  } else if(mode === 'created'){
+    if(main) main.textContent = '部屋作成済み';
+    if(sub) sub.textContent = 'コードを共有できます';
+    btn.disabled = false;
+    if(feedback) feedback.textContent = text || '部屋を作成しました。部屋コードが表示されています。';
+  } else if(mode === 'error'){
+    if(main) main.textContent = 'もう一度作る';
+    if(sub) sub.textContent = '接続を確認してください';
+    btn.disabled = false;
+    if(feedback) feedback.textContent = text || '部屋作成に失敗しました。もう一度押してください。';
+  } else {
+    if(main) main.textContent = '部屋を作る';
+    if(sub) sub.textContent = 'オンライン部屋を作成';
+    btn.disabled = false;
+    if(feedback) feedback.textContent = text || 'まだ部屋は作られていません。';
+  }
+}
+function updateLobbyActionUi(){
+  if(!state) return;
+  const steps = document.querySelectorAll('.lobby-step');
+  const hasRoom = !!state.code && state.phase !== undefined;
+  const ready = state.phase === 'lobby' && (state.players || []).length === 4;
+  steps.forEach((el,idx)=>{
+    el.classList.toggle('active', idx === 0 || (idx === 1 && hasRoom) || (idx === 2 && ready));
+    el.classList.toggle('done', (idx === 0 && hasRoom) || (idx === 1 && hasRoom));
+  });
+
+  const start = $('start');
+  const hint = $('startHint');
+  if(start && state.phase === 'lobby'){
+    const count = (state.players || []).length;
+    const remain = Math.max(0, 4 - count);
+    const host = isHost();
+    start.classList.toggle('is-ready', host && count === 4);
+    start.classList.toggle('is-waiting', count < 4);
+    if(host){
+      start.textContent = count === 4 ? '4人で遊ぶ！ゲーム開始' : `あと${remain}人で開始`;
+      if(hint) hint.textContent = count === 4 ? '準備OKです。中央の大きなボタンでゲームを開始できます。' : `現在${count}/4人です。友達を待つかCPUを追加してください。`;
+    } else {
+      start.textContent = count === 4 ? 'ホストが開始します' : `参加中 ${count}/4人`;
+      if(hint) hint.textContent = count === 4 ? 'ホストの開始を待っています。' : 'ホストが人数をそろえるのを待っています。';
+    }
+  } else if(start && state.phase !== 'lobby'){
+    start.textContent = 'ゲーム進行中';
+    start.classList.remove('is-ready','is-waiting');
+    if(hint) hint.textContent = 'ゲームが始まっています。';
+  }
+}
+
 function syncShootThePigAvailability(){
   const mad = $('madPigEnabled')?.value === 'true';
   const shoot = $('shootThePigEnabled');
@@ -3274,12 +4047,24 @@ function syncShootThePigAvailability(){
 
 $('madPigEnabled').addEventListener('change', syncShootThePigAvailability);
 syncShootThePigAvailability();
-$('create').onclick=()=>{ syncShootThePigAvailability(); intentionalClose=false; connect(()=>send({type:'create', name:$('name').value, rounds:Number($('rounds').value || 3), madPigEnabled:$('madPigEnabled').value==='true', shootThePigEnabled:$('shootThePigEnabled').value==='true', jokerPenalty:Number($('jokerPenalty').value || -20), jokerPenaltyTiming:$('jokerPenaltyTiming').value, initialPairDiscardEnabled:$('initialPairDiscardEnabled').value==='true', passThreeEnabled:$('passThreeEnabled').value==='true', penaltyMode:$('penaltyMode').value, pickTargetCount:Number($('pickTargetCount').value || 2)})); };
-$('join').onclick=()=>{ intentionalClose=false; const saved=loadReconnectInfo(); connect(()=>send({type:'join', name:$('name').value, code:$('code').value, playerId:saved?.playerId || null})); };
-$('start').onclick=()=>send({type:'start'});
+$('create').onclick=()=>{ 
+  syncShootThePigAvailability();
+  intentionalClose=false;
+  setCreateButtonState('creating');
+  connect(()=>send({type:'create', name:$('name').value, rounds:Number($('rounds').value || 3), madPigEnabled:$('madPigEnabled').value==='true', shootThePigEnabled:$('shootThePigEnabled').value==='true', jokerPenalty:Number($('jokerPenalty').value || -20), jokerPenaltyTiming:$('jokerPenaltyTiming').value, initialPairDiscardEnabled:$('initialPairDiscardEnabled').value==='true', passThreeEnabled:$('passThreeEnabled').value==='true', penaltyMode:$('penaltyMode').value, pickTargetCount:Number($('pickTargetCount').value || 2)}));
+};
+$('join').onclick=()=>{ setCreateButtonState('idle', '部屋コードで参加します。'); intentionalClose=false; const saved=loadReconnectInfo(); connect(()=>send({type:'join', name:$('name').value, code:$('code').value, playerId:saved?.playerId || null})); };
+$('start').onclick=()=>{ 
+  const btn=$('start');
+  if(btn && !btn.disabled){
+    btn.classList.add('is-starting');
+    btn.textContent='ゲーム開始中…';
+  }
+  send({type:'start'});
+};
 $('addCpu').onclick=()=>send({type:'addCpu'});
 $('removeCpu').onclick=()=>send({type:'removeCpu'});
-$('reconnect').onclick=()=>{ const data=loadReconnectInfo(); if(!data) return; intentionalClose=false; $('code').value=data.code; if(data.name) $('name').value=data.name; connect(()=>send({type:'reconnect', code:data.code, playerId:data.playerId, name:data.name || $('name').value || '子ブタ'}), true); };
+$('reconnect').onclick=()=>{ const data=loadReconnectInfo(); if(!data) return; setCreateButtonState('creating','前回の部屋へ復帰しています。'); intentionalClose=false; $('code').value=data.code; if(data.name) $('name').value=data.name; connect(()=>send({type:'reconnect', code:data.code, playerId:data.playerId, name:data.name || $('name').value || '子ブタ'}), true); };
 
 // Edge/PCブラウザ対策：インラインonclickではなくイベント委任でピックする。
 // DOMのidやwindowプロパティとの名前衝突を避け、pointer/click両方に対応する。
@@ -3468,7 +4253,15 @@ function connect(after, isReconnect=false){
       updateReconnectButton();
       stopReconnectLoop();
       setConnStatus(msg.type==='reconnected' ? '復帰済' : '接続済');
-      if(msg.type==='reconnected') hypeToast('🔄 再接続しました');
+      if(msg.type==='created'){
+        setCreateButtonState('created', `部屋を作成しました。部屋コード ${msg.code} を共有できます。`);
+        hypeToast('✅ 部屋を作成しました');
+      } else if(msg.type==='joined'){
+        setCreateButtonState('idle', '参加モードです。部屋作成する場合は名前を確認して押してください。');
+      } else if(msg.type==='reconnected'){
+        setCreateButtonState('created', `部屋 ${msg.code} に復帰しました。`);
+        hypeToast('🔄 再接続しました');
+      }
     }
     if(msg.type==='state'){
       state=msg.state;
@@ -3481,11 +4274,13 @@ function connect(after, isReconnect=false){
     }
     if(msg.type==='errorMsg'){
       setConnStatus('要確認');
+      if($('create')?.classList.contains('is-creating')) setCreateButtonState('error', msg.message || '部屋作成に失敗しました。');
       alert(msg.message);
       updateReconnectButton();
     }
   };
   ws.onclose=()=>{
+    if($('create')?.classList.contains('is-creating')) setCreateButtonState('error', '接続が切れました。もう一度試してください。');
     setConnStatus('切断');
     if($('phase')) $('phase').textContent='切断';
     scheduleReconnect();
@@ -3615,8 +4410,8 @@ function render(){
   $('start').disabled = !(isHost() && state.phase==='lobby' && state.players.length===4);
   $('addCpu').disabled = !(isHost() && state.phase==='lobby' && state.players.length<4);
   $('removeCpu').disabled = !(isHost() && state.phase==='lobby' && state.players.some(p=>p.cpu));
-  renderRoundStatus(); renderRoundModal();
-  renderShootPigOverlay(); renderCommentary(); renderPlayers(); renderLastTrick(); renderTable(); normalizeTableBadges(); fixPickTargetBadgePosition(); renderHand(); renderPick(); renderLog(); renderScore(); hypeByState();
+  updateLobbyActionUi(); renderRoundStatus(); renderRoundModal();
+  renderShootPigOverlay(); renderBabaDrawOverlay(); renderCommentary(); renderPlayers(); renderLastTrick(); renderTable(); normalizeTableBadges(); fixPickTargetBadgePosition(); renderHand(); renderPick(); renderLog(); renderScore(); hypeByState();
   if(state.trickReview && state.trickReview.until > Date.now() && !window.__reviewTimer){
     window.__reviewTimer = setInterval(()=>{
       if(!state || !state.trickReview || state.trickReview.until <= Date.now()){
@@ -3650,6 +4445,68 @@ function render(){
 
 
 
+
+
+function renderBabaDrawOverlay(){
+  const root = $('babaDrawOverlay');
+  if(!root || !state) return;
+  const pp = state.pendingPick;
+  const drawn = pp?.result?.drawn;
+  if(!pp || !pp.result || !drawn || !drawn.joker){
+    if(root.dataset.active === '1'){
+      root.innerHTML='';
+      root.dataset.active='0';
+      document.body.classList.remove('baba-impact-active');
+    }
+    return;
+  }
+  const winnerName = state.players?.[pp.winnerPid]?.name || '誰か';
+  const weakestName = state.players?.[pp.weakestPid]?.name || '相手';
+  const key = `${state.code}:${state.round}:${pp.winnerPid}:${pp.weakestPid}:${drawn.id || ''}:${pp.result.text || ''}`;
+  if(__lastBabaDrawEventId === key && root.dataset.active === '1') return;
+  __lastBabaDrawEventId = key;
+  root.dataset.active='1';
+  document.body.classList.add('baba-impact-active');
+  const penalty = state.jokerPenalty ?? 20;
+  root.innerHTML = `
+    <div class="baba-impact-bg" aria-hidden="true"></div>
+    <div class="baba-overlay-card">
+      <div class="baba-burst">🃏🐷</div>
+      <div class="baba-kicker">PUBLIC PICK REVEAL</div>
+      <div class="baba-title">ババブタを引いた！</div>
+      <div class="baba-name">${esc(winnerName)}</div>
+      <div class="baba-route">${esc(weakestName)} の袋から公開ピック</div>
+      <div class="baba-card-pop">
+        <div class="playing-card joker reveal-joker-card">
+          <div class="rank">JOKER</div>
+          <div class="art">🤡🐷</div>
+          <div class="suit">ババブタ</div>
+        </div>
+      </div>
+      <div class="baba-warning">
+        <span>このカードは公開情報です</span>
+        <b>失点候補 -${penalty}</b>
+      </div>
+      <div class="baba-copy">袋に重い空気が流れ込んだ……！</div>
+      <div class="baba-confetti" aria-hidden="true">
+        <i>🃏</i><i>🐷</i><i>💀</i><i>😱</i><i>JOKER</i><i>-${penalty}</i>
+      </div>
+    </div>
+  `;
+  window.clearTimeout(window.__babaDrawOverlayTimer);
+  window.__babaDrawOverlayTimer = window.setTimeout(()=>{
+    if(root.dataset.active === '1'){
+      root.classList.add('fade-out');
+      document.body.classList.remove('baba-impact-active');
+      window.setTimeout(()=>{
+        root.innerHTML='';
+        root.dataset.active='0';
+        root.classList.remove('fade-out');
+      }, 700);
+    }
+  }, 5600);
+}
+
 function renderShootPigOverlay(){
   const root = $('shootPigOverlay');
   if(!root || !state) return;
@@ -3658,25 +4515,35 @@ function renderShootPigOverlay(){
     if(root.dataset.active === '1'){
       root.innerHTML='';
       root.dataset.active='0';
+      document.body.classList.remove('shoot-impact-active');
     }
     return;
   }
   if(__lastShootPigEventId === ev.id && root.dataset.active === '1') return;
   __lastShootPigEventId = ev.id;
   root.dataset.active='1';
+  document.body.classList.add('shoot-impact-active');
   root.innerHTML = `
-    <div class="shoot-overlay-card">
-      <div class="shoot-burst">🐷🌕</div>
+    <div class="shoot-impact-bg" aria-hidden="true"></div>
+    <div class="shoot-overlay-card shoot-overlay-card-v2">
+      <div class="shoot-burst">🐷🌕💥</div>
+      <div class="shoot-kicker">MOON SHOT COMBO</div>
       <div class="shoot-title">SHOOT THE PIG!</div>
       <div class="shoot-title-jp">シュート・ザ・ピッグ発動！</div>
       <div class="shoot-name">${esc(ev.shooterName)}</div>
-      <div class="shoot-effect">
-        <span>ババブタ失点 0</span>
-        <span>マッド失点 0</span>
-        <span>他全員 -10</span>
+      <div class="shoot-combo-line">
+        <span class="combo-piece">🃏 ババブタ保持</span>
+        <b>＋</b>
+        <span class="combo-piece">♠11 マッド保持</span>
       </div>
+      <div class="shoot-effect shoot-effect-v2">
+        <span class="zero">本人：ババブタ失点 0</span>
+        <span class="zero">本人：マッド失点 0</span>
+        <span class="damage">他全員：-10点</span>
+      </div>
+      <div class="shoot-hype-copy">危険札が、逆転コンボに変わった！</div>
       <div class="shoot-confetti" aria-hidden="true">
-        <i>🐷</i><i>🌕</i><i>✨</i><i>🃏</i><i>♠11</i><i>💥</i>
+        <i>🐷</i><i>🌕</i><i>✨</i><i>🃏</i><i>♠11</i><i>💥</i><i>-10</i><i>0点</i>
       </div>
     </div>
   `;
@@ -3684,14 +4551,16 @@ function renderShootPigOverlay(){
   window.__shootPigOverlayTimer = window.setTimeout(()=>{
     if(root.dataset.active === '1'){
       root.classList.add('fade-out');
+      document.body.classList.remove('shoot-impact-active');
       window.setTimeout(()=>{
         root.innerHTML='';
         root.dataset.active='0';
         root.classList.remove('fade-out');
-      }, 650);
+      }, 760);
     }
-  }, 6200);
+  }, 7600);
 }
+
 
 function renderRoundStatus(){
   const el=$('roundStatus');
@@ -3980,7 +4849,8 @@ function renderTable(){
         html += `<div class="pick-status" id="pickStatus">${esc(l.name)} がピック候補を${pp.targetCount}枚に絞っています。</div><div class="small center-note">候補が決まると、${esc(w.name)} がその中から1枚選びます。</div>`;
       }
     } else if(pp.result){
-      html += `<div class="pick-status" id="pickStatus">${esc(pp.result.text)}</div><div class="pick-result"><span>引いたカード</span>${cardHTML(pp.result.drawn,true)}</div>`;
+      const isBabaReveal = pp.result.drawn?.joker;
+      html += `<div class="pick-status ${isBabaReveal?'baba-result-status':''}" id="pickStatus">${esc(pp.result.text)}</div><div class="pick-result ${isBabaReveal?'baba-result-panel':''}"><span>${isBabaReveal?'公開ピック！ババブタ':'引いたカード'}</span>${cardHTML(pp.result.drawn,true)}</div>`;
     } else if(pp.pairChoice){
       const pc = pp.pairChoice;
       html += `<div class="pick-status" id="pickStatus">引いたカード：${cardHTML(pc.drawn,true)}<br>ペアにするか、スキップできます。</div>`;
@@ -4061,7 +4931,7 @@ function renderTable(){
       ${x?`<div class="play-badge">${orderBadge(x.order)}手目</div>`:''}
       ${state.current===pid&&!state.pendingPick?'<div class="turn-flag">▶ 手番</div>':''}
       ${x?`<div class="mini-card">${cardHTML(x.card)}</div>`:'<span class="small">未プレイ</span>'}
-      <div class="seat-arrow${arrowCls}">${dirSymbol(pid)} ${state.current===next&&!state.pendingPick?'次':''}</div>
+
     </div>`;
   }).join('');
   $('table').innerHTML=`${reviewBanner}<div class="play-trail">${trail}</div><div class="table-board">${seats}<div class="center-wheel"><div class="cw-arrow">↻</div><div>時計回り</div><div class="cw-small">次は ${state.current!=null&&!state.pendingPick?esc(playerName(state.current)):'結果確認中'} </div></div></div>`;
@@ -4354,5 +5224,6 @@ function escAttr(s){ return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<
 window.addEventListener('load', ()=>{ applyDeviceUiMode(); const data=loadReconnectInfo(); if(data){ $('code').value=data.code; if(data.name) $('name').value=data.name; } updateReconnectButton(); });
 </script>
 <div id="shootPigOverlay" class="shoot-pig-overlay" data-active="0"></div>
+<div id="babaDrawOverlay" class="baba-draw-overlay" data-active="0"></div>
 </body>
 </html>

@@ -391,27 +391,18 @@ function chooseCpuPairCardForDiscard(room, player, drawn, candidates){
     .map(c=>({card:c, score:cpuCardHandRisk(room, c) + (cpuIsMadPigCard(room, c) ? 100 : 0) + Math.random()}))
     .sort((a,b)=>b.score-a.score)[0].card;
 }
+
 function chooseCpuPickIndex(room, pp, candidates){
-  const winner = room.players[pp.winnerPid];
-  if(!winner || !winner.cpu || !Array.isArray(candidates) || !candidates.length) return Math.floor(Math.random()*Math.max(1,candidates.length));
-  const shoot = cpuShootPotential(room, winner);
-  const ch = cpuCharacter(winner);
-  const scored = candidates.map((c,idx)=>{
-    const pairable = !c.joker && (winner.hand || []).some(h=>h && !h.joker && h.rank===c.rank);
-    let score = Math.random() * (ch?.key === 'wakumodoki' ? 55 : 18);
-    score -= cpuCardHandRisk(room, c) * (ch?.key === 'rikumodoki' ? 18 : ch?.key === 'kamomodoki' ? 12 : 9);
-    if(pairable) score += ch?.key === 'rikumodoki' ? 420 : 320;
-    if(c.joker) score -= ch?.key === 'wakumodoki' ? 520 : 900;
-    if(cpuIsMadPigCard(room, c)){
-      score += shoot ? 120 : -380;
-    }
-    // かももどきは多少危ない札でもペア可能なら取りに行く。ワクは時々直感で突っ込む。
-    if(ch?.key === 'kamomodoki' && pairable) score += 90;
-    if(ch?.key === 'wakumodoki' && Math.random()<.18) score += 180;
-    return {idx, score};
-  }).sort((a,b)=>b.score-a.score);
-  return scored[0].idx;
+  // ピック画面は裏向きカードなので、CPUもカードの中身を見ない。
+  // 以前は候補カードの中身を評価してババブタやマッド・ピッグを避けていたため、
+  // 右側にババブタがある時に左側ばかり選ぶように見える問題があった。
+  // 候補の配置順は ensurePickOrder() / shuffleIds() でランダム化済み。
+  // CPUはそのランダム配置上の位置を、公平にランダム選択する。
+  const n = Array.isArray(candidates) ? candidates.length : 0;
+  if(n <= 0) return 0;
+  return Math.floor(Math.random() * n);
 }
+
 function cpuStrategyLineFor(room, pid, type, ctx={}){
   const p = room.players[pid];
   const ch = cpuCharacter(p);
@@ -528,9 +519,9 @@ function cpuLineFor(room, pid, type, ctx={}){
       'ウホッウホッ、別スートで嫌がらせです♡'
     ]);
     if(type==='pickWin') return sample([
-      `${target}の袋、赤く光ってますね♡ 危険札の匂いです♡`,
+      `${target}の袋、裏向きでも赤く光って見えますね♡ 勘で処刑です♡`,
       'ピックは処刑です♡ マストフォローより甘い罰です♡',
-      'ウホッ…その袋、失点が詰まってそうです♡'
+      'ウホッ…中身は見えないのに、失点の気配だけします♡'
     ]);
     if(type==='pickWatch') return sample([
       'そのピック、誰かの不幸になりますように♡',
@@ -589,8 +580,8 @@ function cpuLineFor(room, pid, type, ctx={}){
     ]);
     if(type==='pickWin') return sample([
       `${target}から引くぞぉ〜✊🏻 私なら当たりを引ける！`,
-      '危険札でも乗りこなす！できるぞぉ〜✊🏻',
-      'あたしゃ、魔神だよ…この袋、開けます。'
+      '裏向きでも乗りこなす！できるぞぉ〜✊🏻',
+      'あたしゃ、魔神だよ…見えない袋も開けます。'
     ]);
     if(type==='pickWatch') return sample([
       'そのピック、めちゃくちゃ盛り上がる気がする！',
@@ -649,7 +640,7 @@ function cpuLineFor(room, pid, type, ctx={}){
     ]);
     if(type==='pickWin') return sample([
       `${target}の手札から1枚確認します。ピック工程に入ります。`,
-      'リスクを最小化して選びます。締切厳守です。',
+      '中身は見えません。確率で処理します。締切厳守です。',
       'ピック担当になりました。進捗を止めません。'
     ]);
     if(type==='pickWatch') return sample([
@@ -737,7 +728,7 @@ function cpuPlayLine(room, pid, card){
 
 function cpuPickLine(room, winnerPid, weakestPid){
   const wp=room.players[winnerPid], lp=room.players[weakestPid];
-  if(wp.cpu) return cpuLineFor(room, winnerPid, 'pickWin', {target:lp.name}) || sample([`さて、${lp.name}の袋をのぞく…`,`そこにババブタいないでほしい…`]);
+  if(wp.cpu) return cpuLineFor(room, winnerPid, 'pickWin', {target:lp.name}) || sample([`さて、${lp.name}の袋から裏向きで選ぶ…`,`中身は見えない。ババブタだけは勘弁…`,`左か右か、これは本当に運です。`]);
   const cpu = room.players.find((p,i)=>p.cpu && i!==winnerPid);
   if(cpu){ const idx = room.players.indexOf(cpu); say(room, idx, cpuLineFor(room, idx, 'pickWatch', {winner:wp.name,target:lp.name}) || sample(['このピック、空気が重い…','ババブタの気配がする…'])); }
   return null;
@@ -2138,7 +2129,7 @@ function completePickWithoutPair(room, pp, drawn){
   if(wp.cpu) say(room, pp.winnerPid, resultLine(drawn, false, room, pp.winnerPid));
   room.message = text;
   broadcast(room);
-  ensurePickFinish(room, pp, pp.winnerPid, 2600);
+  ensurePickFinish(room, pp, pp.winnerPid, drawn.joker ? 4300 : 2600);
 }
 
 function completePickWithPair(room, pp, drawn, pairCard){
