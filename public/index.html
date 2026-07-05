@@ -3968,6 +3968,40 @@ body.modern-game-ui #table .seat .small{
   overflow-wrap:anywhere;
 }
 
+
+/* =========================================================
+   Rule Help Modal Close Fix
+   - ×ボタン/背景クリックを確実に拾う
+   ========================================================= */
+.rule-help-close{
+  z-index:3;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+.rule-help-backdrop{
+  touch-action:manipulation;
+}
+.rule-help-panel{
+  pointer-events:auto;
+}
+.rule-help-modal.open{
+  pointer-events:auto;
+}
+
+
+/* =========================================================
+   Deep Debug Pick Waiting UI
+   ========================================================= */
+.pick-stage .center-note{
+  text-align:center;
+  margin-top:8px;
+  color:#76544b;
+  font-weight:900;
+}
+.pick-status + .center-note{
+  margin-bottom:8px;
+}
+
 </style>
 </head>
 <body class="modern-game-ui">
@@ -4151,6 +4185,7 @@ let __lastMessageText='';
 let __lastMatchTrendKey='';
 let __ruleHelpEscBound=false;
 let __ruleHelpOpenAt=0;
+let __ruleHelpCloseAt=0;
 let __lastHandRenderKey='';
 let __lastTableRenderKey='';
 let __pickTargetVisualOrderKey='';
@@ -4552,12 +4587,19 @@ function openRuleHelp(ruleKey){
   modal.setAttribute('aria-hidden','false');
 }
 
-function closeRuleHelp(){
+
+function closeRuleHelp(ev=null){
+  if(ev){
+    ev.preventDefault?.();
+    ev.stopPropagation?.();
+  }
   const modal = $('ruleHelpModal');
   if(!modal) return;
   modal.classList.remove('open');
   modal.setAttribute('aria-hidden','true');
 }
+
+
 
 function setupRuleSelectionHelpers(){
   const ids = ['rounds','penaltyMode','madPigEnabled','jokerPenalty','jokerPenaltyTiming','shootThePigEnabled','pickTargetCount','passThreeEnabled','initialPairDiscardEnabled'];
@@ -4596,22 +4638,42 @@ function setupRuleSelectionHelpers(){
       }
     });
   });
+
+  // closeボタンと背景は、clickだけだと一部環境で取りこぼすため pointer/touch/click で閉じる。
+  // モーダル内の本文クリックでは閉じず、[data-rule-help-close] を持つ要素だけ閉じる。
+  const closeFromEvent = (ev)=>{
+    const closeEl = ev.target?.closest?.('[data-rule-help-close]');
+    if(!closeEl) return;
+    const now = Date.now();
+    if(now - __ruleHelpCloseAt < 120){
+      ev.preventDefault?.();
+      ev.stopPropagation?.();
+      return;
+    }
+    __ruleHelpCloseAt = now;
+    closeRuleHelp(ev);
+  };
   document.querySelectorAll('[data-rule-help-close]').forEach(el=>{
     if(el.dataset.closeBound === '1') return;
     el.dataset.closeBound = '1';
-    el.addEventListener('click', (ev)=>{
-      ev.preventDefault();
-      closeRuleHelp();
-    });
+    el.addEventListener('pointerdown', (ev)=>{ ev.preventDefault(); ev.stopPropagation(); });
+    el.addEventListener('touchstart', (ev)=>{ ev.preventDefault(); ev.stopPropagation(); }, {passive:false});
+    el.addEventListener('pointerup', closeFromEvent);
+    el.addEventListener('click', closeFromEvent);
   });
+
   if(!__ruleHelpEscBound){
     __ruleHelpEscBound = true;
     document.addEventListener('keydown', (ev)=>{
-      if(ev.key === 'Escape') closeRuleHelp();
+      if(ev.key === 'Escape') closeRuleHelp(ev);
     });
+    // 念のため、将来モーダルHTMLが再生成されても閉じられるように委任でも拾う。
+    document.addEventListener('pointerup', closeFromEvent, true);
+    document.addEventListener('click', closeFromEvent, true);
   }
   updateMatchTrendExplanation();
 }
+
 
 
 function syncShootThePigAvailability(){
@@ -5369,7 +5431,8 @@ function updatePickScreenStatus(pp){
       statusEl.textContent = ready ? '1枚選んでピック！' : `確認中…あと${waitSec}秒`;
     } else {
       const w=state.players[pp.winnerPid];
-      statusEl.textContent = ready ? `${w.name} が選択中です。` : `確認中…あと${waitSec}秒`;
+      const winDisconnected = w && !w.cpu && w.connected === false;
+      statusEl.textContent = winDisconnected ? `${w.name} が切断中です。自動復旧を待っています。` : (ready ? `${w.name} が選択中です。` : `確認中…あと${waitSec}秒`);
     }
   }
   if(ready !== __lastPickReady){
@@ -5425,7 +5488,8 @@ function renderTable(){
         }
         html += `</div><button type="button" class="btn" ${count===need?'':'disabled'} data-pick-target-submit="1">この${need}枚を候補にする</button><div class="small">選んだ候補は、勝者側ではランダム順で表示されます。</div></div>`;
       } else {
-        html += `<div class="pick-status" id="pickStatus">${esc(l.name)} がピック候補を${pp.targetCount}枚に絞っています。</div><div class="small center-note">候補が決まると、${esc(w.name)} がその中から1枚選びます。</div>`;
+        const weakDisconnected = !l.cpu && l.connected === false;
+        html += `<div class="pick-status" id="pickStatus">${weakDisconnected ? `${esc(l.name)} が切断中です。自動復旧を待っています。` : `${esc(l.name)} がピック候補を${pp.targetCount}枚に絞っています。`}</div><div class="small center-note">${weakDisconnected ? 'しばらく戻らない場合はランダム候補で進行します。' : `候補が決まると、${esc(w.name)} がその中から1枚選びます。`}</div>`;
       }
     } else if(pp.result){
       const isBabaReveal = pp.result.drawn?.joker;
@@ -5440,7 +5504,8 @@ function renderTable(){
         }
         html += `</div><button type="button" class="btn secondary skip-pair" data-pair-skip="1">スキップ</button></div>`;
       } else {
-        html += `<div class="pick-status">${esc(w.name)} のペア選択待ちです。</div>`;
+        const winDisconnected = !w.cpu && w.connected === false;
+        html += `<div class="pick-status">${winDisconnected ? `${esc(w.name)} が切断中です。自動復旧を待っています。` : `${esc(w.name)} のペア選択待ちです。`}</div>${winDisconnected ? '<div class="small center-note">しばらく戻らない場合はスキップ扱いで進行します。</div>' : ''}`;
       }
     } else if(state.yourIndex===pp.winnerPid){
       const cnt = pp.targetCandidateCount || l.handCount;
@@ -5449,7 +5514,9 @@ function renderTable(){
       html += `</div>`;
     } else {
       const cnt = pp.targetCandidateCount || l.handCount;
-      html += `<div class="pick-status" id="pickStatus">${ready?`${esc(w.name)} が選択中です。`:`確認中…あと${waitSec}秒`}</div><div class="pick-hand">`;
+      const winDisconnected = !w.cpu && w.connected === false;
+      const waitText = winDisconnected ? `${esc(w.name)} が切断中です。自動復旧を待っています。` : (ready?`${esc(w.name)} が選択中です。`:`確認中…あと${waitSec}秒`);
+      html += `<div class="pick-status" id="pickStatus">${waitText}</div>${winDisconnected ? '<div class="small center-note">しばらく戻らない場合はランダムに1枚ピックして進行します。</div>' : ''}<div class="pick-hand">`;
       for(let i=0;i<cnt;i++) html += `<div class="playing-card back"></div>`;
       html += `</div>`;
     }

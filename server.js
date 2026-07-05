@@ -1508,6 +1508,8 @@ function advanceReviewToPick(room, reviewToken, winnerPid, weakestPid){
     const targetCount = pickCandidateLimit(room, lp);
     const targetSelectionRequired = normalizePickTargetCount(room.pickTargetCount) > 0 && targetCount < lp.hand.length;
     const readyAt = Date.now() + (targetSelectionRequired ? 999999999 : 1800);
+    room.lastPickTargetRebroadcastAt = 0;
+    room.lastPairChoiceRebroadcastAt = 0;
     room.pendingPick = {
       winnerPid,
       weakestPid,
@@ -1736,15 +1738,26 @@ function ensureRoomProgress(room){
   }
 
   // 人間のピック待ちでreadyAtを過ぎても画面が確認中のままにならないよう、状態を再送する。
-  if(room.pendingPick && !room.pendingPick.result && !room.players[room.pendingPick.winnerPid]?.cpu){
-    if(Date.now() >= room.pendingPick.readyAt && !room.pendingPick.readyBroadcasted){
-      room.pendingPick.readyBroadcasted = true;
+  // 勝者が切断したままだとゲームが止まるため、一定時間後にランダム位置を選んで復旧する。
+  if(room.pendingPick && !room.pendingPick.result && !room.pendingPick.pairChoice && !room.players[room.pendingPick.winnerPid]?.cpu){
+    const pp = room.pendingPick;
+    const winner = room.players[pp.winnerPid];
+    const now = Date.now();
+    if(now >= pp.readyAt && winner && !isPlayerConnectedForProgress(winner) && now >= pp.readyAt + 12000){
+      const candidates = pickCandidateCards(room, pp);
+      const idx = candidates.length ? Math.floor(Math.random() * candidates.length) : 0;
+      log(room, `⚠️ ${winner.name} が切断中のため、ランダムに1枚ピックして進行を復旧しました。`);
+      doPick(room, winner.id, idx);
+      return;
+    }
+    if(now >= pp.readyAt && !pp.readyBroadcasted){
+      pp.readyBroadcasted = true;
       broadcast(room);
       return;
     }
     // クリック待ちが長すぎる場合はゲーム停止ではなく、再送だけする。
-    if(Date.now() >= room.pendingPick.readyAt + 12000){
-      room.pendingPick.readyBroadcasted = false;
+    if(now >= pp.readyAt + 12000){
+      pp.readyBroadcasted = false;
       broadcast(room);
       return;
     }
@@ -2509,6 +2522,8 @@ function finishAfterPick(room, winnerPid){
   if(room.cpuPickFailSafeTimer){ clearTimeout(room.cpuPickFailSafeTimer); room.cpuPickFailSafeTimer=null; }
   if(!room.pendingPick && !room.trick.length) return;
   room.pendingPick=null;
+  room.lastPickTargetRebroadcastAt = 0;
+  room.lastPairChoiceRebroadcastAt = 0;
   if(checkRoundEnd(room)) { broadcast(room); return; }
   room.trick=[]; room.leadSuit=null;
   if(!Number.isInteger(winnerPid) || winnerPid < 0 || winnerPid >= room.players.length) winnerPid = room.lead ?? 0;

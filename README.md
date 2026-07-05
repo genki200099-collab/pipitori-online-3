@@ -717,3 +717,19 @@ Start Command: node server.js
 - ？ヘルプボタンをpointerup/keyboardにも対応
 - `EXPERT_DEBUG_PROGRESS_UI_AUDIT.md` を追加
 - 作成日時：2026-07-05 08:50 JST
+
+
+## 今回の修正：ルール個別ヘルプの×ボタン修正
+- ？ヘルプを×ボタンで閉じられない問題を修正
+- 背景クリック、×ボタン、Escキーで確実に閉じるよう改善
+- pointer/touch/clickの取りこぼし対策を追加
+- `RULE_HELP_MODAL_CLOSE_FIX_AUDIT.md` を追加
+- 作成日時：2026-07-05 09:24 JST
+
+
+## 今回の修正：ディープデバッグ進行・UI点検
+- 勝者がピック選択前に切断した場合、12秒後にランダムピックで進行復旧
+- 新しいピック開始時/ピック終了時に再送タイマーをリセット
+- 切断中のピック候補選択/ピック/ペア選択待ちをUIで明示
+- `DEEP_DEBUG_PROGRESS_UI_AUDIT.md` を追加
+- 作成日時：2026-07-05 11:00 JST
