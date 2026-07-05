@@ -3738,6 +3738,236 @@ body.modern-game-ui #table .seat .small{
   }
 }
 
+
+/* =========================================================
+   Final Audit Safety Patch
+   旧バッジ/旧矢印のCSSが残っていても、現在の座席内ステータス行だけを正とする。
+   ========================================================= */
+#table .seat-arrow,
+#table .seat-flow-chip,
+#table .play-badge,
+#table .turn-flag{
+  display:none!important;
+  visibility:hidden!important;
+}
+#table .seat-status-row{
+  display:flex!important;
+  visibility:visible!important;
+}
+
+
+/* =========================================================
+   Rule Selection Help & Match Trend
+   - ルール変更時の試合傾向を自動説明
+   - 各ルールの？個別ヘルプ
+   ========================================================= */
+.rule-title{
+  display:flex!important;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  width:100%;
+}
+.rule-title>span{
+  min-width:0;
+}
+.rule-help-btn{
+  flex:0 0 auto;
+  width:24px;
+  height:24px;
+  border-radius:50%;
+  border:2px solid rgba(126,75,50,.20);
+  background:linear-gradient(135deg,#fff8d7,#fff);
+  color:#7b332e;
+  font-weight:1000;
+  font-size:14px;
+  line-height:1;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  box-shadow:0 4px 10px rgba(72,33,52,.08);
+  transition:transform .14s ease, box-shadow .14s ease, filter .14s ease;
+}
+.rule-help-btn:hover{
+  transform:translateY(-1px) scale(1.04);
+  filter:saturate(1.08);
+  box-shadow:0 7px 14px rgba(72,33,52,.13);
+}
+.match-trend-panel{
+  margin:8px 14px 12px;
+  padding:12px;
+  border-radius:18px;
+  border:2px solid rgba(255,188,77,.45);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255,188,77,.22), transparent 34%),
+    linear-gradient(135deg,rgba(255,255,255,.92),rgba(255,246,225,.80));
+  box-shadow:0 12px 24px rgba(72,33,52,.08);
+}
+.trend-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:8px;
+}
+.trend-kicker{
+  display:block;
+  color:#8a4a08;
+  font-size:11px;
+  font-weight:1000;
+  letter-spacing:.08em;
+}
+.trend-head b{
+  display:block;
+  margin-top:2px;
+  color:#482134;
+  font-size:18px;
+}
+.trend-tags{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:5px;
+}
+.trend-tags span{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:4px 8px;
+  border-radius:999px;
+  background:#fff;
+  color:#6a3a22;
+  border:1px solid rgba(126,75,50,.16);
+  font-weight:1000;
+  font-size:11px;
+  white-space:nowrap;
+}
+.trend-points{
+  margin:0;
+  padding-left:1.2em;
+  color:#63483a;
+  font-weight:800;
+  line-height:1.55;
+  font-size:13px;
+}
+.trend-warning{
+  margin-top:8px;
+  padding:8px 10px;
+  border-radius:14px;
+  background:#fff1f3;
+  color:#8b1e35;
+  border:1px solid rgba(139,30,53,.20);
+  font-weight:900;
+  font-size:12px;
+}
+.rule-help-modal{
+  position:fixed;
+  inset:0;
+  z-index:10050;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+}
+.rule-help-modal.open{
+  display:flex;
+}
+.rule-help-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(24,11,31,.46);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+.rule-help-panel{
+  position:relative;
+  width:min(92vw,560px);
+  max-height:min(82vh,620px);
+  overflow:auto;
+  border-radius:26px;
+  border:2px solid rgba(255,255,255,.45);
+  background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(255,246,231,.94));
+  box-shadow:0 28px 80px rgba(24,11,31,.32);
+  padding:22px;
+  color:#482134;
+  animation:ruleHelpPop .18s ease-out;
+}
+.rule-help-close{
+  position:absolute;
+  top:10px;
+  right:10px;
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  border:0;
+  background:#51243a;
+  color:#fff;
+  font-size:22px;
+  font-weight:1000;
+  cursor:pointer;
+}
+.rule-help-kicker{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:999px;
+  background:#fff0bd;
+  color:#7a4b00;
+  font-size:12px;
+  font-weight:1000;
+}
+.rule-help-panel h3{
+  margin:10px 38px 10px 0;
+  font-size:24px;
+}
+.rule-help-body ul{
+  margin:0;
+  padding-left:1.25em;
+}
+.rule-help-body li{
+  margin:8px 0;
+  line-height:1.55;
+  font-weight:800;
+  color:#5f4450;
+}
+@keyframes ruleHelpPop{
+  from{transform:translateY(10px) scale(.98);opacity:0}
+  to{transform:translateY(0) scale(1);opacity:1}
+}
+@media(max-width:700px){
+  .trend-head{
+    flex-direction:column;
+  }
+  .trend-tags{
+    justify-content:flex-start;
+  }
+  .rule-help-panel{
+    padding:18px;
+    border-radius:22px;
+  }
+  .rule-title{
+    gap:6px;
+  }
+}
+
+
+/* =========================================================
+   Expert Debug UI Safety
+   - ？ボタンの押しやすさ
+   - 切断復旧時もUIが崩れないよう補助
+   ========================================================= */
+.rule-help-btn{
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+.disabled-option .rule-help-btn{
+  opacity:1;
+  filter:none;
+}
+.pick-status{
+  overflow-wrap:anywhere;
+}
+
 </style>
 </head>
 <body class="modern-game-ui">
@@ -3762,6 +3992,7 @@ body.modern-game-ui #table .seat .small{
       <div class="rules-default-note">
         <b>標準設定</b>：3ラウンド / マッド・ピッグあり / ババブタ-20点・ラウンド毎 / 残り手札1枚-3点 / ピック対象2枚 / 3枚パスなし / 開始時ペア捨てなし / シュート・ザ・ピッグOFF
       </div>
+      <div id="matchTrendPanel" class="match-trend-panel" aria-live="polite"></div>
       <div class="settings-sections">
         <section class="settings-section standard-rule">
           <div class="settings-section-head">
@@ -3770,8 +4001,8 @@ body.modern-game-ui #table .seat .small{
           </div>
           <p>ゲームの長さと、残った手札の失点方法を決めます。</p>
           <div class="settings-grid compact-grid">
-            <label class="input-label"><span>ラウンド数</span><select id="rounds" class="input"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option></select><em>標準は3ラウンド</em></label>
-            <label class="input-label option-toggle"><span>残り手札の失点</span><select id="penaltyMode" class="input"><option value="flat3" selected>1枚ごとに-3点</option><option value="faceValue">数字分だけ失点</option><option value="spadeSuit">1枚ごとに-1点、♠スートは-3点</option></select><em>標準は1枚-3点</em></label>
+            <label class="input-label"><span class="rule-title"><span>ラウンド数</span><button type="button" class="rule-help-btn" data-help-rule="rounds" aria-label="ラウンド数のヘルプ">?</button></span><select id="rounds" class="input"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option></select><em>標準は3ラウンド</em></label>
+            <label class="input-label option-toggle"><span class="rule-title"><span>残り手札の失点</span><button type="button" class="rule-help-btn" data-help-rule="penaltyMode" aria-label="残り手札の失点のヘルプ">?</button></span><select id="penaltyMode" class="input"><option value="flat3" selected>1枚ごとに-3点</option><option value="faceValue">数字分だけ失点</option><option value="spadeSuit">1枚ごとに-1点、♠スートは-3点</option></select><em>標準は1枚-3点</em></label>
           </div>
         </section>
 
@@ -3782,10 +4013,10 @@ body.modern-game-ui #table .seat .small{
           </div>
           <p>ババブタ、マッド・ピッグ、シュート・ザ・ピッグの扱いを決めます。</p>
           <div class="settings-grid compact-grid">
-            <label class="input-label option-toggle"><span>マッド・ピッグ</span><select id="madPigEnabled" class="input"><option value="true" selected>あり</option><option value="false">なし</option></select><em>♠11の追加失点</em></label>
-            <label class="input-label"><span>ババブタ失点</span><input id="jokerPenalty" class="input" type="number" value="-20" min="-999" max="0" step="1" /><em>標準は-20点</em></label>
-            <label class="input-label option-toggle"><span>ババブタ失点タイミング</span><select id="jokerPenaltyTiming" class="input"><option value="perRound" selected>ラウンド毎</option><option value="gameEnd">ゲームの最後</option></select><em>標準はラウンド毎</em></label>
-            <label class="input-label option-toggle"><span>シュート・ザ・ピッグ</span><select id="shootThePigEnabled" class="input"><option value="false" selected>OFF</option><option value="true">ON</option></select><em>マッド・ピッグありの時だけ選択可</em></label>
+            <label class="input-label option-toggle"><span class="rule-title"><span>マッド・ピッグ</span><button type="button" class="rule-help-btn" data-help-rule="madPigEnabled" aria-label="マッド・ピッグのヘルプ">?</button></span><select id="madPigEnabled" class="input"><option value="true" selected>あり</option><option value="false">なし</option></select><em>♠11の追加失点</em></label>
+            <label class="input-label"><span class="rule-title"><span>ババブタ失点</span><button type="button" class="rule-help-btn" data-help-rule="jokerPenalty" aria-label="ババブタ失点のヘルプ">?</button></span><input id="jokerPenalty" class="input" type="number" value="-20" min="-999" max="0" step="1" /><em>標準は-20点</em></label>
+            <label class="input-label option-toggle"><span class="rule-title"><span>ババブタ失点タイミング</span><button type="button" class="rule-help-btn" data-help-rule="jokerPenaltyTiming" aria-label="ババブタ失点タイミングのヘルプ">?</button></span><select id="jokerPenaltyTiming" class="input"><option value="perRound" selected>ラウンド毎</option><option value="gameEnd">ゲームの最後</option></select><em>標準はラウンド毎</em></label>
+            <label class="input-label option-toggle"><span class="rule-title"><span>シュート・ザ・ピッグ</span><button type="button" class="rule-help-btn" data-help-rule="shootThePigEnabled" aria-label="シュート・ザ・ピッグのヘルプ">?</button></span><select id="shootThePigEnabled" class="input"><option value="false" selected>OFF</option><option value="true">ON</option></select><em>マッド・ピッグありの時だけ選択可</em></label>
           </div>
         </section>
 
@@ -3796,9 +4027,9 @@ body.modern-game-ui #table .seat .small{
           </div>
           <p>標準設定から変化を付けたい時の調整項目です。ピック対象数の標準は2枚です。</p>
           <div class="settings-grid compact-grid">
-            <label class="input-label option-toggle"><span>ピック対象数</span><select id="pickTargetCount" class="input"><option value="0">絞らない</option><option value="1">1枚</option><option value="2" selected>2枚</option><option value="3">3枚</option><option value="4">4枚</option><option value="5">5枚</option><option value="6">6枚</option><option value="7">7枚</option><option value="8">8枚</option><option value="9">9枚</option><option value="10">10枚</option><option value="11">11枚</option><option value="12">12枚</option><option value="13">13枚</option></select><em>標準は2枚。最弱者が候補を絞る</em></label>
-            <label class="input-label option-toggle"><span>開始時3枚パス</span><select id="passThreeEnabled" class="input"><option value="false" selected>なし</option><option value="true">あり</option></select><em>開始前に3枚渡す</em></label>
-            <label class="input-label option-toggle"><span>開始時ペア捨て</span><select id="initialPairDiscardEnabled" class="input"><option value="false" selected>なし</option><option value="true">あり</option></select><em>同じ数字ペアを任意で捨てる</em></label>
+            <label class="input-label option-toggle"><span class="rule-title"><span>ピック対象数</span><button type="button" class="rule-help-btn" data-help-rule="pickTargetCount" aria-label="ピック対象数のヘルプ">?</button></span><select id="pickTargetCount" class="input"><option value="0">絞らない</option><option value="1">1枚</option><option value="2" selected>2枚</option><option value="3">3枚</option><option value="4">4枚</option><option value="5">5枚</option><option value="6">6枚</option><option value="7">7枚</option><option value="8">8枚</option><option value="9">9枚</option><option value="10">10枚</option><option value="11">11枚</option><option value="12">12枚</option><option value="13">13枚</option></select><em>標準は2枚。最弱者が候補を絞る</em></label>
+            <label class="input-label option-toggle"><span class="rule-title"><span>開始時3枚パス</span><button type="button" class="rule-help-btn" data-help-rule="passThreeEnabled" aria-label="開始時3枚パスのヘルプ">?</button></span><select id="passThreeEnabled" class="input"><option value="false" selected>なし</option><option value="true">あり</option></select><em>開始前に3枚渡す</em></label>
+            <label class="input-label option-toggle"><span class="rule-title"><span>開始時ペア捨て</span><button type="button" class="rule-help-btn" data-help-rule="initialPairDiscardEnabled" aria-label="開始時ペア捨てのヘルプ">?</button></span><select id="initialPairDiscardEnabled" class="input"><option value="false" selected>なし</option><option value="true">あり</option></select><em>同じ数字ペアを任意で捨てる</em></label>
           </div>
         </section>
       </div>
@@ -3873,7 +4104,7 @@ body.modern-game-ui #table .seat .small{
             <li>残り通常手札：標準は1枚-3点。数字分失点、または1枚-1点・♠は-3点にも変更可。マッドON時の♠11はマッド失点を優先。</li>
             <li>マッド・ピッグ：♠11。標準ON。通常は追加-13点。数字分失点では手札なら-40点、山なら+1点後に-40点。♠-3/他-1ではマッド失点を優先。</li>
             <li>ババブタ：標準-20点。失点タイミングはラウンド毎/ゲーム最後から選択。</li>
-            <li>シュート・ザ・ピッグON時：ババブタ＋マッド・ピッグを持ってラウンド終了すると本人の両失点0、他全員-10点。</li>
+            <li>シュート・ザ・ピッグON時：ババブタ＋マッド・ピッグを持ってラウンド終了すると本人の両失点0、他全員-10点。ラウンド毎設定では、発動したラウンドのマッド/ババ失点免除を得点へ反映。</li>
           </ul>
         </div>
         <div class="rule-card">
@@ -3917,6 +4148,9 @@ let __lastLastTrickKey='';
 let __lastLegacyPickKey='';
 let __lastBasicStatusKey='';
 let __lastMessageText='';
+let __lastMatchTrendKey='';
+let __ruleHelpEscBound=false;
+let __ruleHelpOpenAt=0;
 let __lastHandRenderKey='';
 let __lastTableRenderKey='';
 let __pickTargetVisualOrderKey='';
@@ -4142,6 +4376,244 @@ function updateLobbyActionUi(){
   }
 }
 
+
+const RULE_HELP_TEXTS = {
+  rounds:{
+    title:'ラウンド数',
+    body:[
+      '遊ぶラウンド数です。標準は3ラウンド。',
+      '少ないほど短期決戦で運と事故の影響が強くなります。',
+      '多いほど実力差・手札管理・ババブタの押し付けが効きやすくなります。'
+    ]
+  },
+  penaltyMode:{
+    title:'残り手札の失点',
+    body:[
+      'ラウンド終了時・ゲーム終了時に、残った通常カードをどう失点にするかを決めます。',
+      '1枚-3点：一番シンプルで標準的です。',
+      '数字分失点：高い数字ほど危険になり、手札整理がシビアになります。',
+      '1枚-1点、♠-3点：スペード管理が重要になります。マッド・ピッグON時の♠11は、♠失点ではなくマッド失点を優先します。'
+    ]
+  },
+  madPigEnabled:{
+    title:'マッド・ピッグ',
+    body:[
+      '♠11を危険カードとして扱うルールです。',
+      'ONの場合、♠11は手札またはごちそう山にあると追加失点になります。',
+      'OFFの場合、♠11は普通のカードです。',
+      'シュート・ザ・ピッグはマッド・ピッグONの時だけ選べます。'
+    ]
+  },
+  jokerPenalty:{
+    title:'ババブタ失点',
+    body:[
+      'ジョーカー＝ババブタを持っている時の失点です。標準は-20点。',
+      '数値を大きくすると、ババブタを引いた瞬間や押し付け合いがより派手になります。',
+      '0点にするとババブタの怖さはかなり下がります。'
+    ]
+  },
+  jokerPenaltyTiming:{
+    title:'ババブタ失点タイミング',
+    body:[
+      'ババブタ失点をいつ適用するかを決めます。',
+      'ラウンド毎：毎ラウンド、保持者に失点。標準設定で、毎回緊張感があります。',
+      'ゲームの最後：最終ラウンドだけ失点。終盤に一気に盛り上がります。',
+      'シュート・ザ・ピッグの判定タイミングにも影響します。'
+    ]
+  },
+  shootThePigEnabled:{
+    title:'シュート・ザ・ピッグ',
+    body:[
+      'ババブタとマッド・ピッグを両方持ってラウンド終了した時の逆転コンボです。',
+      '発動者はババブタ失点とマッド・ピッグ失点が0になり、他全員に-10点を与えます。',
+      'このゲームの大きな盛り上がりポイントです。',
+      'マッド・ピッグOFF時は選択できません。'
+    ]
+  },
+  pickTargetCount:{
+    title:'ピック対象数',
+    body:[
+      'トリック最弱者が、勝者に引かせる候補を何枚に絞るかを決めます。標準は2枚。',
+      '少ないほど最弱者が守りやすく、事故が減ります。',
+      '多いほど勝者がババブタや危険札を引く可能性が上がり、派手になります。',
+      '候補選択画面はソート表示、勝者側のピック画面はランダム配置です。'
+    ]
+  },
+  passThreeEnabled:{
+    title:'開始時3枚パス',
+    body:[
+      'ラウンド開始前に、ババブタ以外から3枚を次のプレイヤーへ渡します。',
+      '手札を整えやすくなり、戦略性が上がります。',
+      'ババブタは渡せません。'
+    ]
+  },
+  initialPairDiscardEnabled:{
+    title:'開始時ペア捨て',
+    body:[
+      '開始時に同じ数字のペアを任意で捨てられます。',
+      '手札が軽くなり、失点や事故が少し減ります。',
+      'マッド・ピッグも他の11とペアにできれば捨てられます。'
+    ]
+  }
+};
+
+function readRuleSelectionForTrend(){
+  return {
+    rounds:Number($('rounds')?.value || 3),
+    penaltyMode:$('penaltyMode')?.value || 'flat3',
+    madPig:$('madPigEnabled')?.value === 'true',
+    jokerPenalty:Math.abs(Number($('jokerPenalty')?.value || -20)),
+    jokerTiming:$('jokerPenaltyTiming')?.value || 'perRound',
+    shoot:$('shootThePigEnabled')?.value === 'true' && $('madPigEnabled')?.value === 'true',
+    pickCount:Number($('pickTargetCount')?.value || 2),
+    passThree:$('passThreeEnabled')?.value === 'true',
+    initialPair:$('initialPairDiscardEnabled')?.value === 'true'
+  };
+}
+function buildMatchTrendDescription(cfg){
+  const tags = [];
+  const points = [];
+  const warnings = [];
+  let chaos = 0;
+  let strategy = 0;
+  let pressure = 0;
+
+  if(cfg.rounds <= 2){ tags.push('短期決戦'); chaos += 2; points.push('ラウンド数が少ないため、序盤のピック事故やババブタの移動が勝敗に直結しやすいです。'); }
+  else if(cfg.rounds >= 5){ tags.push('長期戦'); strategy += 2; points.push('ラウンド数が多く、手札管理と危険札の処理がじわじわ効く展開になります。'); }
+  else { tags.push('標準テンポ'); points.push('3ラウンド中心の標準テンポです。運と戦略のバランスが取りやすい設定です。'); }
+
+  if(cfg.penaltyMode === 'faceValue'){ tags.push('高数字が危険'); strategy += 2; pressure += 1; points.push('数字分失点なので、高い数字を残すほど重くなります。高札の処理判断が重要です。'); }
+  else if(cfg.penaltyMode === 'spadeSuit'){ tags.push('♠管理'); strategy += 2; pressure += 1; points.push('♠スートが重い設定です。スペードをいつ処理するか、マッド・ピッグをどう扱うかが焦点になります。'); }
+  else { tags.push('分かりやすい失点'); points.push('残り手札は1枚-3点です。初プレイでも得点感覚が分かりやすいです。'); }
+
+  if(cfg.madPig){ tags.push('マッドあり'); pressure += 1; points.push('♠11が危険カードになります。取る・捨てる・ペアにする判断で差が出ます。'); }
+  else { tags.push('マッドなし'); points.push('マッド・ピッグなしなので、危険カードは主にババブタ中心です。少し軽めの展開になります。'); if(cfg.shoot) warnings.push('マッド・ピッグなしのため、シュート・ザ・ピッグは自動的にOFFになります。'); }
+
+  if(cfg.jokerPenalty >= 30){ tags.push('ババ重め'); chaos += 2; pressure += 2; points.push(`ババブタ失点が-${cfg.jokerPenalty}点と重く、ババブタ公開ピックの盛り上がりが大きくなります。`); }
+  else if(cfg.jokerPenalty <= 5){ tags.push('ババ軽め'); points.push('ババブタ失点が軽く、事故の痛みは小さめです。'); }
+  else { tags.push('ババ標準'); points.push(`ババブタ失点は-${cfg.jokerPenalty}点です。標準的な緊張感があります。`); }
+
+  if(cfg.jokerTiming === 'gameEnd'){ tags.push('終盤勝負'); chaos += 1; strategy += 1; points.push('ババブタ失点はゲーム最後だけです。終盤の押し付け合いが大きな見せ場になります。'); }
+  else { tags.push('毎R緊張'); pressure += 1; points.push('ババブタ失点はラウンド毎です。毎ラウンド、保持者にプレッシャーがあります。'); }
+
+  if(cfg.shoot){ tags.push('逆転コンボあり'); chaos += 2; strategy += 1; points.push('シュート・ザ・ピッグON。ババブタ＋マッド保持で逆転コンボが狙えるため、危険札がチャンスにもなります。'); }
+
+  if(cfg.pickCount === 0){ tags.push('ピック運大'); chaos += 2; points.push('ピック対象を絞らないため、勝者が広い手札から選びます。事故感と運要素が強くなります。'); }
+  else if(cfg.pickCount === 1){ tags.push('守り強め'); strategy += 1; points.push('ピック対象1枚なので、最弱者がかなり守りやすい設定です。'); }
+  else if(cfg.pickCount === 2){ tags.push('標準ピック'); points.push('ピック対象2枚の標準設定です。守りと事故のバランスが良いです。'); }
+  else if(cfg.pickCount >= 6){ tags.push('公開ピック派手'); chaos += 2; points.push(`ピック候補${cfg.pickCount}枚。候補が多く、ババブタや危険札を引くドラマが増えます。`); }
+  else { tags.push('ピックやや派手'); chaos += 1; points.push(`ピック候補${cfg.pickCount}枚。標準より少し事故が起きやすいです。`); }
+
+  if(cfg.passThree){ tags.push('手札調整'); strategy += 2; points.push('開始時3枚パスあり。初手から手札を整える読み合いが増えます。'); }
+  if(cfg.initialPair){ tags.push('浄化しやすい'); strategy += 1; points.push('開始時ペア捨てあり。手札が軽くなり、序盤の失点事故は少し減ります。'); }
+
+  let title = '標準バランス';
+  if(chaos >= strategy + 2) title = '事故とドラマ多め';
+  else if(strategy >= chaos + 2) title = '戦略・手札管理重視';
+  else if(pressure >= 4) title = '危険カードの圧が強い';
+  else if(cfg.shoot) title = '逆転コンボが光る';
+  else if(cfg.rounds <= 2) title = '短期決戦';
+
+  return {title, tags:[...new Set(tags)].slice(0,8), points:points.slice(0,6), warnings};
+}
+
+function updateMatchTrendExplanation(){
+  const panel = $('matchTrendPanel');
+  if(!panel) return;
+  syncShootThePigAvailability();
+  const cfg = readRuleSelectionForTrend();
+  const trend = buildMatchTrendDescription(cfg);
+  const key = JSON.stringify({cfg, trend});
+  if(key === __lastMatchTrendKey) return;
+  __lastMatchTrendKey = key;
+  panel.innerHTML = `
+    <div class="trend-head">
+      <div><span class="trend-kicker">ルール変更時の試合傾向</span><b>${esc(trend.title)}</b></div>
+      <div class="trend-tags">${trend.tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div>
+    </div>
+    <ul class="trend-points">${trend.points.map(p=>`<li>${esc(p)}</li>`).join('')}</ul>
+    ${trend.warnings.length ? `<div class="trend-warning">${trend.warnings.map(w=>esc(w)).join('<br>')}</div>` : ''}
+  `;
+}
+
+
+function openRuleHelp(ruleKey){
+  const data = RULE_HELP_TEXTS[ruleKey];
+  if(!data) return;
+  const modal = $('ruleHelpModal');
+  const title = $('ruleHelpTitle');
+  const body = $('ruleHelpBody');
+  if(!modal || !title || !body) return;
+  title.textContent = data.title;
+  body.innerHTML = `<ul>${data.body.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`;
+  const panel = modal.querySelector('.rule-help-panel');
+  if(panel) panel.scrollTop = 0;
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden','false');
+}
+
+function closeRuleHelp(){
+  const modal = $('ruleHelpModal');
+  if(!modal) return;
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden','true');
+}
+
+function setupRuleSelectionHelpers(){
+  const ids = ['rounds','penaltyMode','madPigEnabled','jokerPenalty','jokerPenaltyTiming','shootThePigEnabled','pickTargetCount','passThreeEnabled','initialPairDiscardEnabled'];
+  ids.forEach(id=>{
+    const el = $(id);
+    if(!el || el.dataset.trendBound === '1') return;
+    el.dataset.trendBound = '1';
+    el.addEventListener('change', updateMatchTrendExplanation);
+    el.addEventListener('input', updateMatchTrendExplanation);
+  });
+  document.querySelectorAll('.rule-help-btn').forEach(btn=>{
+    if(btn.dataset.helpBound === '1') return;
+    btn.dataset.helpBound = '1';
+
+    // ボタンがlabel内にあるため、PC/スマホで背後のselect/inputが反応しないようpointerdown時点で止める。
+    const stopLabelAction = (ev)=>{
+      ev.preventDefault();
+      ev.stopPropagation();
+    };
+    const openHelpFromButton = (ev)=>{
+      ev.preventDefault();
+      ev.stopPropagation();
+      const now = Date.now();
+      if(now - __ruleHelpOpenAt < 180) return;
+      __ruleHelpOpenAt = now;
+      openRuleHelp(btn.dataset.helpRule);
+    };
+    btn.addEventListener('pointerdown', stopLabelAction);
+    btn.addEventListener('mousedown', stopLabelAction);
+    btn.addEventListener('touchstart', stopLabelAction, {passive:false});
+    btn.addEventListener('pointerup', openHelpFromButton);
+    btn.addEventListener('click', openHelpFromButton);
+    btn.addEventListener('keydown', (ev)=>{
+      if(ev.key === 'Enter' || ev.key === ' '){
+        openHelpFromButton(ev);
+      }
+    });
+  });
+  document.querySelectorAll('[data-rule-help-close]').forEach(el=>{
+    if(el.dataset.closeBound === '1') return;
+    el.dataset.closeBound = '1';
+    el.addEventListener('click', (ev)=>{
+      ev.preventDefault();
+      closeRuleHelp();
+    });
+  });
+  if(!__ruleHelpEscBound){
+    __ruleHelpEscBound = true;
+    document.addEventListener('keydown', (ev)=>{
+      if(ev.key === 'Escape') closeRuleHelp();
+    });
+  }
+  updateMatchTrendExplanation();
+}
+
+
 function syncShootThePigAvailability(){
   const mad = $('madPigEnabled')?.value === 'true';
   const shoot = $('shootThePigEnabled');
@@ -4153,6 +4625,7 @@ function syncShootThePigAvailability(){
 
 $('madPigEnabled').addEventListener('change', syncShootThePigAvailability);
 syncShootThePigAvailability();
+setupRuleSelectionHelpers();
 $('create').onclick=()=>{ 
   syncShootThePigAvailability();
   intentionalClose=false;
@@ -5331,6 +5804,17 @@ function escAttr(s){ return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<
 
 window.addEventListener('load', ()=>{ applyDeviceUiMode(); const data=loadReconnectInfo(); if(data){ $('code').value=data.code; if(data.name) $('name').value=data.name; } updateReconnectButton(); });
 </script>
+
+<div id="ruleHelpModal" class="rule-help-modal" aria-hidden="true">
+  <div class="rule-help-backdrop" data-rule-help-close="1"></div>
+  <div class="rule-help-panel" role="dialog" aria-modal="true" aria-labelledby="ruleHelpTitle">
+    <button type="button" class="rule-help-close" data-rule-help-close="1" aria-label="閉じる">×</button>
+    <div class="rule-help-kicker">ルール個別ヘルプ</div>
+    <h3 id="ruleHelpTitle">ヘルプ</h3>
+    <div id="ruleHelpBody" class="rule-help-body"></div>
+  </div>
+</div>
+
 <div id="shootPigOverlay" class="shoot-pig-overlay" data-active="0"></div>
 <div id="babaDrawOverlay" class="baba-draw-overlay" data-active="0"></div>
 </body>

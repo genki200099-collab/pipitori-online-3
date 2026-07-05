@@ -36,7 +36,7 @@ setInterval(()=>{
 
 const suits = ['♠','♥','♦','♣'];
 const ranks = ['1','2','3','4','5','6','7','8','9','10','11','12','13'];
-let deckSerial = 0; // 第2ラウンド補充時もカードIDが重複しないようにする。
+let deckSerial = 0; // 次ラウンド補充時もカードIDが重複しないようにする。
 const value = Object.fromEntries(ranks.map(r=>[r, Number(r)]));
 
 function code(){
@@ -302,13 +302,17 @@ function cpuWouldWinCurrentTrick(room, card){
   if(card.suit !== room.leadSuit) return false;
   return Number(card.val || 0) > cpuCurrentLeadHigh(room);
 }
+
 function cpuPersonalityWeights(player){
   const ch = cpuCharacter(player);
-  if(ch?.key === 'kamomodoki') return {win:1.28, dump:1.08, risk:0.82, chaos:.22, shoot:1.02};
-  if(ch?.key === 'wakumodoki') return {win:1.08, dump:.92, risk:0.55, chaos:.62, shoot:1.34};
-  if(ch?.key === 'rikumodoki') return {win:.72, dump:1.22, risk:1.34, chaos:.04, shoot:.78};
-  return {win:1, dump:1, risk:1, chaos:.18, shoot:1};
+  // win:勝ちに行く度、dump:危険札処理度、risk:リスク回避度、chaos:揺らぎ、shoot:シュート狙い度、talk:発言頻度
+  if(ch?.key === 'kamomodoki') return {win:1.36, dump:1.18, risk:0.74, chaos:.26, shoot:1.04, talk:.56};
+  if(ch?.key === 'wakumodoki') return {win:1.14, dump:.95, risk:0.50, chaos:.72, shoot:1.52, talk:.62};
+  if(ch?.key === 'rikumodoki') return {win:.68, dump:1.30, risk:1.46, chaos:.06, shoot:.70, talk:.46};
+  return {win:1, dump:1, risk:1, chaos:.18, shoot:1, talk:.35};
 }
+
+
 function cpuCardPlayScore(room, pid, card){
   const player = room.players[pid];
   const ch = cpuCharacter(player);
@@ -317,74 +321,92 @@ function cpuCardPlayScore(room, pid, card){
   const risk = cpuCardHandRisk(room, card);
   const isMad = cpuIsMadPigCard(room, card);
   const shoot = cpuShootPotential(room, player);
+  const nearShoot = cpuNearShootPotential(room, player);
   const counts = cpuSuitCounts(player);
   const suitCount = counts[card.suit] || 0;
   const lowCard = 14 - Number(card.val || 0);
   const highCard = Number(card.val || 0);
   const leadSuit = room.leadSuit;
-  let score = Math.random() * (8 + w.chaos * 22);
+  const handRisk = cpuHandRisk(room, player);
+  let score = Math.random() * (8 + w.chaos * 25);
 
-  // シュート・ザ・ピッグを狙える状態では、ババブタとマッド・ピッグのセット維持を優先。
-  // ただしマッドを勝ってごちそう山に置ける見込みがある時だけ、少しだけ許容する。
+  // シュート・ザ・ピッグ狙い中は、マッドをうっかり捨てない。
+  // ただし「このトリックに勝って自分の山へ入れられる」なら許容。
   if(shoot && isMad){
-    score -= 420 * w.shoot;
+    score -= 460 * w.shoot;
   }
 
   if(!leadSuit){
-    // リード時：キャラごとの基本方針。
+    // リード時：個性を強める。
     if(ch?.key === 'kamomodoki'){
-      score += highCard * 9 * w.win;
-      score += (suitCount <= 2 ? 22 : 0); // 短いスートを切って将来フォロー不能を作りやすくする。
-      score += risk * (mode === 'faceValue' ? 1.0 : .45);
+      score += highCard * 10.2 * w.win;
+      score += (suitCount <= 2 ? 28 : 0);       // 短いスートを切って将来フォロー不能を作る
+      score += risk * (mode === 'faceValue' ? 1.1 : .55);
+      if(mode === 'spadeSuit' && card.suit === '♠' && !isMad) score += 18; // 重い♠も攻撃的に処理
     } else if(ch?.key === 'wakumodoki'){
-      score += (Math.random() < .55 ? highCard * 8 : lowCard * 6);
-      score += shoot && !isMad ? 28 : 0;
-      score += risk * .35;
+      score += (Math.random() < .62 ? highCard * 8.8 : lowCard * 6.4);
+      score += nearShoot ? 30 * w.shoot : 0;
+      score += shoot && !isMad ? 34 : 0;
+      score += risk * .38;
+      if(highCard >= 12) score += Math.random()*35; // 大胆な高札リード
     } else {
-      score += lowCard * 9;
-      score += (suitCount <= 2 ? 16 : 0);
-      score -= risk * 3.5 * w.risk;
-      // ただし手札リスクが高い時は少し整理に動く。
-      if(cpuHandRisk(room, player) >= 34) score += risk * 2.2;
+      score += lowCard * 10.4;
+      score += (suitCount <= 2 ? 20 : 0);
+      score -= risk * 3.9 * w.risk;
+      if(handRisk >= 34) score += risk * 2.35;      // 高リスク手札は棚卸し
+      if(mode === 'spadeSuit' && card.suit === '♠' && !isMad) score += 26; // ♠は早めに処理
     }
-    if(isMad && !shoot) score -= 140; // リードでマッドを奪われる事故を避ける。
+    if(isMad && !shoot) score -= 170; // リードでマッドを自分の山に取る事故を避ける
     return score;
   }
 
   const follow = card.suit === leadSuit;
   const canWin = cpuWouldWinCurrentTrick(room, card);
+  const trickRisk = cpuTrickRisk(room);
+  const trickHasMad = cpuTrickHasMadPig(room);
+  const hasJoker = playerHasJoker(player);
 
   if(!follow){
-    // フォロー不能時：危険札整理の最大チャンス。
-    score += risk * 18 * w.dump;
-    score += highCard * .7;
-    if(mode === 'spadeSuit' && card.suit === '♠') score += 18;
-    if(isMad && !shoot) score += 260;
-    if(shoot && isMad) score -= 780; // シュート狙い中はマッドを渡さない。
+    // フォロー不能時：危険札処理のチャンス。
+    score += risk * 19.5 * w.dump;
+    score += highCard * .9;
+    if(mode === 'spadeSuit' && card.suit === '♠') score += 26;
+    if(isMad && !shoot) score += 290;
+    if(shoot && isMad) score -= 820; // シュート狙い中はマッドを渡さない
+    if(ch?.key === 'kamomodoki') score += 20;      // かももどきは嫌がらせの放流が好き
+    if(ch?.key === 'rikumodoki') score += risk * 3; // リクは棚卸し重視
     return score;
   }
 
   if(canWin){
-    // 勝つと自分のごちそう山に入る。危険札で勝つのは基本避ける。
     const over = Number(card.val || 0) - cpuCurrentLeadHigh(room);
-    score += (80 - over * 7) * w.win;
-    score -= risk * 8 * w.risk;
-    if(ch?.key === 'kamomodoki') score += 40;
-    if(ch?.key === 'wakumodoki') score += 24 + Math.random()*26;
-    if(ch?.key === 'rikumodoki' && over <= 2) score += 42;
-    if(isMad && shoot) score += 260;     // 勝って山に置けるならシュート条件を維持できる。
-    if(isMad && !shoot) score -= 360;    // シュートなしでマッドを自分の山へ入れるのは危険。
+    score += (82 - over * 7.5) * w.win;
+    score -= risk * 8.5 * w.risk;
+    score -= trickRisk * (ch?.key === 'rikumodoki' ? 1.35 : .55); // 危険な山を取りたくない
+
+    if(ch?.key === 'kamomodoki') score += 48; // 攻撃的に取りに行く
+    if(ch?.key === 'wakumodoki') score += 28 + Math.random()*34;
+    if(ch?.key === 'rikumodoki' && over <= 2) score += 52; // 最小勝ちを評価
+
+    // ババを持っている時にマッドが場にあるなら、勝って山に入れるとシュート条件に近づく。
+    if(shootThePigEnabled(room) && hasJoker && trickHasMad){
+      score += (ch?.key === 'wakumodoki' ? 340 : ch?.key === 'kamomodoki' ? 230 : 110) * w.shoot;
+    }
+    if(isMad && shoot) score += 280;
+    if(isMad && !shoot) score -= 390;
     return score;
   }
 
-  // フォローして負ける：手札リスクを逃がせるので、危険札や高札を切る価値が高い。
-  score += risk * 11 * w.dump;
-  score += highCard * 2.2;
+  // フォローして負ける：危険札や高札を逃がす。
+  score += risk * 12.2 * w.dump;
+  score += highCard * 2.4;
   score += lowCard * .6;
-  if(isMad && !shoot) score += 240;
-  if(shoot && isMad) score -= 620;
+  if(isMad && !shoot) score += 260;
+  if(shoot && isMad) score -= 650;
+  if(ch?.key === 'rikumodoki' && risk <= 1) score += 10; // 安全な小札処理
   return score;
 }
+
 function chooseCpuPairCardForDiscard(room, player, drawn, candidates){
   if(!Array.isArray(candidates) || !candidates.length) return null;
   return candidates.slice()
@@ -403,108 +425,236 @@ function chooseCpuPickIndex(room, pp, candidates){
   return Math.floor(Math.random() * n);
 }
 
+
+function cpuSafeName(room, pid){
+  return room?.players?.[pid]?.name || '相手';
+}
+
+function cpuNextName(room, pid){
+  const count = Array.isArray(room?.players) ? room.players.length : 0;
+  if(!count) return '相手';
+  const np = (Number(pid) + 1 + count) % count;
+  return cpuSafeName(room, np);
+}
+
+function cpuCurrentTrickLeaderPid(room){
+  if(!room?.trick?.length) return -1;
+  const leadSuit = room.leadSuit || room.trick[0]?.card?.suit;
+  const leadCards = room.trick.filter(x=>x.card?.suit === leadSuit);
+  if(!leadCards.length) return -1;
+  return leadCards.slice().sort((a,b)=>Number(b.card.val||0)-Number(a.card.val||0))[0].pid;
+}
+function cpuCurrentTrickLeaderName(room){
+  const pid = cpuCurrentTrickLeaderPid(room);
+  return pid >= 0 ? cpuSafeName(room, pid) : '今の勝者';
+}
+function cpuTrickRisk(room){
+  return (room?.trick || []).reduce((sum,x)=>sum + cpuCardHandRisk(room, x.card), 0);
+}
+function cpuTrickHasMadPig(room){
+  return (room?.trick || []).some(x=>cpuIsMadPigCard(room, x.card));
+}
+function cpuNearShootPotential(room, player){
+  if(!shootThePigEnabled(room) || !player) return false;
+  return playerHasJoker(player) || playerHasMadPig(room, player);
+}
+function cpuCommentChance(room, base=.36){
+  if(!room) return false;
+  const p = Math.max(.05, Math.min(.85, base));
+  return Math.random() < p;
+}
+
+
 function cpuStrategyLineFor(room, pid, type, ctx={}){
   const p = room.players[pid];
   const ch = cpuCharacter(p);
   if(!ch) return null;
   const card = ctx.card ? cardText(ctx.card) : '';
-  const target = ctx.target || '相手';
+  const target = ctx.target || cpuNextName(room, pid);
+  const winner = ctx.winner || '勝者';
+  const weakest = ctx.weakest || '最弱';
+  const drawn = ctx.drawn ? cardText(ctx.drawn) : '';
+  const round = room.round || 1;
   const mode = roomPenaltyLabel(room);
+  const penalty = room.jokerPenalty ?? 20;
 
   if(ch.key === 'kamomodoki'){
     if(type==='shootThreat') return sample([
-      '月が赤いですね♡ ババブタとマッド、揃うと地獄が反転します♡',
-      'シュートの匂い…他人の不幸が10点ずつ増える音がします♡',
-      'ウホッ♡ 危険札コンボ、赤く育てておきます♡'
+      `${target}さん、ごめんね♡ 月が赤いので、シュートの準備をします♡`,
+      `ババブタとマッド、揃うと${target}さん以外も全員しんどいですよ♡`,
+      'ウホッ♡ 危険札コンボ、赤く育てておきます♡',
+      `このラウンド、${target}さんの不幸も蜜の味にします♡`
     ]);
     if(type==='dumpDanger') return sample([
-      `${card}を投下♡ その失点、誰かの山で咲いてください♡`,
+      `${target}さん、ごめんね♡ ${card}を投下します♡`,
+      `${card}を処理します♡ 爆発先はできれば${target}さんで♡`,
       '危険物処理です♡ もちろん相手側で爆発希望です♡',
-      '下家のデスロードに燃料を置きます♡'
+      `下家のデスロード、${target}さん方面に舗装します♡`
     ]);
     if(type==='spadePenalty') return sample([
-      `♠は重いですからね♡ ${card}で圧を撒きます♡`,
+      `${target}さん、♠は重いですよ♡ ${card}で圧を撒きます♡`,
       'スペード失点、誰かの心に刺され♡',
-      '黒い札は黒い未来の味がします♡'
+      `${mode}なら黒い札は黒い未来です♡`
     ]);
     if(type==='targetSelectSmart') return sample([
-      '候補は2枚。甘く見せて、ちゃんと毒を混ぜます♡',
-      'ババブタを渡すか、シュートを温存するか…蜜の味です♡',
-      '一番嫌な候補セット、完成です♡'
+      `${target}さんに渡す候補、甘く見せて毒を混ぜます♡`,
+      '候補は2枚。ババブタを渡すか、シュートを温存するか…蜜の味です♡',
+      `${target}さん、ごめんね♡ 一番嫌な候補セット、完成です♡`
+    ]);
+    if(type==='trickWin') return sample([
+      `勝者は私です♡ ${weakest}さんの袋、開けに行きます♡`,
+      `ごちそう山ゲット♡ 次は${weakest}さんから公開ピックです♡`,
+      `ウホッ♡ 勝ちました。${weakest}さん、ごめんね♡`
+    ]);
+    if(type==='trickWeak') return sample([
+      `最弱ですか♡ でも袋の中身は簡単に渡しませんよ♡`,
+      `${winner}さん、そんなに見ないでください♡ 毒入りかも♡`,
+      'ウホッ…最弱でも、候補選びで嫌がらせします♡'
+    ]);
+    if(type==='watchDrama') return sample([
+      `${winner}さんが取りましたね♡ ${weakest}さん、ご愁傷さまです♡`,
+      'ここから公開ピックです♡ 事故を期待しています♡',
+      '人の不幸は蜜の味…さあ袋を開けましょう♡'
+    ]);
+    if(type==='babaReveal') return sample([
+      `${target}さん、ババブタ直撃♡ -${penalty}の香りがします♡`,
+      `出ました♡ ババブタ！ ${target}さん、ごめんねじゃ済まないやつです♡`,
+      'ウホッ！公開ピックでこれは最高の赤信号です♡'
+    ]);
+    if(type==='pairClean') return sample([
+      `${target}さん、浄化ですか♡ でもデスロードはまだ続きます♡`,
+      'ペアで逃げましたね♡ 次は逃がしません♡',
+      'ウホッ、消しても圧は残ります♡'
     ]);
   }
 
   if(ch.key === 'wakumodoki'){
     if(type==='shootThreat') return sample([
-      'シュート・ザ・ピッグ、狙える気がする！できるぞぉ〜✊🏻',
+      `${target}さん見てて！シュート・ザ・ピッグ、狙える気がする！できるぞぉ〜✊🏻`,
       'ババとマッド？ 逆にチャンスじゃん！やるぞぉ〜✊🏻',
-      'あたしゃ、魔神だよ…月まで撃ち抜く！'
+      'あたしゃ、魔神だよ…月まで撃ち抜く！',
+      `${target}さん、ここからドラマ作るから！`
     ]);
     if(type==='dumpDanger') return sample([
-      `${card}、ここで放流！私なら流れを変えられる！`,
+      `${card}、ここで放流！${target}さん、ごめん！でも盛り上がる！`,
       '危ない札も勢いで処理！できるぞぉ〜✊🏻',
-      '直感でいく！この失点、今ここで手放す！'
+      `直感でいく！${target}さん方面に流れを変える！`
     ]);
     if(type==='spadePenalty') return sample([
       `♠は重い！だからこそ今切る！${card}！`,
-      'スペードの重さ？ 私なら持ち上げられる！たぶん！',
-      '黒い札でも盛り上げ札！やるぞぉ〜✊🏻'
+      `${mode}でも私なら持ち上げられる！たぶん！`,
+      `${target}さん、黒い札でも盛り上げ札にします！`
     ]);
     if(type==='targetSelectSmart') return sample([
-      '候補2枚、私の直感で選ぶぞぉ〜✊🏻',
+      `${target}さんに候補2枚！私の直感で選ぶぞぉ〜✊🏻`,
       'ここは魔神セレクト！どっち引いてもドラマ！',
       'できるぞぉ〜✊🏻 たぶん一番いい候補！'
+    ]);
+    if(type==='trickWin') return sample([
+      `勝った！${weakest}さんの袋から引くぞぉ〜✊🏻`,
+      'ごちそう山ゲット！ここから公開ピックで盛り上げる！',
+      `やるぞぉ〜✊🏻 ${weakest}さん、ごめんね！`
+    ]);
+    if(type==='trickWeak') return sample([
+      `最弱！？でも${winner}さんに引かれても、私なら耐えられる！`,
+      '候補選びならできるぞぉ〜✊🏻',
+      'あたしゃ、魔神だよ…最弱からでも見せ場作る！'
+    ]);
+    if(type==='watchDrama') return sample([
+      `${winner}さんが取った！${weakest}さんの袋、開封だ！`,
+      '公開ピック、ここが一番盛り上がる！',
+      'ババブタ出たら伝説！出なくてもドラマ！'
+    ]);
+    if(type==='babaReveal') return sample([
+      `${target}さん、ババブタ引いた！？でもまだできるぞぉ〜✊🏻`,
+      'うわー！公開ピックでババブタ！最高にゲームしてる！',
+      'あたしゃ、魔神だよ…でもこれは震える！'
+    ]);
+    if(type==='pairClean') return sample([
+      `${target}さん、ペア浄化！うまい！できてる！`,
+      'ペアで消えた！これは気持ちいいやつ！',
+      '手札整理、成功！やるぞぉ〜✊🏻'
     ]);
   }
 
   if(ch.key === 'rikumodoki'){
     if(type==='shootThreat') return sample([
-      'シュート・ザ・ピッグ条件を確認。保持して最終影響を狙います。',
+      `シュート条件を確認。${target}さんへの影響も含めて管理します。`,
       'ババブタとマッド・ピッグの組み合わせ、リスクではなく計画に組み込みます。',
-      '危険札コンボを管理対象にします。慌てず進行します。'
+      `危険札コンボを管理対象にします。${target}さん、進行にご注意ください。`
     ]);
     if(type==='dumpDanger') return sample([
-      `${card}をリスク処理します。手札負債を減らします。`,
+      `${card}をリスク処理します。${target}さん、すみませんが工程上必要です。`,
       '危険札を棚卸しします。不要資産は早めに外します。',
-      'ここで失点リスクを圧縮します。'
+      `${target}さん方面へ負債を圧縮します。`
     ]);
     if(type==='spadePenalty') return sample([
       `♠スートは失点が重いです。${card}を処理します。`,
-      'スペードリスクを確認。早めに切ります。',
-      '黒い札は管理コスト高めです。処理します。'
+      `${mode}なので、スペードリスクを優先管理します。`,
+      '黒い札は管理コスト高めです。早めに処理します。'
     ]);
     if(type==='targetSelectSmart') return sample([
-      '候補2枚をリスク順に選定します。',
+      `${target}さんへの候補2枚をリスク順に選定します。`,
       'ババブタ、マッド、スート失点を考慮して候補を絞ります。',
       '対象範囲を2枚に圧縮。進捗良好です。'
+    ]);
+    if(type==='trickWin') return sample([
+      `勝利を確認。次工程として${weakest}さんから公開ピックします。`,
+      'ごちそう山取得。リスクと得点を再計算します。',
+      `${weakest}さん、ピック工程に入ります。よろしくお願いします。`
+    ]);
+    if(type==='trickWeak') return sample([
+      `最弱を確認。${winner}さんに引かれる前に候補を整理します。`,
+      'リスクがあります。候補選定で被害を抑えます。',
+      '想定外ですが、進行を止めません。'
+    ]);
+    if(type==='watchDrama') return sample([
+      `${winner}さんが勝利、${weakest}さんがピック対象。工程が動きます。`,
+      '公開ピック工程に入ります。事故リスクがありますね。',
+      'ババブタの所在が重要です。注視します。'
+    ]);
+    if(type==='babaReveal') return sample([
+      `${target}さんがババブタ取得。失点リスク-${penalty}を確認しました。`,
+      '公開ピックでババブタ。これは進捗に大きく影響します。',
+      'リスク顕在化です。リカバリープランが必要です。'
+    ]);
+    if(type==='pairClean') return sample([
+      `${target}さん、ペア処理完了。手札リスクが下がりました。`,
+      '浄化工程完了。進捗良好です。',
+      '手札整理が入りました。計画的です。'
     ]);
   }
   return null;
 }
 
+
+
 function cpuLineFor(room, pid, type, ctx={}){
   const p = room.players[pid];
   const ch = cpuCharacter(p);
   if(!ch) return null;
-  const target = ctx.target || '相手';
+  const target = ctx.target || cpuNextName(room, pid);
   const cardTextShort = ctx.card ? cardText(ctx.card) : '';
   const drawnText = ctx.drawn ? cardText(ctx.drawn) : '';
   const round = room.round || 1;
 
+  // 新しい状況特化コメントを優先
+  const strategic = cpuStrategyLineFor(room, pid, type, ctx);
+  if(strategic) return strategic;
+
   if(ch.key==='kamomodoki'){
-    // 赤背景ドットゴリラ風。攻撃的で圧が強いが、豚語は使わない。
     if(type==='playLeadHigh') return sample([
-      `赤信号、点灯です♡ ${cardTextShort}で下家のデスロード開通♡`,
+      `${target}さん、ごめんね♡ ${cardTextShort}で下家のデスロード開通♡`,
       'マストフォローは祝福です♡ さあ、逃げ道を塞ぎます♡',
       'ウホッウホッ！高火力で殴ります♡'
     ]);
     if(type==='playLeadLow') return sample([
-      'まずは小さな不幸を仕込みます♡',
+      `まずは小さな不幸を${target}さん方面に仕込みます♡`,
       'この一歩が下家のデスロードになります♡',
       '人の不幸は蜜の味…まだ前菜です♡'
     ]);
     if(type==='followWin') return sample([
-      `勝ち筋、いただきます♡ ${cardTextShort}で圧をかけます♡`,
+      `${target}さんの勝ち筋、横からいただきます♡ ${cardTextShort}です♡`,
       'マストフォローは祝福です♡ 祝福という名の強制です♡',
       'そこ、逃げ道ありませんよ♡ ウホッ♡'
     ]);
@@ -514,35 +664,27 @@ function cpuLineFor(room, pid, type, ctx={}){
       'ウホッ、しゃがんでから殴るタイプです♡'
     ]);
     if(type==='offSuit') return sample([
-      'フォロー不能？ では自由に呪いを置きます♡',
+      `${target}さん、ごめんね♡ フォロー不能なので自由に呪いを置きます♡`,
       '下家のデスロード、舗装しておきますね♡',
       'ウホッウホッ、別スートで嫌がらせです♡'
     ]);
     if(type==='pickWin') return sample([
-      `${target}の袋、裏向きでも赤く光って見えますね♡ 勘で処刑です♡`,
-      'ピックは処刑です♡ マストフォローより甘い罰です♡',
+      `${target}さんの袋、裏向きでも赤く光って見えますね♡ 勘で処刑です♡`,
+      `${target}さん、ごめんね♡ ピックは処刑です♡`,
       'ウホッ…中身は見えないのに、失点の気配だけします♡'
     ]);
     if(type==='pickWatch') return sample([
-      'そのピック、誰かの不幸になりますように♡',
+      `${ctx.winner || '勝者'}さん、そのピックで誰かを泣かせてください♡`,
       '人の不幸は蜜の味…開封の儀です♡',
       '赤背景のゴリラも見守っています。ウホッ♡'
     ]);
     if(type==='targetSelect') return sample([
-      '候補を絞る？ では一番嫌な袋にします♡',
+      `${target}さん用の候補、嫌な感じにします♡`,
       '危険札を混ぜたい…混ぜたいですね♡',
       '下家のデスロード候補、厳選します♡'
     ]);
-    if(type==='resultJoker') return sample([
-      `出ました♡ ${drawnText || '危険札'}、最高の赤信号です♡`,
-      'ウホッ！直撃、蜜の味です♡',
-      '事故は美しい♡ その失点、輝いてます♡'
-    ]);
-    if(type==='resultPair') return sample([
-      '浄化ですか…でもデスロードはまだ続きます♡',
-      'ペア浄化、逃げ足が速いですね♡',
-      'ウホッ、消しても圧は残ります♡'
-    ]);
+    if(type==='resultJoker') return cpuStrategyLineFor(room, pid, 'babaReveal', {target:p.name, drawn:ctx.drawn}) || sample([`出ました♡ ${drawnText || '危険札'}、最高の赤信号です♡`]);
+    if(type==='resultPair') return cpuStrategyLineFor(room, pid, 'pairClean', {target:p.name, drawn:ctx.drawn}) || sample(['浄化ですか…でもデスロードはまだ続きます♡']);
     if(type==='roundEnd') return sample([
       `第${round}ラウンド、誰かの不幸で締まりましたね♡`,
       '終了です♡ 次のデスロードを準備しましょう♡',
@@ -552,10 +694,9 @@ function cpuLineFor(room, pid, type, ctx={}){
   }
 
   if(ch.key==='wakumodoki'){
-    // 赤帽子・丸メガネの明るい自信家。大胆だが豚語は使わない。
     if(type==='playLeadHigh') return sample([
       `やるぞぉ〜✊🏻 ${cardTextShort}で主役を取りに行く！`,
-      'できるぞぉ〜✊🏻 ここはドーンといく！',
+      `${target}さん、見てて！ここはドーンといく！`,
       'あたしゃ、魔神だよ…この一手で空気を変える！'
     ]);
     if(type==='playLeadLow') return sample([
@@ -564,7 +705,7 @@ function cpuLineFor(room, pid, type, ctx={}){
       '赤帽子の直感、信じます！'
     ]);
     if(type==='followWin') return sample([
-      '勝てる！私ならできるぞぉ〜✊🏻',
+      `${target}さんを超えられる！私ならできるぞぉ〜✊🏻`,
       'ここで取ったら盛り上がるよね？ 取ります！',
       'あたしゃ、魔神だよ…勝ちに行く！'
     ]);
@@ -574,35 +715,27 @@ function cpuLineFor(room, pid, type, ctx={}){
       'やるぞぉ〜✊🏻 低くても気持ちは高い！'
     ]);
     if(type==='offSuit') return sample([
-      '自由なら大胆にいくぞぉ〜✊🏻',
+      `${target}さん、ごめん！自由なら大胆にいくぞぉ〜✊🏻`,
       'フォロー不能？ むしろ見せ場！',
       'できるぞぉ〜✊🏻 なんとかなる！'
     ]);
     if(type==='pickWin') return sample([
-      `${target}から引くぞぉ〜✊🏻 私なら当たりを引ける！`,
+      `${target}さんから引くぞぉ〜✊🏻 私なら当たりを引ける！`,
       '裏向きでも乗りこなす！できるぞぉ〜✊🏻',
       'あたしゃ、魔神だよ…見えない袋も開けます。'
     ]);
     if(type==='pickWatch') return sample([
       'そのピック、めちゃくちゃ盛り上がる気がする！',
-      'やるぞぉ〜✊🏻 見届けるぞぉ〜✊🏻',
+      `${ctx.winner || '勝者'}さん、やるぞぉ〜✊🏻 見届けるぞぉ〜✊🏻`,
       '大丈夫、たぶん全部うまくいく！'
     ]);
     if(type==='targetSelect') return sample([
-      '候補を選ぶぞぉ〜✊🏻 私の直感を信じて！',
+      `${target}さんへの候補を選ぶぞぉ〜✊🏻 私の直感を信じて！`,
       'この中ならいける！できるぞぉ〜✊🏻',
       '魔神候補セレクション、始めます。'
     ]);
-    if(type==='resultJoker') return sample([
-      'えっ、でも私ならできるぞぉ〜✊🏻',
-      '危険札？ 私なら扱える！たぶん！',
-      'あたしゃ、魔神だよ…いや、今ちょっと人間かも…'
-    ]);
-    if(type==='resultPair') return sample([
-      'ペア浄化！できるぞぉ〜✊🏻',
-      'やるぞぉ〜✊🏻 手札が整った！',
-      '私、やっぱり天才かも！'
-    ]);
+    if(type==='resultJoker') return cpuStrategyLineFor(room, pid, 'babaReveal', {target:p.name, drawn:ctx.drawn}) || sample(['えっ、でも私ならできるぞぉ〜✊🏻']);
+    if(type==='resultPair') return cpuStrategyLineFor(room, pid, 'pairClean', {target:p.name, drawn:ctx.drawn}) || sample(['ペア浄化！できるぞぉ〜✊🏻']);
     if(type==='roundEnd') return sample([
       `第${round}ラウンド完了！次もやるぞぉ〜✊🏻`,
       'できるぞぉ〜✊🏻 まだまだ勝てるぞぉ〜✊🏻',
@@ -612,11 +745,10 @@ function cpuLineFor(room, pid, type, ctx={}){
   }
 
   if(ch.key==='rikumodoki'){
-    // 白い犬の堅実PM。進捗・締切・リスク管理で話す。豚語は使わない。
     if(type==='playLeadHigh') return sample([
       `進捗上、${cardTextShort}で主導権を取ります。`,
       'リスクはありますが、ここは取得が妥当です。',
-      '白犬PM判断です。前倒しで処理します。'
+      `${target}さんの動きも踏まえ、前倒しで処理します。`
     ]);
     if(type==='playLeadLow') return sample([
       'まずは安全に進めます。進捗確認から入ります。',
@@ -624,7 +756,7 @@ function cpuLineFor(room, pid, type, ctx={}){
       '計画通り、無理のない着手です。'
     ]);
     if(type==='followWin') return sample([
-      '勝てる見込みがあります。実行します。',
+      `${target}さんを上回れます。実行します。`,
       'ここは取得が妥当です。議事録に残します。',
       '計画を前倒しします。'
     ]);
@@ -635,11 +767,11 @@ function cpuLineFor(room, pid, type, ctx={}){
     ]);
     if(type==='offSuit') return sample([
       'フォロー不能です。想定外ですが処理します。',
-      'スコープ外です。別スートで対応します。',
+      `${target}さん方面へ、別スートで対応します。`,
       '予定変更です。落ち着いて進めます。'
     ]);
     if(type==='pickWin') return sample([
-      `${target}の手札から1枚確認します。ピック工程に入ります。`,
+      `${target}さんの袋から裏向きで1枚選びます。ピック工程に入ります。`,
       '中身は見えません。確率で処理します。締切厳守です。',
       'ピック担当になりました。進捗を止めません。'
     ]);
@@ -649,20 +781,12 @@ function cpuLineFor(room, pid, type, ctx={}){
       '予定外の事故が起きないことを祈ります。'
     ]);
     if(type==='targetSelect') return sample([
-      '候補選定に入ります。リスク順に確認します。',
+      `${target}さんへの候補選定に入ります。リスク順に確認します。`,
       '対象範囲を絞ります。締切内に決めます。',
       '想定外を避けるため、候補を管理します。'
     ]);
-    if(type==='resultJoker') return sample([
-      '想定外です。リカバリープランを立てます。',
-      '危険札ですか…進捗に影響があります。',
-      '計画が崩れました。いったん落ち着きます。'
-    ]);
-    if(type==='resultPair') return sample([
-      'ペア処理完了。進捗良好です。',
-      '手札整理、完了しました。',
-      '計画通りです。'
-    ]);
+    if(type==='resultJoker') return cpuStrategyLineFor(room, pid, 'babaReveal', {target:p.name, drawn:ctx.drawn}) || sample(['想定外です。リカバリープランを立てます。']);
+    if(type==='resultPair') return cpuStrategyLineFor(room, pid, 'pairClean', {target:p.name, drawn:ctx.drawn}) || sample(['ペア処理完了。進捗良好です。']);
     if(type==='roundEnd') return sample([
       `第${round}ラウンド完了。振り返りを行いましょう。`,
       'ラウンド終了です。次工程へ進みます。',
@@ -674,7 +798,9 @@ function cpuLineFor(room, pid, type, ctx={}){
   return null;
 }
 
+
 function sample(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
 
 
 function cpuPlayLine(room, pid, card){
@@ -686,66 +812,79 @@ function cpuPlayLine(room, pid, card){
   const shoot = cpuShootPotential(room, p);
   const mode = normalizePenaltyMode(room.penaltyMode);
   const risk = cpuCardHandRisk(room, card);
+  const currentLeader = cpuCurrentTrickLeaderName(room);
+  const nextName = cpuNextName(room, pid);
+  const targetName = leadSuit ? currentLeader : nextName;
 
   if(shoot && (isMad || jokerInHand)){
-    const line = cpuStrategyLineFor(room, pid, 'shootThreat', {card});
+    const line = cpuStrategyLineFor(room, pid, 'shootThreat', {card, target:targetName});
     if(line) return line;
   }
 
   if(isMad && !shoot){
-    const line = cpuStrategyLineFor(room, pid, 'dumpDanger', {card});
+    const line = cpuStrategyLineFor(room, pid, 'dumpDanger', {card, target:targetName});
     if(line) return line;
   }
 
   if(mode === 'spadeSuit' && card.suit === '♠' && !isMad){
-    const line = cpuStrategyLineFor(room, pid, 'spadePenalty', {card});
+    const line = cpuStrategyLineFor(room, pid, 'spadePenalty', {card, target:targetName});
     if(line) return line;
   }
 
   if(leadSuit && card.suit !== leadSuit && risk >= 10){
-    const line = cpuStrategyLineFor(room, pid, 'dumpDanger', {card});
+    const line = cpuStrategyLineFor(room, pid, 'dumpDanger', {card, target:targetName});
     if(line) return line;
   }
 
   if(!leadSuit){
     const t = card.val >= 11 ? 'playLeadHigh' : 'playLeadLow';
-    return cpuLineFor(room, pid, t, {card}) || sample(['まずは様子見でいく。','小さく入って様子を見る。','ここは安全運転。']);
+    return cpuLineFor(room, pid, t, {card, target:nextName}) || sample(['まずは様子見でいく。','小さく入って様子を見る。','ここは安全運転。']);
   }
 
   if(card.suit !== leadSuit){
-    return cpuLineFor(room, pid, 'offSuit', {card}) || (jokerInHand
+    return cpuLineFor(room, pid, 'offSuit', {card, target:currentLeader}) || (jokerInHand
       ? sample(['スートがない！ババブタを隠して逃げる…','ここは別スートでかわす。ババブタだけは出せない！'])
       : sample(['そのスート持ってない！','自由に出せるならこれでいく。']));
   }
 
   const currentHigh = room.trick.filter(x=>x.card.suit===leadSuit).reduce((m,x)=>Math.max(m,x.card.val),0);
-  if(card.val > currentHigh && card.val >= 10) return cpuLineFor(room, pid, 'followWin', {card}) || sample(['ここでそれを出す！ごちそう狙い！','勝てるなら勝つしかない！']);
-  if(card.val <= 5) return cpuLineFor(room, pid, 'followLow', {card}) || sample(['低めで耐える…','これで最弱にならないといい…']);
-  return cpuLineFor(room, pid, 'normal', {card}) || sample(['マストフォロー、了解。','このカードでついていく。']);
+  if(card.val > currentHigh && card.val >= 10) return cpuLineFor(room, pid, 'followWin', {card, target:currentLeader}) || sample(['ここでそれを出す！ごちそう狙い！','勝てるなら勝つしかない！']);
+  if(card.val <= 5) return cpuLineFor(room, pid, 'followLow', {card, target:currentLeader}) || sample(['低めで耐える…','これで最弱にならないといい…']);
+  return cpuLineFor(room, pid, 'normal', {card, target:currentLeader}) || sample(['マストフォロー、了解。','このカードでついていく。']);
 }
+
+
 
 
 
 function cpuPickLine(room, winnerPid, weakestPid){
   const wp=room.players[winnerPid], lp=room.players[weakestPid];
-  if(wp.cpu) return cpuLineFor(room, winnerPid, 'pickWin', {target:lp.name}) || sample([`さて、${lp.name}の袋から裏向きで選ぶ…`,`中身は見えない。ババブタだけは勘弁…`,`左か右か、これは本当に運です。`]);
+  if(wp.cpu) return cpuLineFor(room, winnerPid, 'pickWin', {target:lp.name, weakest:lp.name}) || sample([`さて、${lp.name}の袋から裏向きで選ぶ…`,`中身は見えない。ババブタだけは勘弁…`,`左か右か、これは本当に運です。`]);
   const cpu = room.players.find((p,i)=>p.cpu && i!==winnerPid);
-  if(cpu){ const idx = room.players.indexOf(cpu); say(room, idx, cpuLineFor(room, idx, 'pickWatch', {winner:wp.name,target:lp.name}) || sample(['このピック、空気が重い…','ババブタの気配がする…'])); }
+  if(cpu){
+    const idx = room.players.indexOf(cpu);
+    const line = cpuLineFor(room, idx, 'pickWatch', {winner:wp.name,target:lp.name, weakest:lp.name}) || sample(['このピック、空気が重い…','ババブタの気配がする…']);
+    say(room, idx, line);
+  }
   return null;
 }
 
 
 
+
+
 function resultLine(drawn, paired, room=null, pid=null){
   if(room && pid != null){
-    if(drawn.joker) return cpuLineFor(room, pid, 'resultJoker', {drawn, paired}) || sample(['危険札を引きました。これは痛い展開です。','最悪の1枚です。空気が変わりました。']);
-    if(paired) return cpuLineFor(room, pid, 'resultPair', {drawn, paired}) || sample(['おそろいペア！これはうまい。','ナイス浄化。手札が軽くなりました。']);
+    const p = room.players[pid];
+    if(drawn.joker) return cpuLineFor(room, pid, 'resultJoker', {drawn, paired, target:p?.name}) || sample(['危険札を引きました。これは痛い展開です。','最悪の1枚です。空気が変わりました。']);
+    if(paired) return cpuLineFor(room, pid, 'resultPair', {drawn, paired, target:p?.name}) || sample(['おそろいペア！これはうまい。','ナイス浄化。手札が軽くなりました。']);
   }
   if(drawn.joker) return sample(['危険札を引きました。これは痛い展開です。','最悪の1枚です。空気が変わりました。','完全に事故です。']);
   if(paired) return sample(['おそろいペア！これはうまい。','ナイス浄化。手札が軽くなりました。','そのペアは気持ちいい展開です。']);
   if(drawn.val >= 11) return sample(['強いカードを拾いました。これは効きそうです。','高いカード、後半で存在感が出そうです。']);
   return sample(['まずまずの1枚です。','とりあえず手札に入れておきます。','危険札ではないだけ助かりました。']);
 }
+
 
 
 function publicState(room, viewerId){
@@ -792,7 +931,9 @@ function publicState(room, viewerId){
       targetCount: room.pendingPick.targetCount || pickCandidateLimit(room, room.players[room.pendingPick.weakestPid]),
       targetSelectionRequired: room.pendingPick.targetSelectionRequired === true,
       targetSelectionDone: room.pendingPick.targetSelectionDone !== false,
-      targetCandidateCount: pickCandidateCards(room, room.pendingPick).length || pickCandidateLimit(room, room.players[room.pendingPick.weakestPid]),
+      targetCandidateCount: (room.pendingPick.targetSelectionRequired && room.pendingPick.targetSelectionDone === false)
+        ? Math.min(room.pendingPick.targetCount || 0, room.players[room.pendingPick.weakestPid]?.hand?.length || 0)
+        : (pickCandidateCards(room, room.pendingPick).length || pickCandidateLimit(room, room.players[room.pendingPick.weakestPid])),
       targetSelectableCardIds: (viewerIndex === room.pendingPick.weakestPid && room.pendingPick.targetSelectionRequired && !room.pendingPick.targetSelectionDone) ? room.players[room.pendingPick.weakestPid].hand.map(c=>c.id) : [],
       result: room.pendingPick.result || null,
       pairChoice: room.pendingPick.pairChoice ? {
@@ -987,9 +1128,10 @@ function applyShootThePigForRound(room){
     p.shootPigActivatedRounds = p.shootPigActivatedRounds || [];
     if(i === shooterPid){
       p.shootPigActivatedRounds.push(result.round);
-      // ラウンド結果ではローカルにマッド失点を0表示する。
-      // 最終得点でマッド失点を0にするのは、最終ラウンドで発動した場合だけ。
-      if(isFinalRound) p.shootPigFinalMadPigWaived = true;
+      // シュート・ザ・ピッグ発動時は、その発動タイミングのマッド・ピッグ失点を0にする。
+      // ラウンド毎設定では毎ラウンド判定なので、発動した時点で最終得点側のマッド失点も免除対象にする。
+      // ゲーム最後設定では最終ラウンドのみ判定されるため、最終ラウンド発動時だけ免除する。
+      if(timing === 'perRound' || isFinalRound) p.shootPigFinalMadPigWaived = true;
       if(timing === 'gameEnd' && isFinalRound) p.shootPigGameEndJokerWaived = true;
     } else {
       p.shootPigPenaltyBank += result.penaltyToOthers;
@@ -1370,6 +1512,7 @@ function advanceReviewToPick(room, reviewToken, winnerPid, weakestPid){
       winnerPid,
       weakestPid,
       readyAt,
+      createdAt: Date.now(),
       result:null,
       token:`pick-${Date.now()}-${Math.random()}`,
       targetCount,
@@ -1398,6 +1541,19 @@ function advanceReviewToPick(room, reviewToken, winnerPid, weakestPid){
   }
 }
 
+
+
+function isPlayerConnectedForProgress(p){
+  return !!(p && (p.cpu || (p.ws && p.ws.readyState === WebSocket.OPEN)));
+}
+function disconnectedPickTargetFallbackIds(room, pp){
+  const lp = room?.players?.[pp?.weakestPid];
+  if(!lp || !Array.isArray(lp.hand)) return [];
+  const need = Math.min(Number(pp?.targetCount || 0), lp.hand.length);
+  if(need <= 0) return [];
+  // 切断復旧用。CPUの戦略で人間の手札を勝手に最適化しないよう、ランダム候補にする。
+  return shuffleIds(lp.hand.map(c=>c.id)).slice(0, need);
+}
 
 function ensureRoomProgress(room){
   if(!room) return;
@@ -1497,9 +1653,21 @@ function ensureRoomProgress(room){
   }
 
   // ピック候補選択中は最弱プレイヤーの選択待ち。CPUなら自動解決し、人間なら状態を再送する。
+  // ただし候補選択者が切断したままだとゲームが止まるため、一定時間後にランダム候補で復旧する。
   if(room.pendingPick && room.pendingPick.targetSelectionRequired && !room.pendingPick.targetSelectionDone && !room.pendingPick.result){
-    autoResolveCpuPickTargets(room, room.pendingPick);
+    const pp = room.pendingPick;
+    pp.createdAt = pp.createdAt || Date.now();
+    autoResolveCpuPickTargets(room, pp);
+    const weakest = room.players[pp.weakestPid];
     const now = Date.now();
+    if(weakest && !weakest.cpu && !isPlayerConnectedForProgress(weakest) && now - pp.createdAt > 12000){
+      const ids = disconnectedPickTargetFallbackIds(room, pp);
+      if(ids.length){
+        log(room, `⚠️ ${weakest.name} が切断中のため、ピック候補をランダムに選んで進行を復旧しました。`);
+        submitPickTargets(room, weakest.id, ids, true);
+        return;
+      }
+    }
     if(!room.lastPickTargetRebroadcastAt || now - room.lastPickTargetRebroadcastAt > 4000){
       room.lastPickTargetRebroadcastAt = now;
       log(room, 'ピック候補選択待ちです。最弱プレイヤーは候補カードを選んでください。');
@@ -1508,9 +1676,18 @@ function ensureRoomProgress(room){
     }
   }
 
-  // ペア選択中は結果確定前なので自動で進めない。人間の選択待ちとして状態だけ再送する。
+  // ペア選択中は人間の選択待ちとして状態を再送する。
+  // ただし選択者が切断したままだとゲームが止まるため、一定時間後にスキップ扱いで復旧する。
   if(room.pendingPick && room.pendingPick.pairChoice && !room.pendingPick.result){
+    const pp = room.pendingPick;
+    pp.pairChoiceAt = pp.pairChoiceAt || Date.now();
+    const winner = room.players[pp.winnerPid];
     const now = Date.now();
+    if(winner && !winner.cpu && !isPlayerConnectedForProgress(winner) && now - pp.pairChoiceAt > 15000){
+      log(room, `⚠️ ${winner.name} が切断中のため、ペア選択をスキップ扱いにして進行を復旧しました。`);
+      completePickWithoutPair(room, pp, pp.pairChoice.drawn);
+      return;
+    }
     if(!room.lastPairChoiceRebroadcastAt || now - room.lastPairChoiceRebroadcastAt > 4000){
       room.lastPairChoiceRebroadcastAt = now;
       log(room, 'ペア選択待ちです。ペアにするカードを選ぶか、スキップしてください。');
@@ -1519,10 +1696,14 @@ function ensureRoomProgress(room){
     }
   }
 
-  // ピック結果が出ているのにpendingPickが残り続けている場合は進める.
+  // ピック結果が出ているのにpendingPickが残り続けている場合は進める。
+  // 通常結果は約2.6秒、ババブタ公開ピックは演出強化のため約4.3秒表示する。
+  // 監視側が早すぎるとババブタ演出を途中で切ってしまうため、結果内容ごとに猶予を変える。
   if(room.pendingPick && room.pendingPick.result){
     const age = Date.now() - (room.pendingPick.resultAt || Date.now());
-    if(age > 3800){
+    const expectedDelay = room.pendingPick.result?.drawn?.joker ? 4300 : 2600;
+    const recoverAfter = expectedDelay + 1500;
+    if(age > recoverAfter){
       log(room, '⚠️ ピック結果表示後に停止を検知したため、自動復旧しました。');
       finishAfterPick(room, room.pendingPick.winnerPid);
       return;
@@ -2100,8 +2281,14 @@ function resolveTrick(room){
     expiresAt:reviewUntil + 5000
   };
 
-  if(wp.cpu) say(room, winner.pid, sample(['よし、ごちそう山ゲットだ！','勝ったけど、このあとが怖い…','取った！でもピックが本番。']));
-  if(lp.cpu && lp.hand.length>0) say(room, weakest.pid, sample(['えっ、最弱！？やめて〜！','うわっ、きついな〜。袋を見ないで！','最弱になった…嫌な予感しかしない。']));
+  if(wp.cpu) say(room, winner.pid, cpuStrategyLineFor(room, winner.pid, 'trickWin', {winner:wp.name, weakest:lp.name, target:lp.name, card:winner.card}) || sample(['よし、ごちそう山ゲットだ！','勝ったけど、このあとが怖い…','取った！でもピックが本番。']));
+  if(lp.cpu && lp.hand.length>0) say(room, weakest.pid, cpuStrategyLineFor(room, weakest.pid, 'trickWeak', {winner:wp.name, weakest:lp.name, target:wp.name, card:weakest.card}) || sample(['えっ、最弱！？やめて〜！','うわっ、きついな〜。袋を見ないで！','最弱になった…嫌な予感しかしない。']));
+  const watcher = room.players.find((p,i)=>p.cpu && i!==winner.pid && i!==weakest.pid);
+  if(watcher && cpuCommentChance(room, cpuPersonalityWeights(watcher).talk)){
+    const wi = room.players.indexOf(watcher);
+    const line = cpuStrategyLineFor(room, wi, 'watchDrama', {winner:wp.name, weakest:lp.name, target:lp.name});
+    if(line) say(room, wi, line);
+  }
   wp.scorePile.push(...room.trick.map(x=>x.card));
   log(room, `👑 ${wp.name} が勝利。場の4枚をごちそう山へ。`);
   log(room, `💀 最弱は ${lp.name}（${cardText(weakest.card)}）。`);
@@ -2127,6 +2314,10 @@ function completePickWithoutPair(room, pp, drawn){
   pp.resultAt = Date.now();
   log(room, `🐽 ${text}`);
   if(wp.cpu) say(room, pp.winnerPid, resultLine(drawn, false, room, pp.winnerPid));
+  else if(drawn.joker){
+    const cpu = room.players.find((p,i)=>p.cpu && i!==pp.winnerPid);
+    if(cpu){ const ci=room.players.indexOf(cpu); say(room, ci, cpuStrategyLineFor(room, ci, 'babaReveal', {target:wp.name, drawn}) || resultLine(drawn, false, room, ci)); }
+  }
   room.message = text;
   broadcast(room);
   ensurePickFinish(room, pp, pp.winnerPid, drawn.joker ? 4300 : 2600);
@@ -2288,6 +2479,7 @@ function doPick(room, playerId, targetIndex){
 
   if(!drawn.joker && candidatesForPair.length){
     pp.pairChoice = {drawn, candidates:candidatesForPair};
+    pp.pairChoiceAt = Date.now();
     pp.resultAt = null;
     const text = `${wp.name} は ${cardText(drawn)} を引いた。ペアにするカードを選べます。`;
     log(room, `🐽 ${text}`);
